@@ -11,4 +11,5 @@ client.configure(auth());
 
 export const services = {
   users: client.service('users'),
+  todolists: client.service('todolists'),
 };

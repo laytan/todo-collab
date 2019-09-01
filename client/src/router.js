@@ -27,5 +27,10 @@ export default new Router({
       // which is lazy-loaded when the route is visited.
       component: () => import(/* webpackChunkName: "authentication" */ './views/Authentication.vue'),
     },
+    {
+      path: '/list/:id',
+      name: 'list',
+      component: () => import(/* webpackChunkName: "list" */ './views/List.vue'),
+    },
   ],
 });
