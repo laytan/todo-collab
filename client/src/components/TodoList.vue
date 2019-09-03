@@ -19,9 +19,19 @@
           :style="{ background: `linear-gradient(to left top, #fff 0%, #fff 50%, ${item.color} 50%, ${item.color} 100%)` }"
           @click="item.labelExpanded = true"></div>
           {{ /* eslint-enable max-len */ }}
-          <div class="item-body valign-wrapper">
-            Buy Groceries
-            Laytan1@hotmail.com
+          <div class="item-body">
+            <p>
+              Buy Groceries
+            </p>
+            <p class="author">
+              {{ item.author }}
+            </p>
+            <label class="valign-wrapper">
+              <input type="checkbox" class="filled-in" :checked="item.done"
+              @click="item.done = !item.done" />
+              <!-- This span is required -->
+              <span class="checkbox-span"></span>
+            </label>
           </div>
         </div>
       </transition-group>
@@ -51,6 +61,7 @@ export default {
             color: 'rgba(255,0,0,1)',
             editedAt: Date.now(),
             done: false,
+            author: 'laytanlaats@hotmail.com',
           },
           {
             order: 2,
@@ -61,6 +72,7 @@ export default {
             color: 'rgba(0,255,0,1)',
             editedAt: Date.now(),
             done: false,
+            author: 'laytanlaats@hotmail.com',
           },
           {
             order: 3,
@@ -71,6 +83,7 @@ export default {
             color: 'rgba(0,0,255,1)',
             editedAt: Date.now(),
             done: true,
+            author: 'laytanlaats@hotmail.com',
           },
         ],
       },
@@ -144,6 +157,9 @@ export default {
 .item-body {
   height: 100%;
   margin-left: 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
 .label-anim-enter-active, .label-anim-leave-active {
@@ -161,5 +177,23 @@ export default {
 
 .flip-list-move {
   transition: transform .2s;
+}
+
+.todo-list .checkbox-span {
+  height: 1rem;
+}
+
+[type="checkbox"].filled-in:checked + span:not(.lever)::after {
+  border: #2196f3;
+  background-color: #2196f3;
+}
+
+.author {
+  position: absolute;
+  transform: translateY(1.5rem);
+  color: #37474f;
+  text-transform: uppercase;
+  font-weight: bold;
+  font-size:12px;
 }
 </style>
