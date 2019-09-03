@@ -19,6 +19,7 @@
     "vue": "^2.6.10",
     "vue-function-api": "^3.0.0-beta.0",
     "vue-router": "^3.0.3",
+    "vuedraggable": "^2.23.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
