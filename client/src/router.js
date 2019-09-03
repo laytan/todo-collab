@@ -28,7 +28,7 @@ export default new Router({
       component: () => import(/* webpackChunkName: "authentication" */ './views/Authentication.vue'),
     },
     {
-      path: '/list/:id',
+      path: '/lists/:id',
       name: 'list',
       component: () => import(/* webpackChunkName: "list" */ './views/List.vue'),
     },
