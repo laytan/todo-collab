@@ -6,32 +6,34 @@
     <draggable v-model="state.list.items">
       <transition-group type="transition" :name="'flip-list'">
         <div v-for="item in state.list.items" :key="item.id"
-        class="section z-depth-2 item">
+        class="section z-depth-2 todolist-item"
+        @click="toggleLabel(item, $event)">
+          <div class="label-color"
+          :style="{ backgroundColor: item.color }"
+          ></div>
           <transition name="label-anim">
-            <div v-if="item.labelExpanded" class="label"
-            :style="{ backgroundColor: item.color, color: lightOrDark(item.color) }"
-            @click="item.labelExpanded = false">
-              {{ item.label }}
+            <div v-show="item.labelExpanded" class="label-text-wrapper"
+            :style="{ backgroundColor: item.color, color: lightOrDark(item.color) }">
+              <div class="label-text truncate">
+                {{ item.label }}
+              </div>
             </div>
           </transition>
-          {{ /* eslint-disable max-len */ }}
-          <div v-if="!item.labelExpanded" class="color"
-          :style="{ background: `linear-gradient(to left top, #fff 0%, #fff 50%, ${item.color} 50%, ${item.color} 100%)` }"
-          @click="item.labelExpanded = true"></div>
-          {{ /* eslint-enable max-len */ }}
-          <div class="item-body">
-            <p>
-              Buy Groceries
-            </p>
-            <p class="author">
-              {{ item.author }}
-            </p>
-            <label class="valign-wrapper">
-              <input type="checkbox" class="filled-in" :checked="item.done"
+          <div class="todolist-item-body">
+            <div class="todolist-item-name">
+              {{ item.name }}
+            </div>
+            <div class="todolist-item-description">
+              {{ endAt(item.description, 150) }}
+            </div>
+          </div>
+          <div class="checkbox-wrapper">
+            <label>
+            <input type="checkbox" class="filled-in" :checked="item.done"
               @click="item.done = !item.done" />
               <!-- This span is required -->
               <span class="checkbox-span"></span>
-            </label>
+              </label>
           </div>
         </div>
       </transition-group>
@@ -56,18 +58,26 @@ export default {
             order: 1,
             id: 'asdasd',
             name: 'Buy Groceries',
-            label: 'neccesity',
-            labelExpanded: true,
+            label: 'Dashboard bugs',
+            description: 'Lorem ipsum dolor sit amet',
+            labelExpanded: false,
             color: 'rgba(255,0,0,1)',
             editedAt: Date.now(),
             done: false,
             author: 'laytanlaats@hotmail.com',
           },
           {
-            order: 2,
+            order: 3,
             id: 'asdasxcxcd',
             name: 'Fix bugs',
             label: 'low prio',
+            description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.'
+            + ' Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s,'
+            + ' when an unknown printer took a galley of type and scrambled it to make a type specimen book.'
+            + ' It has survived not only five centuries, but also the leap into electronic typesetting,'
+            + ' remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset'
+            + ' sheets containing Lorem Ipsum passages, and more recently with desktop publishing software'
+            + ' like Aldus PageMaker including versions of Lorem Ipsum',
             labelExpanded: false,
             color: 'rgba(0,255,0,1)',
             editedAt: Date.now(),
@@ -75,11 +85,12 @@ export default {
             author: 'laytanlaats@hotmail.com',
           },
           {
-            order: 3,
+            order: 2,
             id: 'asdasasdd',
             name: 'brush your theeth',
             label: 'maybe',
-            labelExpanded: true,
+            description: 'Lorem ipsum dolor sit amet',
+            labelExpanded: false,
             color: 'rgba(0,0,255,1)',
             editedAt: Date.now(),
             done: true,
@@ -88,6 +99,10 @@ export default {
         ],
       },
     });
+
+    function endAt(text, length) {
+      return text.length > length ? `${text.substring(0, length)}...` : text;
+    }
 
     function lightOrDark(color) {
       let calculationColor = color;
@@ -122,9 +137,23 @@ export default {
       return hsp > 127.5 ? '#141414' : '#fafafa';
     }
 
+    function toggleLabel(item, e) {
+      /* eslint-disable no-param-reassign */
+      item.labelExpanded = !item.labelExpanded;
+      /* eslint-enable no-param-reassign */
+      if (!item.labelExpanded) {
+        return;
+      }
+      const listItem = window.$(e.target).closest('.todolist-item');
+      const label = listItem.find('.label-text');
+      label.css('max-height', listItem.height());
+    }
+
     return {
       state,
       lightOrDark,
+      endAt,
+      toggleLabel,
     };
   },
 };
@@ -133,33 +162,63 @@ export default {
 .todo-list {
   max-width: 400px;
   padding-bottom: 1.5rem;
-
+  background: linear-gradient(50deg, #2196f3, #3f51b5);
 }
 
-.item {
-  padding: 0;
-  height: 5rem;
-  margin: 1rem 1.5rem;
+.name {
+  margin: 0 1.5rem;
+  padding: 1.5rem 0 .5rem 0;
+  font-size: 2.5rem;
+  text-transform: uppercase;
+  border-bottom: 3px solid #00E676;
+  color: #EF9A9A;
 }
 
-.color {
-  height: 1.5rem;
-  width: 1.5rem;
-  position: absolute;
-}
-
-.label {
-  position: absolute;
-  padding: .1rem 1rem;
-  max-height: 1.5rem;
-}
-
-.item-body {
-  height: 100%;
-  margin-left: 2rem;
+.todolist-item {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 0;
+  margin: 1.5rem;
+  background: rgba(255,255,255,0.85);
+
+  > div {
+    padding: 1rem 0;
+  }
+}
+
+.label-color {
+  width: 5px;
+}
+
+.label-text-wrapper {
+  padding-top: 5px !important;
+  padding-bottom: 5px !important;
+  width: 2rem;
+}
+
+.label-text {
+  writing-mode: sideways-lr;
+  max-height: 100%;
+  text-overflow: unset;
+}
+
+.checkbox-wrapper {
+  margin-left: auto;
+}
+
+.todolist-item-body {
+  margin-left: 1rem;
+  flex-shrink: 100;
+}
+
+.todolist-item-name {
+  font-weight: bold;
+  margin-bottom: .4rem;
+}
+
+.todolist-item-description {
+  font-size: 95%;
+  text-align:justify;
+  margin-right:1rem;
 }
 
 .label-anim-enter-active, .label-anim-leave-active {
@@ -171,29 +230,7 @@ export default {
   transform: translateX(-50%) scaleX(0);
 }
 
-.name {
-  padding: 2rem;
-}
-
 .flip-list-move {
   transition: transform .2s;
-}
-
-.todo-list .checkbox-span {
-  height: 1rem;
-}
-
-[type="checkbox"].filled-in:checked + span:not(.lever)::after {
-  border: #2196f3;
-  background-color: #2196f3;
-}
-
-.author {
-  position: absolute;
-  transform: translateY(1.5rem);
-  color: #37474f;
-  text-transform: uppercase;
-  font-weight: bold;
-  font-size:12px;
 }
 </style>
