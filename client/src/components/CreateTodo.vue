@@ -16,11 +16,13 @@
 
 <script>
 import { reactive } from '@vue/composition-api';
-import { useState } from '@u3u/vue-hooks';
-import { services } from '../feathers';
+import { useState, useActions } from '@u3u/vue-hooks';
+import types from '../types';
 
 export default {
   setup() {
+    const { ADD_LIST } = useActions([types.ADD_LIST]);
+
     const state = reactive({
       name: '',
       description: '',
@@ -31,7 +33,7 @@ export default {
     const { user } = useState(['user']);
 
     async function create() {
-      const createdTodo = await services.todolists.create({
+      const res = await ADD_LIST({
         name: state.name,
         description: state.description,
         password: state.password,
@@ -39,8 +41,8 @@ export default {
           user.value.email,
         ],
       });
-
-      state.createdTodo = createdTodo;
+      console.log(res);
+      state.createdTodo = res;
     }
 
     return {
