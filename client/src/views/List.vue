@@ -8,7 +8,7 @@
           <p>{{ state.list.author }}</p>
         </div>
 
-        <todo-list></todo-list>
+        <todo-list v-if="state.list.name"></todo-list>
       </div>
       <div class="col s3">
         <div>
@@ -74,34 +74,39 @@
 
 <script>
 import { onMounted, reactive } from '@vue/composition-api';
+import { useActions } from '@u3u/vue-hooks';
 import { services } from '../feathers';
+import todoList from '../components/TodoList.vue';
 
 export default {
+  components: {
+    todoList,
+  },
   setup(_, context) {
+    const { SET_CURRENT_LIST } = useActions(['SET_CURRENT_LIST']);
+
     const state = reactive({
       list: {},
       giveAccessEmail: '',
     });
 
     onMounted(async () => {
-      // eslint-disable-next-line no-underscore-dangle
       const listId = context.root._route.params.id;
-      const res = await services.todolists.get(listId);
-      state.list = res;
+      state.list = await SET_CURRENT_LIST(listId);
 
       const acc = document.getElementById('list-accordion');
       window.M.Collapsible.init(acc);
     });
 
+    // TODO: As state action, need f5 to see changes now
     async function revokeAccess(email) {
-      // eslint-disable-next-line no-underscore-dangle
       await services.todolists.patch(state.list._id, {
         revoke: email,
       });
     }
 
+    // TODO: As state action, need f5 to see changes now
     async function giveAccess() {
-      // eslint-disable-next-line no-underscore-dangle
       await services.todolists.patch(state.list._id, {
         access: state.giveAccessEmail,
       });

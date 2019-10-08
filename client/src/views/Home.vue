@@ -59,7 +59,6 @@
     </div>
     <h1>Todo Collab</h1>
     <div class="container list-container">
-      <todo-list></todo-list>
     </div>
     <div v-if="user.email">
       <h2>Create a todo!</h2>
@@ -73,15 +72,12 @@ import { onMounted } from '@vue/composition-api';
 import { useState } from '@u3u/vue-hooks';
 import CreateTodo from '../components/CreateTodo.vue';
 import Navigation from '../components/Navigation.vue';
-import TodoList from '../components/TodoList.vue';
-
 
 export default {
   name: 'home',
   components: {
     CreateTodo,
     Navigation,
-    TodoList,
   },
   setup() {
     const { user } = useState(['user']);
