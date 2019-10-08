@@ -67,6 +67,15 @@ const revokeAccess = async context => {
   }
 };
 
+// Merges the todos of this list into an array called items on the result
+const addItemsArray = async context => {
+  const listId = context.result._id;
+  return context.app.service('todos').find({ query: { listId } }).then(items => {
+    context.result.items = items.data;
+    return context;
+  });
+};
+
 module.exports = {
   before: {
     all: [authenticate('jwt')],
@@ -81,7 +90,7 @@ module.exports = {
   after: {
     all: [protect('password')],
     find: [],
-    get: [],
+    get: [addItemsArray],
     create: [],
     update: [],
     patch: [],
