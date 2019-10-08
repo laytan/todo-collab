@@ -1,8 +1,13 @@
 // Application hooks that run for every service
 
+const logRequest = async context => {
+  console.log(`${context.method} Request on: ${context.path}`);
+  return context;
+};
+
 module.exports = {
   before: {
-    all: [],
+    all: [logRequest],
     find: [],
     get: [],
     create: [],
