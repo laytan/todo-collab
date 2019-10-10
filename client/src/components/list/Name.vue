@@ -27,7 +27,7 @@ export default {
     name: String,
   },
   setup(props) {
-    const { CHANGE_TODO_NAME } = useActions([types.CHANGE_TODO_NAME]);
+    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
 
     const editing = ref(false);
     const text = ref(props.name.length > 0 ? props.name : 'Name...');
@@ -51,7 +51,7 @@ export default {
     }
 
     function save() {
-      CHANGE_TODO_NAME({ todoId: props.todoId, name: text.value });
+      PATCH_ITEM({ id: props.todoId, patchData: { name: text.value } });
       closeEditing();
     }
 

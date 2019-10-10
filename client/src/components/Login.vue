@@ -4,6 +4,7 @@
     <form @submit.prevent="loginWithCreds">
         <input type="email" placeholder="Email" v-model="state.email">
         <input type="password" placeholder="Password" v-model="state.password">
+        <p class="red-text" v-if="state.error.length > 0">{{ state.error }}</p>
         <input type="submit" value="login">
     </form>
   </div>
@@ -21,13 +22,20 @@ export default {
     const state = reactive({
       email: '',
       password: '',
+      error: '',
     });
 
-    function loginWithCreds() {
-      LOGIN_WITH_CREDENTIALS({
+    async function loginWithCreds() {
+      state.error = '';
+
+      const errOrUser = await LOGIN_WITH_CREDENTIALS({
         email: state.email,
         password: state.password,
       });
+
+      if (errOrUser.error) {
+        state.error = errOrUser.error.message;
+      }
     }
 
     return {

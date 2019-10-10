@@ -19,7 +19,7 @@
     <div class="checkbox-wrapper flex column between">
       <label>
         <input type="checkbox" class="filled-in" :checked="item.done"
-        @click="item.done = !item.done" />
+        @click="toggleDone" />
           <!-- This span is required -->
         <span class="checkbox-span"></span>
       </label>
@@ -29,6 +29,8 @@
 </template>
 <script>
 import { ref } from '@vue/composition-api';
+import { useActions } from '@u3u/vue-hooks';
+import types from '../../types';
 
 import itemLabel from './ItemLabel.vue';
 import name from './Name.vue';
@@ -46,6 +48,8 @@ export default {
     itemData: Object,
   },
   setup(props) {
+    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
+
     const showMore = ref(false);
 
     // TODO: implement
@@ -53,10 +57,17 @@ export default {
       console.log(props.itemData);
     }
 
+    async function toggleDone() {
+      props.itemData.done = !props.itemData.done;
+
+      PATCH_ITEM({ id: props.itemData._id, patchData: { done: props.itemData.done } });
+    }
+
     return {
       item: props.itemData,
       showMore,
       removeItem,
+      toggleDone,
     };
   },
 };

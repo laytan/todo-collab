@@ -11,8 +11,12 @@ export default new Vuex.Store({
     loading: false,
     lists: [],
     currentList: {},
+    isInitialized: false,
   },
   mutations: {
+    [types.SET_INITIALIZED](state) {
+      state.isInitialized = true;
+    },
     [types.SET_USER](state, user) {
       state.user = user;
     },
@@ -32,18 +36,51 @@ export default new Vuex.Store({
         state.currentList.items = [item];
       }
     },
-    [types.OVERRIDE_TODO](state, newTodo) {
-      // Find needed todo to update, update and stop looping
-      state.currentList.items.some((v, i) => {
-        if (v._id === newTodo._id) {
-          state.currentList.items[i] = newTodo;
-          return true;
-        }
-        return false;
-      });
-    },
+    // [types.OVERRIDE_TODO](state, newTodo) {
+    //   // Find needed todo to update, update and stop looping
+    //   state.currentList.items.some((v, i) => {
+    //     if (v._id === newTodo._id) {
+    //       state.currentList.items[i] = newTodo;
+    //       return true;
+    //     }
+    //     return false;
+    //   });
+    // },
   },
   actions: {
+    [types.INIT]({ state, commit }) {
+      console.log('initializing');
+      if (state.isInitialized) {
+        console.log('already initialized');
+        return;
+      }
+
+      services.todolists.on('created', (data) => {
+        console.log('created', data);
+      });
+
+      services.todolists.on('updated', (data) => {
+        console.log('updated', data);
+      });
+
+      services.todolists.on('patched', (data) => {
+        console.log('patched', data);
+      });
+
+      services.todos.on('created', (data) => {
+        console.log('created t', data);
+      });
+
+      services.todos.on('updated', (data) => {
+        console.log('updated t', data);
+      });
+
+      services.todos.on('patched', (data) => {
+        console.log('patched t', data);
+      });
+
+      commit(types.SET_INITIALIZED);
+    },
     async [types.REGISTER]({ commit }, user) {
       commit(types.SET_LOADING, true);
       const res = await services.users.create(user);
@@ -51,10 +88,15 @@ export default new Vuex.Store({
       commit(types.SET_LOADING, false);
     },
     async [types.LOGIN_WITH_CREDENTIALS]({ commit }, user) {
-      commit(types.SET_LOADING, true);
-      const res = await client.authenticate({ strategy: 'local', ...user });
-      commit(types.SET_USER, res.user);
-      commit(types.SET_LOADING, false);
+      try {
+        commit(types.SET_LOADING, true);
+        const res = await client.authenticate({ strategy: 'local', ...user });
+        commit(types.SET_USER, res.user);
+        commit(types.SET_LOADING, false);
+        return { error: null, user: res };
+      } catch (error) {
+        return { error, user: null };
+      }
     },
     [types.LOGOUT]({ commit }) {
       commit(types.SET_USER, {});
@@ -62,14 +104,16 @@ export default new Vuex.Store({
     },
     [types.TRY_AUTH]({ commit }) {
       console.log('Trying authentication');
-      client.reAuthenticate()
+      return client.reAuthenticate()
         .then((res) => {
           console.log('Authentication succeeded');
           commit(types.SET_USER, res.user);
+          return true;
         })
         .catch(() => {
           console.log('Authentication failed');
           commit(types.SET_USER, {});
+          return false;
         });
     },
     async [types.ADD_LIST]({ commit }, listData) {
@@ -108,20 +152,25 @@ export default new Vuex.Store({
       commit(types.SET_LOADING, false);
       return item;
     },
-    async [types.CHANGE_TODO_NAME]({ commit }, { todoId, name }) {
+    // async [types.CHANGE_TODO_NAME]({ commit }, { todoId, name }) {
+    //   commit(types.SET_LOADING, true);
+    //   const newTodo = await services.todos.patch(todoId, {
+    //     name,
+    //   });
+    //   commit(types.OVERRIDE_TODO, newTodo);
+    //   commit(types.SET_LOADING, false);
+    // },
+    // async [types.CHANGE_TODO_DESCRIPTION]({ commit }, { todoId, description }) {
+    //   commit(types.SET_LOADING, true);
+    //   const newTodo = await services.todos.patch(todoId, {
+    //     description,
+    //   });
+    //   commit(types.OVERRIDE_TODO, newTodo);
+    //   commit(types.SET_LOADING, false);
+    // },
+    async [types.PATCH_ITEM]({ commit }, { id, patchData }) {
       commit(types.SET_LOADING, true);
-      const newTodo = await services.todos.patch(todoId, {
-        name,
-      });
-      commit(types.OVERRIDE_TODO, newTodo);
-      commit(types.SET_LOADING, false);
-    },
-    async [types.CHANGE_TODO_DESCRIPTION]({ commit }, { todoId, description }) {
-      commit(types.SET_LOADING, true);
-      const newTodo = await services.todos.patch(todoId, {
-        description,
-      });
-      commit(types.OVERRIDE_TODO, newTodo);
+      await services.todos.patch(id, patchData);
       commit(types.SET_LOADING, false);
     },
   },

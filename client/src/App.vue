@@ -13,12 +13,17 @@ import types from './types';
 
 export default {
   setup() {
-    const { TRY_AUTH } = useActions([types.TRY_AUTH]);
+    const { TRY_AUTH, INIT } = useActions([types.TRY_AUTH, types.INIT]);
     const { user, loading } = useState(['user', 'loading']);
 
     onMounted(async () => {
       if (!user.id) {
-        TRY_AUTH();
+        const loggedIn = await TRY_AUTH();
+        if (loggedIn) {
+          INIT();
+        }
+      } else {
+        INIT();
       }
     });
 

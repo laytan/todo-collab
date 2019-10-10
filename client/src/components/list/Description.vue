@@ -28,7 +28,7 @@ export default {
     },
   },
   setup(props) {
-    const { CHANGE_TODO_DESCRIPTION } = useActions([types.CHANGE_TODO_DESCRIPTION]);
+    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
 
     const editing = ref(false);
     const text = ref(props.description);
@@ -63,7 +63,7 @@ export default {
     }
 
     function save() {
-      CHANGE_TODO_DESCRIPTION({ todoId: props.todoId, description: text.value });
+      PATCH_ITEM({ id: props.todoId, patchData: { description: text.value } });
       closeEditing();
     }
 
