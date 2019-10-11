@@ -69,11 +69,23 @@ const revokeAccess = async context => {
 
 // Merges the todos of this list into an array called items on the result
 const addItemsArray = async context => {
-  const listId = context.result._id;
-  return context.app.service('todos').find({ query: { listId } }).then(items => {
-    context.result.items = items.data;
+  if (context.method === 'get') {
+    const listId = context.result._id;
+    return context.app.service('todos').find({ query: { listId } }).then(items => {
+      context.result.items = items.data;
+      return context;
+    });
+  } else if (context.method === 'find') {
+    for (let i = 0; i < context.result.data.length; i++) {
+      const list = context.result.data[i];
+      const items = await context.app.service('todos').find({ query: { listId: list._id } });
+      list.items = items.data;
+      // eslint-disable-next-line require-atomic-updates
+      context.result.data[i] = list;
+    }
     return context;
-  });
+  }
+  return context;
 };
 
 module.exports = {
@@ -89,7 +101,7 @@ module.exports = {
 
   after: {
     all: [protect('password')],
-    find: [],
+    find: [addItemsArray],
     get: [addItemsArray],
     create: [],
     update: [],
