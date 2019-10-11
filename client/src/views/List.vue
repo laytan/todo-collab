@@ -1,14 +1,14 @@
 <template>
-  <div class="list">
+  <div v-if="list" class="list">
     <div class="row">
       <div class="col s9">
-        <div v-if="state.list.name">
-          <h1>{{ state.list.name }}</h1>
-          <p>{{ state.list.description }}</p>
-          <p>{{ state.list.author }}</p>
+        <div v-if="list.name">
+          <h1>{{ list.name }}</h1>
+          <p>{{ list.description }}</p>
+          <p>{{ list.author }}</p>
         </div>
 
-        <todo-list v-if="state.list.name"></todo-list>
+        <todo-list :list="list" v-if="list.name"></todo-list>
       </div>
       <div class="col s3">
         <div>
@@ -24,9 +24,9 @@
               </div>
               <div class="collapsible-body cyan lighten-5">
                 <p>Accounts with access:</p>
-                <div v-for="email in state.list.access" :key="email">
+                <div v-for="email in list.access" :key="email">
                   <span>{{ email }}</span>
-                  <span v-if="email !== state.list.author" @click="revokeAccess(email)">
+                  <span v-if="email !== list.author" @click="revokeAccess(email)">
                     Revoke access
                   </span>
                 </div>
@@ -73,9 +73,8 @@
 </template>
 
 <script>
-import { onMounted, reactive } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
-import { services } from '../feathers';
+import { onMounted, reactive, computed } from '@vue/composition-api';
+import { useState } from '@u3u/vue-hooks';
 import todoList from '../components/TodoList.vue';
 
 export default {
@@ -83,39 +82,40 @@ export default {
     todoList,
   },
   setup(_, context) {
-    const { SET_CURRENT_LIST } = useActions(['SET_CURRENT_LIST']);
+    const { lists } = useState(['lists']);
+    const listId = context.root._route.params.id;
+    const currentList = computed(() => lists.value.filter(list => list._id === listId)[0]);
 
     const state = reactive({
-      list: {},
       giveAccessEmail: '',
     });
 
-    onMounted(async () => {
-      const listId = context.root._route.params.id;
-      state.list = await SET_CURRENT_LIST(listId);
 
+    onMounted(async () => {
       const acc = document.getElementById('list-accordion');
       window.M.Collapsible.init(acc);
     });
 
     // TODO: As state action, need f5 to see changes now
+    // eslint-disable-next-line
     async function revokeAccess(email) {
-      await services.todolists.patch(state.list._id, {
-        revoke: email,
-      });
+      // await services.todolists.patch(list._id, {
+      //   revoke: email,
+      // });
     }
 
     // TODO: As state action, need f5 to see changes now
     async function giveAccess() {
-      await services.todolists.patch(state.list._id, {
-        access: state.giveAccessEmail,
-      });
+      // await services.todolists.patch(list._id, {
+      //   access: state.giveAccessEmail,
+      // });
     }
 
     return {
       state,
       revokeAccess,
       giveAccess,
+      list: currentList,
     };
   },
 };

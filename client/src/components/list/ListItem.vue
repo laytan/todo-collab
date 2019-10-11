@@ -1,24 +1,26 @@
 <template>
   <div class="todolist-item section z-depth-2">
-    <item-label :label-color="item.color" :label-text="item.label" />
+    <item-label :label-color="itemData.color" :label-text="itemData.label" />
     <div class="todolist-item-body">
-      <name :todoId="item._id" :name="item.name"/>
-      <description :todoId="item._id" :description="item.description" />
+      <name :todoId="itemData._id" :name="itemData.name"/>
+      <description :todoId="itemData._id" :description="itemData.description" />
       <div class="item-details" @click="showMore = !showMore">
         <item-detail
-        v-if="item.done"
-        :date="item.doneAt" :user="item.doneBy" icon="check" tooltip="Completed" />
+        v-if="itemData.done"
+        :date="itemData.doneAt" :user="itemData.doneBy" icon="check" tooltip="Completed" />
         <item-detail
-        v-if="showMore || !item.done"
-        :date="item.lastEditedAt" :user="item.lastEditedBy" icon="edit" tooltip="Last edit" />
+        v-if="showMore || !itemData.done"
+        :date="itemData.lastEditedAt"
+        :user="itemData.lastEditedBy"
+        icon="edit" tooltip="Last edit" />
         <item-detail
         v-if="showMore"
-        :date="item.createdAt" :user="item.author" icon="add" tooltip="Created" />
+        :date="itemData.createdAt" :user="itemData.author" icon="add" tooltip="Created" />
       </div>
     </div>
     <div class="checkbox-wrapper flex column between">
       <label>
-        <input type="checkbox" class="filled-in" :checked="item.done"
+        <input type="checkbox" class="filled-in" :checked="itemData.done"
         @click="toggleDone" />
           <!-- This span is required -->
         <span class="checkbox-span"></span>
@@ -45,7 +47,9 @@ export default {
     itemDetail,
   },
   props: {
-    itemData: Object,
+    itemData: {
+      required: true,
+    },
   },
   setup(props) {
     const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
@@ -64,7 +68,6 @@ export default {
     }
 
     return {
-      item: props.itemData,
       showMore,
       removeItem,
       toggleDone,

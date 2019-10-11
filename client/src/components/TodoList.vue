@@ -1,14 +1,12 @@
 <template>
-  <div v-show="state.list" class="todo-list z-depth-2">
+  <div v-show="list" class="todo-list z-depth-2">
     <h2 class="name">
-      {{ state.list.name }}
+      {{ list.name }}
     </h2>
-    <progress-bar v-if="state.list.items" :items="state.list.items"/>
-    <draggable v-if="state.list.items" v-model="state.list.items" v-bind="draggableOptions">
+    <progress-bar v-if="list.items" :items="list.items"/>
+    <draggable v-if="list.items" v-model="list.items" v-bind="draggableOptions">
       <transition-group type="transition" :name="'flip-list'">
-        <div v-for="item in state.list.items" :key="item._id">
-          <list-item :item-data="item"/>
-        </div>
+        <list-item v-for="item in list.items" :key="item._id" :item-data="item"/>
       </transition-group>
     </draggable>
     <div class="buttons flex between">
@@ -26,8 +24,8 @@
   </div>
 </template>
 <script>
-import { reactive, onMounted } from '@vue/composition-api';
-import { useState, useActions } from '@u3u/vue-hooks';
+import { reactive } from '@vue/composition-api';
+import { useActions } from '@u3u/vue-hooks';
 import draggable from 'vuedraggable';
 import progressBar from './list/ProgressBar.vue';
 import listItem from './list/ListItem.vue';
@@ -40,78 +38,21 @@ export default {
     progressBar,
     listItem,
   },
-  setup() {
-    const { ADD_ITEM_TO_CURRENT_LIST } = useActions([types.ADD_ITEM_TO_CURRENT_LIST]);
+  props: {
+    list: {
+      required: true,
+    },
+  },
+  setup(props) {
+    const { ADD_ITEM_TO_LIST } = useActions([types.ADD_ITEM_TO_LIST]);
 
     // TODO: add children event?
     const draggableOptions = reactive({
       disabled: false,
     });
 
-    const state = reactive({
-      list: {},
-      // list: {
-      //   name: 'Todo list 1',
-      //   author: 'laytan1@hotmail.com',
-      //   items: [
-      //     {
-      //       order: 1,
-      //       id: 'asdasd',
-      //       name: 'Buy Groceries',
-      //       label: 'Dashboard bugs',
-      //       description: 'Lorem ipsum dolor sit amet',
-      //       color: 'rgba(255,0,0,1)',
-      //       lastEditedAt: Date.now(),
-      //       createdAt: Date.now(),
-      //       doneAt: Date.now(),
-      //       lastEditedBy: 'laytan1@hotmail.com',
-      //       doneBy: null,
-      //       done: false,
-      //       author: 'laytanlaats@hotmail.com',
-      //     },
-      //     {
-      //       order: 3,
-      //       id: 'asdasxcxcd',
-      //       name: 'Fix bugs',
-      //       label: 'low prio',
-      //       description: 'Lorem Ipsum is simply dummy text of the
-      //       printing and typesetting industry.'
-      //       + ' Lorem Ipsum has been the industry\'s standard ',
-      //       color: 'rgba(0,255,0,1)',
-      //       createdAt: Date.now(),
-      //       lastEditedAt: Date.now(),
-      //       doneAt: Date.now(),
-      //       lastEditedBy: 'laytan@admin.nl',
-      //       doneBy: null,
-      //       done: false,
-      //       author: 'laytanlaats@hotmail.com',
-      //     },
-      //     {
-      //       order: 2,
-      //       id: 'asdasasdd',
-      //       name: 'brush your theeth',
-      //       label: 'maybe',
-      //       description: 'Lorem ipsum dolor sit amet',
-      //       color: 'rgba(0,0,255,1)',
-      //       createdAt: Date.now(),
-      //       lastEditedAt: Date.now(),
-      //       doneAt: Date.now(),
-      //       lastEditedBy: 'laytan@admin.nl',
-      //       doneBy: 'laytan@admin.nl',
-      //       done: true,
-      //       author: 'laytanlaats@hotmail.com',
-      //     },
-      //   ],
-      // },
-    });
-
-    onMounted(async () => {
-      const { currentList } = useState(['currentList']);
-      state.list = currentList;
-    });
-
     function addItem() {
-      ADD_ITEM_TO_CURRENT_LIST();
+      ADD_ITEM_TO_LIST(props.list._id);
     }
 
     EventBus.$on('set-draggable', (bool) => {
@@ -119,7 +60,6 @@ export default {
     });
 
     return {
-      state,
       draggableOptions,
       addItem,
     };

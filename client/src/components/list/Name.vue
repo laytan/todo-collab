@@ -4,9 +4,9 @@
       v-show="!editing"
       class="todolist-item-name"
       @click="openEditing"
-    >{{ text }}</div>
+    >{{ name }}</div>
     <div v-show="editing">
-      <input class="input-field inline" type="text" v-model="text" />
+      <input class="input-field inline" type="text" v-model="name" />
       <button @click="save" class="waves-effect waves-green green-text btn-flat">Save</button>
       <button @click="cancel" class="waves-effect waves-red red-text btn-flat">Cancel</button>
     </div>
@@ -30,7 +30,6 @@ export default {
     const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
 
     const editing = ref(false);
-    const text = ref(props.name.length > 0 ? props.name : 'Name...');
 
     function closeEditing() {
       setTimeout(() => {
@@ -51,7 +50,7 @@ export default {
     }
 
     function save() {
-      PATCH_ITEM({ id: props.todoId, patchData: { name: text.value } });
+      PATCH_ITEM({ id: props.todoId, patchData: { name: props.name } });
       closeEditing();
     }
 
@@ -64,7 +63,6 @@ export default {
       editing,
       save,
       cancel,
-      text,
       openEditing,
     };
   },

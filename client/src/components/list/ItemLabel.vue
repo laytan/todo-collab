@@ -63,8 +63,6 @@ export default {
     }
 
     return {
-      color: props.labelColor,
-      label: props.labelText,
       labelExpanded,
       toggleLabel,
       textColor,

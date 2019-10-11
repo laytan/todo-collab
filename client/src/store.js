@@ -10,7 +10,6 @@ export default new Vuex.Store({
     user: {},
     loading: false,
     lists: [],
-    currentList: {},
     isInitialized: false,
   },
   mutations: {
@@ -26,26 +25,29 @@ export default new Vuex.Store({
     [types.ADD_LIST](state, list) {
       state.lists.push(list);
     },
-    [types.SET_CURRENT_LIST](state, list) {
-      state.currentList = list;
+    [types.REMOVE_LIST](state, list) {
+      state.lists = state.lists.filter(sList => sList._id !== list._id);
     },
-    [types.ADD_ITEM_TO_CURRENT_LIST](state, item) {
-      if (state.currentList.items) {
-        state.currentList.items.push(item);
-      } else {
-        state.currentList.items = [item];
-      }
+    [types.ADD_ITEM_TO_LIST](state, item) {
+      state.lists.forEach((list) => {
+        if (list._id !== item.listId) {
+          return;
+        }
+
+        list.items.push(item);
+      });
     },
-    // [types.OVERRIDE_TODO](state, newTodo) {
-    //   // Find needed todo to update, update and stop looping
-    //   state.currentList.items.some((v, i) => {
-    //     if (v._id === newTodo._id) {
-    //       state.currentList.items[i] = newTodo;
-    //       return true;
-    //     }
-    //     return false;
-    //   });
-    // },
+    [types.UPDATE_ITEM](state, item) {
+      state.lists.forEach((list) => {
+        if (list._id !== item.listId) {
+          return;
+        }
+
+        const newItems = list.items.filter(listItem => item._id !== listItem._id);
+        list.items = newItems;
+        list.items.push(item);
+      });
+    },
   },
   actions: {
     [types.INIT]({ state, commit }) {
@@ -56,28 +58,29 @@ export default new Vuex.Store({
       }
 
       services.todolists.on('created', (data) => {
+        commit(types.ADD_LIST, data);
         console.log('created', data);
       });
 
-      services.todolists.on('updated', (data) => {
+      const onUpdateList = (data) => {
+        commit(types.REMOVE_LIST, data);
+        commit(types.ADD_LIST, data);
         console.log('updated', data);
-      });
-
-      services.todolists.on('patched', (data) => {
-        console.log('patched', data);
-      });
+      };
+      services.todolists.on('updated', onUpdateList);
+      services.todolists.on('patched', onUpdateList);
 
       services.todos.on('created', (data) => {
         console.log('created t', data);
+        commit(types.ADD_ITEM_TO_LIST, data);
       });
 
-      services.todos.on('updated', (data) => {
+      const onUpdateItem = (data) => {
+        commit(types.UPDATE_ITEM, data);
         console.log('updated t', data);
-      });
-
-      services.todos.on('patched', (data) => {
-        console.log('patched t', data);
-      });
+      };
+      services.todos.on('updated', onUpdateItem);
+      services.todos.on('patched', onUpdateItem);
 
       commit(types.SET_INITIALIZED);
     },
@@ -122,21 +125,21 @@ export default new Vuex.Store({
       commit(types.SET_LOADING, false);
       // TODO: error handling
       console.log(res);
-      commit(types.ADD_LIST, res);
+      // commit(types.ADD_LIST, res);
       return res;
     },
-    async [types.SET_CURRENT_LIST]({ commit }, listId) {
+    // async [types.SET_CURRENT_LIST]({ commit }, listId) {
+    //   commit(types.SET_LOADING, true);
+    //   const list = await services.todolists.get(listId);
+    //   console.log(list);
+    //   commit(types.SET_CURRENT_LIST, list);
+    //   commit(types.SET_LOADING, false);
+    //   return list;
+    // },
+    async [types.ADD_ITEM_TO_LIST]({ commit }, listId) {
       commit(types.SET_LOADING, true);
-      const list = await services.todolists.get(listId);
-      console.log(list);
-      commit(types.SET_CURRENT_LIST, list);
-      commit(types.SET_LOADING, false);
-      return list;
-    },
-    async [types.ADD_ITEM_TO_CURRENT_LIST]({ state, commit }) {
-      commit(types.SET_LOADING, true);
-      const item = await services.todos.create({
-        listId: state.currentList._id,
+      await services.todos.create({
+        listId,
         order: 0,
         name: '',
         label: '',
@@ -148,9 +151,9 @@ export default new Vuex.Store({
         doneBy: '',
         done: false,
       });
-      commit(types.ADD_ITEM_TO_CURRENT_LIST, item);
+      // commit(types.ADD_ITEM_TO_CURRENT_LIST, item);
       commit(types.SET_LOADING, false);
-      return item;
+      // return item;
     },
     // async [types.CHANGE_TODO_NAME]({ commit }, { todoId, name }) {
     //   commit(types.SET_LOADING, true);
@@ -171,6 +174,12 @@ export default new Vuex.Store({
     async [types.PATCH_ITEM]({ commit }, { id, patchData }) {
       commit(types.SET_LOADING, true);
       await services.todos.patch(id, patchData);
+      commit(types.SET_LOADING, false);
+    },
+    async [types.SYNC_LISTS]({ commit }) {
+      commit(types.SET_LOADING, true);
+      const lists = await services.todolists.find();
+      lists.data.forEach(list => commit(types.ADD_LIST, list));
       commit(types.SET_LOADING, false);
     },
   },

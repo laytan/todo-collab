@@ -13,19 +13,29 @@ import types from './types';
 
 export default {
   setup() {
-    const { TRY_AUTH, INIT } = useActions([types.TRY_AUTH, types.INIT]);
+    const { TRY_AUTH, INIT, SYNC_LISTS } = useActions([
+      types.TRY_AUTH,
+      types.INIT,
+      types.SYNC_LISTS,
+    ]);
     const { user, loading } = useState(['user', 'loading']);
+
+    function onLogin() {
+      INIT();
+      SYNC_LISTS();
+    }
 
     onMounted(async () => {
       if (!user.id) {
         const loggedIn = await TRY_AUTH();
         if (loggedIn) {
-          INIT();
+          onLogin();
         }
       } else {
-        INIT();
+        onLogin();
       }
     });
+
 
     return {
       loading,
