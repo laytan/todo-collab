@@ -30,10 +30,9 @@
   </div>
 </template>
 <script>
-import { ref } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
+import { ref } from 'vue';
 import types from '../../types';
-
+import store from '../../store';
 import itemLabel from './ItemLabel.vue';
 import name from './Name.vue';
 import description from './Description.vue';
@@ -52,7 +51,7 @@ export default {
     },
   },
   setup(props) {
-    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
+    const { dispatch } = store;
 
     const showMore = ref(false);
 
@@ -64,7 +63,12 @@ export default {
     async function toggleDone() {
       props.itemData.done = !props.itemData.done;
 
-      PATCH_ITEM({ id: props.itemData._id, patchData: { done: props.itemData.done } });
+      dispatch(types.PATCH_ITEM, {
+        id: props.itemData._id,
+        patchData: {
+          done: props.itemData.done,
+        },
+      });
     }
 
     return {
