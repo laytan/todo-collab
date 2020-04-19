@@ -3,12 +3,12 @@
     <h2 class="name">
       {{ list.name }}
     </h2>
-    <progress-bar v-if="list.items" :items="list.items"/>
-    <draggable v-if="list.items" v-model="list.items" v-bind="draggableOptions">
+      <progress-bar v-if="list.items" :items="list.items"/>
+    <!-- <draggable v-if="list.items" v-model="list.items" v-bind="draggableOptions"> -->
       <transition-group type="transition" :name="'flip-list'">
         <list-item v-for="item in list.items" :key="item._id" :item-data="item"/>
       </transition-group>
-    </draggable>
+    <!-- </draggable> -->
     <div class="buttons flex between">
       <button class="btn-floating btn-large waves-effect waves-light red lighten-3">
         <i class="material-icons">security</i>
@@ -24,17 +24,18 @@
   </div>
 </template>
 <script>
-import { reactive } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
-import draggable from 'vuedraggable';
+import { reactive } from 'vue';
+// FIXME: Draggable does not support vue 3.0 yet
+// import draggable from 'vuedraggable';
 import progressBar from './list/ProgressBar.vue';
 import listItem from './list/ListItem.vue';
-import EventBus from '../event-bus';
 import types from '../types';
+import store from '../store';
 
 export default {
   components: {
-    draggable,
+    // FIXME: Draggable does not support vue 3.0 yet
+    // draggable,
     progressBar,
     listItem,
   },
@@ -44,7 +45,7 @@ export default {
     },
   },
   setup(props) {
-    const { ADD_ITEM_TO_LIST } = useActions([types.ADD_ITEM_TO_LIST]);
+    const { dispatch } = store;
 
     // TODO: add children event?
     const draggableOptions = reactive({
@@ -52,12 +53,12 @@ export default {
     });
 
     function addItem() {
-      ADD_ITEM_TO_LIST(props.list._id);
+      dispatch(types.ADD_ITEM_TO_LIST, props.list._id);
     }
-
-    EventBus.$on('set-draggable', (bool) => {
-      draggableOptions.disabled = !bool;
-    });
+    // TODO: Rewrite event bus logic
+    // EventBus.$on('set-draggable', (bool) => {
+    //   draggableOptions.disabled = !bool;
+    // });
 
     return {
       draggableOptions,
