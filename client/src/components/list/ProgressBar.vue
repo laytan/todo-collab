@@ -21,7 +21,7 @@ export default {
         return 100;
       }
 
-      const completed = props.items.filter(item => item.done).length;
+      const completed = props.items.filter((item) => item.done).length;
       return ((completed / props.items.length) * 100).toFixed(0);
     });
 

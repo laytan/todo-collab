@@ -1,11 +1,8 @@
-import Vue from 'vue';
 import Vuex from 'vuex';
 import types from './types';
 import { services, client } from './feathers';
 
-Vue.use(Vuex);
-
-export default new Vuex.Store({
+export default Vuex.createStore({
   state: {
     user: {},
     loading: false,
@@ -26,7 +23,7 @@ export default new Vuex.Store({
       state.lists.push(list);
     },
     [types.REMOVE_LIST](state, list) {
-      state.lists = state.lists.filter(sList => sList._id !== list._id);
+      state.lists = state.lists.filter((sList) => sList._id !== list._id);
     },
     [types.ADD_ITEM_TO_LIST](state, item) {
       state.lists.forEach((list) => {
@@ -43,7 +40,7 @@ export default new Vuex.Store({
           return;
         }
 
-        const newItems = list.items.filter(listItem => item._id !== listItem._id);
+        const newItems = list.items.filter((listItem) => item._id !== listItem._id);
         list.items = newItems;
         list.items.push(item);
       });
@@ -179,7 +176,7 @@ export default new Vuex.Store({
     async [types.SYNC_LISTS]({ commit }) {
       commit(types.SET_LOADING, true);
       const lists = await services.todolists.find();
-      lists.data.forEach(list => commit(types.ADD_LIST, list));
+      lists.data.forEach((list) => commit(types.ADD_LIST, list));
       commit(types.SET_LOADING, false);
     },
   },

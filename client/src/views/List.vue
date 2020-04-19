@@ -84,7 +84,7 @@ export default {
   setup(_, context) {
     const { lists } = useState(['lists']);
     const listId = context.root._route.params.id;
-    const currentList = computed(() => lists.value.filter(list => list._id === listId)[0]);
+    const currentList = computed(() => lists.value.filter((list) => list._id === listId)[0]);
 
     const state = reactive({
       giveAccessEmail: '',
