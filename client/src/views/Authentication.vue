@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { useState } from '@u3u/vue-hooks';
+import { computed } from 'vue';
+import store from '../store';
 import Login from '../components/Login.vue';
 import Register from '../components/Register.vue';
 
@@ -23,7 +24,8 @@ export default {
     Register,
   },
   setup() {
-    const { user } = useState(['user']);
+    const { state } = store;
+    const user = computed(() => state.user);
 
     return {
       user,
