@@ -138,7 +138,7 @@ export default Vuex.createStore({
       await services.todos.create({
         listId,
         order: 0,
-        name: '',
+        name: 'Write your to-do here',
         label: '',
         description: '',
         color: 'rgba(0,0,0,1)',
