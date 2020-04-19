@@ -7,27 +7,25 @@
   </div>
 </template>
 <script>
-import { useState, useActions } from '@u3u/vue-hooks';
-import { onMounted } from '@vue/composition-api';
+import { computed, onMounted } from 'vue';
 import types from './types';
+import store from './store';
 
 export default {
   setup() {
-    const { TRY_AUTH, INIT, SYNC_LISTS } = useActions([
-      types.TRY_AUTH,
-      types.INIT,
-      types.SYNC_LISTS,
-    ]);
-    const { user, loading } = useState(['user', 'loading']);
+    const { state, dispatch } = store;
+
+    const loading = computed(() => state.loading);
+    const user = computed(() => state.user);
 
     function onLogin() {
-      INIT();
-      SYNC_LISTS();
+      dispatch(types.INIT);
+      dispatch(types.SYNC_LISTS);
     }
 
     onMounted(async () => {
       if (!user.id) {
-        const loggedIn = await TRY_AUTH();
+        const loggedIn = await dispatch(types.TRY_AUTH);
         if (loggedIn) {
           onLogin();
         }
@@ -35,7 +33,6 @@ export default {
         onLogin();
       }
     });
-
 
     return {
       loading,
