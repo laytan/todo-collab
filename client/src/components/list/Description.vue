@@ -14,10 +14,9 @@
   </div>
 </template>
 <script>
-import { ref } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
-import EventBus from '../../event-bus';
+import { ref } from 'vue';
 import types from '../../types';
+import store from '../../store';
 
 export default {
   props: {
@@ -28,33 +27,40 @@ export default {
     },
   },
   setup(props) {
-    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
+    const { dispatch } = store;
 
     const editing = ref(false);
     const textarea = ref(null);
 
     function closeEditing() {
-      EventBus.$emit('set-draggable', true);
+      // TODO: Rewrite event bus logic
+      // EventBus.$emit('set-draggable', true);
 
       setTimeout(() => {
         editing.value = false;
       }, 250);
     }
-
-    EventBus.$on('close-editing', () => {
-      editing.value = false;
-    });
+    // TODO: Rewrite event bus logic
+    // EventBus.$on('close-editing', () => {
+    //   editing.value = false;
+    // });
 
     function openEditing() {
-      EventBus.$emit('close-editing');
-      EventBus.$emit('set-draggable', false);
+      // TODO: Rewrite event bus logic
+      // EventBus.$emit('close-editing');
+      // EventBus.$emit('set-draggable', false);
 
       editing.value = true;
       window.M.textareaAutoResize(window.$(textarea.value));
     }
 
     function save() {
-      PATCH_ITEM({ id: props.todoId, patchData: { description: props.description } });
+      dispatch(types.PATCH_ITEM, {
+        id: props.todoId,
+        patchData: {
+          description: props.description,
+        },
+      });
       closeEditing();
     }
 
