@@ -1,71 +1,77 @@
 <template>
-  <div v-if="list" class="list">
-    <div class="row">
-      <div class="col s9">
-        <div v-if="list.name">
-          <h1>{{ list.name }}</h1>
-          <p>{{ list.description }}</p>
-          <p>{{ list.author }}</p>
+  <div>
+    <div v-if="list" class="list">
+      <div class="row">
+        <div class="col s9">
+          <div v-if="list.name">
+            <h1>{{ list.name }}</h1>
+            <p>{{ list.description }}</p>
+            <p>{{ list.author }}</p>
+          </div>
+
+          <todo-list :list="list" v-if="list.name"></todo-list>
         </div>
+        <div class="col s3">
+          <div>
+            <ul id="list-accordion" class="collapsible">
+              <li>
+                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
+                    Users
+                  <div class="icon-stack ml-auto">
+                    <i class="material-icons">person_outline</i>
+                    <i class="material-icons arrow-down">arrow_drop_down</i>
+                    <i class="material-icons arrow-up">arrow_drop_up</i>
+                  </div>
+                </div>
+                <div class="collapsible-body cyan lighten-5">
+                  <p>Accounts with access:</p>
+                  <div v-for="email in list.access" :key="email">
+                    <span>{{ email }}</span>
+                    <span v-if="email !== list.author" @click="revokeAccess(email)">
+                      Revoke access
+                    </span>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
+                  Add Collaborators
+                  <div class="icon-stack ml-auto">
+                    <i class="material-icons">supervisor_account</i>
+                    <i class="material-icons arrow-down">arrow_drop_down</i>
+                    <i class="material-icons arrow-up">arrow_drop_up</i>
+                  </div>
+                </div>
+                <div class="collapsible-body cyan lighten-5">
+                  <p>Enter your collaborators emails here: </p>
+                  <form @submit.prevent="giveAccess">
+                    <input type="email" placeholder="Email" v-model="giveAccessEmail">
+                      <button
+                        class="btn waves-effect yellow black-text"
+                        type="submit"
+                        name="action"
+                      >
+                        Give access
+                        <i class="material-icons right">add</i>
+                      </button>
+                  </form>
+                </div>
+              </li>
+              <li>
+                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
+                  Events
+                  <div class="icon-stack ml-auto">
+                    <i class="material-icons">view_stream</i>
+                    <i class="material-icons arrow-down">arrow_drop_down</i>
+                    <i class="material-icons arrow-up">arrow_drop_up</i>
+                  </div>
+                </div>
+                <div class="collapsible-body cyan lighten-5">
 
-        <todo-list :list="list" v-if="list.name"></todo-list>
-      </div>
-      <div class="col s3">
-        <div>
-          <ul id="list-accordion" class="collapsible">
-            <li>
-              <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                  Users
-                <div class="icon-stack ml-auto">
-                  <i class="material-icons">person_outline</i>
-                  <i class="material-icons arrow-down">arrow_drop_down</i>
-                  <i class="material-icons arrow-up">arrow_drop_up</i>
                 </div>
-              </div>
-              <div class="collapsible-body cyan lighten-5">
-                <p>Accounts with access:</p>
-                <div v-for="email in list.access" :key="email">
-                  <span>{{ email }}</span>
-                  <span v-if="email !== list.author" @click="revokeAccess(email)">
-                    Revoke access
-                  </span>
-                </div>
-              </div>
-            </li>
-            <li>
-              <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                Add Collaborators
-                <div class="icon-stack ml-auto">
-                  <i class="material-icons">supervisor_account</i>
-                  <i class="material-icons arrow-down">arrow_drop_down</i>
-                  <i class="material-icons arrow-up">arrow_drop_up</i>
-                </div>
-              </div>
-              <div class="collapsible-body cyan lighten-5">
-                <p>Enter your collaborators emails here: </p>
-                <form @submit.prevent="giveAccess">
-                  <input type="email" placeholder="Email" v-model="state.giveAccessEmail">
-                    <button class="btn waves-effect yellow black-text" type="submit" name="action">
-                      Give access
-                      <i class="material-icons right">add</i>
-                    </button>
-                </form>
-              </div>
-            </li>
-            <li>
-              <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                Events
-                <div class="icon-stack ml-auto">
-                  <i class="material-icons">view_stream</i>
-                  <i class="material-icons arrow-down">arrow_drop_down</i>
-                  <i class="material-icons arrow-up">arrow_drop_up</i>
-                </div>
-              </div>
-              <div class="collapsible-body cyan lighten-5">
-
-              </div>
-            </li>
-          </ul>
+              </li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -73,23 +79,24 @@
 </template>
 
 <script>
-import { onMounted, reactive, computed } from '@vue/composition-api';
-import { useState } from '@u3u/vue-hooks';
+import { onMounted, ref, computed } from 'vue';
 import todoList from '../components/TodoList.vue';
+import store from '../store';
+import router from '../router';
 
 export default {
   components: {
     todoList,
   },
-  setup(_, context) {
-    const { lists } = useState(['lists']);
-    const listId = context.root._route.params.id;
+  setup() {
+    const { state } = store;
+    const lists = computed(() => state.lists);
+
+    const listId = router.currentRoute.value.params.id;
+
     const currentList = computed(() => lists.value.filter((list) => list._id === listId)[0]);
 
-    const state = reactive({
-      giveAccessEmail: '',
-    });
-
+    const giveAccessEmail = ref('');
 
     onMounted(async () => {
       const acc = document.getElementById('list-accordion');
@@ -112,7 +119,7 @@ export default {
     }
 
     return {
-      state,
+      giveAccessEmail,
       revokeAccess,
       giveAccess,
       list: currentList,
