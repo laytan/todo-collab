@@ -36,7 +36,7 @@ export default {
         order: 0,
         name: 'Write your to-do here',
         label: '',
-        description: '',
+        description: 'Write your description here',
         color: 'rgba(0,0,0,1)',
         createdAt: Date.now(),
         lastEditedAt: Date.now(),
