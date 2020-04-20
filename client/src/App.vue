@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
     <div class="loading-spinner">
       <i class="material-icons" v-if="loading">autorenew</i>
     </div>
