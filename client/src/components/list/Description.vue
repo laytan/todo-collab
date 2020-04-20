@@ -6,7 +6,12 @@
       @click="openEditing"
     >{{ description }}</div>
     <div v-show="editing">
-      <textarea ref="textarea" v-model="description" class="materialize-textarea">
+      <textarea
+        @blur="cancel"
+        ref="textarea"
+        v-model="internalDescription"
+        class="materialize-textarea"
+      >
       </textarea>
       <button @click="save" class="waves-effect waves-green green-text btn-flat">Save</button>
       <button @click="cancel" class="waves-effect waves-red red-text btn-flat">Cancel</button>
@@ -27,29 +32,23 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const { dispatch } = useStore();
 
     const editing = ref(false);
     const textarea = ref(null);
+    const internalDescription = ref(props.description);
 
     function closeEditing() {
-      // TODO: Rewrite event bus logic
-      // EventBus.$emit('set-draggable', true);
+      emit('on-editing-change', false);
 
       setTimeout(() => {
         editing.value = false;
       }, 250);
     }
-    // TODO: Rewrite event bus logic
-    // EventBus.$on('close-editing', () => {
-    //   editing.value = false;
-    // });
 
     function openEditing() {
-      // TODO: Rewrite event bus logic
-      // EventBus.$emit('close-editing');
-      // EventBus.$emit('set-draggable', false);
+      emit('on-editing-change', true);
 
       editing.value = true;
       window.M.textareaAutoResize(window.$(textarea.value));
@@ -59,7 +58,7 @@ export default {
       dispatch(actions.PATCH_ITEM, {
         id: props.todoId,
         patchData: {
-          description: props.description,
+          description: internalDescription.value,
         },
       });
       closeEditing();
@@ -76,6 +75,7 @@ export default {
       cancel,
       openEditing,
       textarea,
+      internalDescription,
     };
   },
 };

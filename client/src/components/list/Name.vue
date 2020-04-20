@@ -6,7 +6,7 @@
       @click="openEditing"
     >{{ internalName }}</div>
     <div v-show="editing">
-      <input class="input-field inline" type="text" v-model="internalName" />
+      <input @blur="cancel" class="input-field inline" type="text" v-model="internalName" />
       <button @click="save" class="waves-effect waves-green green-text btn-flat">Save</button>
       <button @click="cancel" class="waves-effect waves-red red-text btn-flat">Cancel</button>
     </div>
@@ -26,7 +26,7 @@ export default {
     },
     name: String,
   },
-  setup(props) {
+  setup(props, { emit }) {
     const { dispatch } = useStore();
 
     const editing = ref(false);
@@ -36,18 +36,12 @@ export default {
       setTimeout(() => {
         editing.value = false;
       }, 250);
-      // TODO: Rewrite event bus logic
-      // EventBus.$emit('set-draggable', true);
+
+      emit('on-editing-change', false);
     }
-    // TODO: Rewrite event bus logic
-    // EventBus.$on('close-editing', () => {
-    //   editing.value = false;
-    // });
 
     function openEditing() {
-      // TODO: Rewrite event bus logic
-      // EventBus.$emit('close-editing');
-      // EventBus.$emit('set-draggable', false);
+      emit('on-editing-change', true);
       editing.value = true;
     }
 

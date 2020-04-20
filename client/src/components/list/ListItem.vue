@@ -2,8 +2,12 @@
   <div class="todolist-item section z-depth-2">
     <item-label :label-color="itemData.color" :label-text="itemData.label" />
     <div class="todolist-item-body">
-      <name :todoId="itemData._id" :name="itemData.name"/>
-      <description :todoId="itemData._id" :description="itemData.description" />
+      <name @on-editing-change="onEditingChange" :todoId="itemData._id" :name="itemData.name"/>
+      <description
+        @on-editing-change="onEditingChange"
+        :todoId="itemData._id"
+        :description="itemData.description"
+      />
       <div class="item-details" @click="showMore = !showMore">
         <item-detail
         v-if="itemData.done"
@@ -52,7 +56,7 @@ export default {
       required: true,
     },
   },
-  setup(props) {
+  setup(props, { emit }) {
     const { dispatch } = useStore();
 
     const showMore = ref(false);
@@ -73,10 +77,15 @@ export default {
       });
     }
 
+    function onEditingChange(editing) {
+      emit('on-editing-change', editing);
+    }
+
     return {
       showMore,
       removeItem,
       toggleDone,
+      onEditingChange,
     };
   },
 };
