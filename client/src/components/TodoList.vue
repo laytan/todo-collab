@@ -4,11 +4,14 @@
       {{ list.name }}
     </h2>
       <progress-bar v-if="list.items" :items="list.items"/>
-    <!-- <draggable v-if="list.items" v-model="list.items" v-bind="draggableOptions"> -->
       <transition-group type="transition" :name="'flip-list'">
-        <list-item v-for="item in list.items" :key="item._id" :item-data="item"/>
+        <list-item
+          v-for="item in list.items"
+          :key="item._id"
+          :item-data="item"
+          @on-editing-change="onEditingChange"
+        />
       </transition-group>
-    <!-- </draggable> -->
     <div class="buttons flex between">
       <button class="btn-floating btn-large waves-effect waves-light red lighten-3">
         <i class="material-icons">security</i>
@@ -25,8 +28,6 @@
 </template>
 <script>
 import { reactive } from 'vue';
-// FIXME: Draggable does not support vue 3.0 yet
-// import draggable from 'vuedraggable';
 
 import { useStore } from '@/store';
 import progressBar from '@/components/list/ProgressBar.vue';
@@ -35,8 +36,6 @@ import { actions } from '@/types';
 
 export default {
   components: {
-    // FIXME: Draggable does not support vue 3.0 yet
-    // draggable,
     progressBar,
     listItem,
   },
@@ -48,7 +47,6 @@ export default {
   setup(props) {
     const { dispatch } = useStore();
 
-    // TODO: add children event?
     const draggableOptions = reactive({
       disabled: false,
     });
@@ -56,14 +54,15 @@ export default {
     function addItem() {
       dispatch(actions.ADD_ITEM_TO_LIST, props.list._id);
     }
-    // TODO: Rewrite event bus logic
-    // EventBus.$on('set-draggable', (bool) => {
-    //   draggableOptions.disabled = !bool;
-    // });
+
+    function onEditingChange(isEditing) {
+      draggableOptions.disabled = isEditing;
+    }
 
     return {
       draggableOptions,
       addItem,
+      onEditingChange,
     };
   },
 };
