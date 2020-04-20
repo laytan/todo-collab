@@ -20,25 +20,21 @@ export default {
 
       services.todolists.on('created', (data) => {
         commit(mutations.ADD_LIST, data);
-        console.log('created', data);
       });
 
       const onUpdateList = (data) => {
         commit(mutations.REMOVE_LIST, data);
         commit(mutations.ADD_LIST, data);
-        console.log('updated', data);
       };
       services.todolists.on('updated', onUpdateList);
       services.todolists.on('patched', onUpdateList);
 
       services.todos.on('created', (data) => {
-        console.log('created t', data);
         commit(mutations.ADD_ITEM_TO_LIST, data);
       });
 
       const onUpdateItem = (data) => {
         commit(mutations.UPDATE_ITEM, data);
-        console.log('updated t', data);
       };
       services.todos.on('updated', onUpdateItem);
       services.todos.on('patched', onUpdateItem);
