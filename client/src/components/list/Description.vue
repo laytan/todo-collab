@@ -15,8 +15,9 @@
 </template>
 <script>
 import { ref } from 'vue';
-import types from '../../types';
-import store from '../../store';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   props: {
@@ -27,7 +28,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     const editing = ref(false);
     const textarea = ref(null);
@@ -55,7 +56,7 @@ export default {
     }
 
     function save() {
-      dispatch(types.PATCH_ITEM, {
+      dispatch(actions.PATCH_ITEM, {
         id: props.todoId,
         patchData: {
           description: props.description,

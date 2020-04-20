@@ -30,21 +30,21 @@
   </div>
 </template>
 <script>
-import { onMounted, computed } from 'vue';
-import store from '../store';
-import types from '../types';
+import { onMounted } from 'vue';
+import { useStore, mapState } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { state, dispatch } = store;
-    const user = computed(() => state.user);
+    const { dispatch } = useStore();
+    const user = mapState('user');
 
     function logout() {
-      dispatch(types.LOGOUT);
+      dispatch(actions.LOGOUT);
     }
 
     onMounted(() => {
-      dispatch(types.TRY_AUTH);
+      dispatch(actions.TRY_AUTH);
       window.$('.dropdown-trigger').dropdown();
     });
 

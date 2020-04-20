@@ -31,12 +31,14 @@
 </template>
 <script>
 import { ref } from 'vue';
-import types from '../../types';
-import store from '../../store';
-import itemLabel from './ItemLabel.vue';
-import name from './Name.vue';
-import description from './Description.vue';
-import itemDetail from './ItemDetail.vue';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
+
+import itemLabel from '@/components/list/ItemLabel.vue';
+import name from '@/components/list/Name.vue';
+import description from '@/components/list/Description.vue';
+import itemDetail from '@/components/list/ItemDetail.vue';
 
 export default {
   components: {
@@ -51,7 +53,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     const showMore = ref(false);
 
@@ -63,7 +65,7 @@ export default {
     async function toggleDone() {
       props.itemData.done = !props.itemData.done;
 
-      dispatch(types.PATCH_ITEM, {
+      dispatch(actions.PATCH_ITEM, {
         id: props.itemData._id,
         patchData: {
           done: props.itemData.done,

@@ -15,15 +15,16 @@
 </template>
 
 <script>
-import { reactive, computed, ref } from 'vue';
-import types from '../types';
-import store from '../store';
+import { reactive, ref } from 'vue';
+
+import { useStore, mapState } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { state, dispatch } = store;
+    const { dispatch } = useStore();
 
-    const user = computed(() => state.user);
+    const user = mapState('user');
 
     const todo = reactive({
       name: '',
@@ -34,7 +35,7 @@ export default {
     const createdTodo = ref({});
 
     async function create() {
-      const res = await dispatch(types.ADD_LIST, {
+      const res = await dispatch(actions.ADD_LIST, {
         name: todo.name,
         description: todo.description,
         password: todo.password,

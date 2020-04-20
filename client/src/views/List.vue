@@ -80,20 +80,21 @@
 
 <script>
 import { onMounted, ref, computed } from 'vue';
-import todoList from '../components/TodoList.vue';
-import store from '../store';
-import router from '../router';
+
+import { mapState } from '@/store';
+import { useRouter } from '@/router';
+
+import todoList from '@/components/TodoList.vue';
 
 export default {
   components: {
     todoList,
   },
   setup() {
-    const { state } = store;
-    const lists = computed(() => state.lists);
+    const lists = mapState('lists');
 
+    const router = useRouter();
     const listId = router.currentRoute.value.params.id;
-
     const currentList = computed(() => lists.value.filter((list) => list._id === listId)[0]);
 
     const giveAccessEmail = ref('');

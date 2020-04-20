@@ -11,12 +11,13 @@
 
 <script>
 import { reactive } from 'vue';
-import store from '../store';
-import types from '../types';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     const credentials = reactive({
       email: '',
@@ -24,7 +25,7 @@ export default {
     });
 
     function registerWithCreds() {
-      dispatch(types.REGISTER, {
+      dispatch(actions.REGISTER, {
         email: credentials.email,
         password: credentials.password,
       });

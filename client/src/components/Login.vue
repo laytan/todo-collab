@@ -12,12 +12,13 @@
 
 <script>
 import { reactive, ref } from 'vue';
-import store from '../store';
-import types from '../types';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     const credentials = reactive({
       email: '',
@@ -29,7 +30,7 @@ export default {
     async function loginWithCreds() {
       error.value = '';
 
-      const errOrUser = await dispatch(types.LOGIN_WITH_CREDENTIALS, {
+      const errOrUser = await dispatch(actions.LOGIN_WITH_CREDENTIALS, {
         email: credentials.email,
         password: credentials.password,
       });

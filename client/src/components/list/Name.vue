@@ -14,8 +14,9 @@
 </template>
 <script>
 import { ref } from 'vue';
-import types from '../../types';
-import store from '../../store';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   props: {
@@ -26,7 +27,7 @@ export default {
     name: String,
   },
   setup(props) {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     const editing = ref(false);
     const internalName = ref(props.name);
@@ -51,7 +52,7 @@ export default {
     }
 
     function save() {
-      dispatch(types.PATCH_ITEM, { id: props.todoId, patchData: { name: internalName.value } });
+      dispatch(actions.PATCH_ITEM, { id: props.todoId, patchData: { name: internalName.value } });
       closeEditing();
     }
 

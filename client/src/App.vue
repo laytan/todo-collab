@@ -7,25 +7,24 @@
   </div>
 </template>
 <script>
-import { computed, onMounted } from 'vue';
-import types from './types';
-import store from './store';
+import { onMounted } from 'vue';
+
+import { mapState, useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { state, dispatch } = store;
-
-    const loading = computed(() => state.loading);
-    const user = computed(() => state.user);
+    const { dispatch } = useStore();
+    const [loading, user] = mapState(['loading', 'user']);
 
     function onLogin() {
-      dispatch(types.INIT);
-      dispatch(types.SYNC_LISTS);
+      dispatch(actions.INIT);
+      dispatch(actions.SYNC_LISTS);
     }
 
     onMounted(async () => {
       if (!user.id) {
-        const loggedIn = await dispatch(types.TRY_AUTH);
+        const loggedIn = await dispatch(actions.TRY_AUTH);
         if (loggedIn) {
           onLogin();
         }

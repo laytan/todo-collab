@@ -12,10 +12,9 @@
 </template>
 
 <script>
-import { computed } from 'vue';
-import store from '../store';
-import Login from '../components/Login.vue';
-import Register from '../components/Register.vue';
+import { mapState } from '@/store';
+import Login from '@/components/Login.vue';
+import Register from '@/components/Register.vue';
 
 export default {
   name: 'authentication',
@@ -24,8 +23,7 @@ export default {
     Register,
   },
   setup() {
-    const { state } = store;
-    const user = computed(() => state.user);
+    const user = mapState('user');
 
     return {
       user,

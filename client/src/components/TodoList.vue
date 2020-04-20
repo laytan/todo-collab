@@ -27,10 +27,11 @@
 import { reactive } from 'vue';
 // FIXME: Draggable does not support vue 3.0 yet
 // import draggable from 'vuedraggable';
-import progressBar from './list/ProgressBar.vue';
-import listItem from './list/ListItem.vue';
-import types from '../types';
-import store from '../store';
+
+import { useStore } from '@/store';
+import progressBar from '@/components/list/ProgressBar.vue';
+import listItem from '@/components/list/ListItem.vue';
+import { actions } from '@/types';
 
 export default {
   components: {
@@ -45,7 +46,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = store;
+    const { dispatch } = useStore();
 
     // TODO: add children event?
     const draggableOptions = reactive({
@@ -53,7 +54,7 @@ export default {
     });
 
     function addItem() {
-      dispatch(types.ADD_ITEM_TO_LIST, props.list._id);
+      dispatch(actions.ADD_ITEM_TO_LIST, props.list._id);
     }
     // TODO: Rewrite event bus logic
     // EventBus.$on('set-draggable', (bool) => {
