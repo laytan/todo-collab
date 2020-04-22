@@ -26,7 +26,7 @@ export default {
     },
     name: String,
   },
-  setup(props, { emit }) {
+  setup(props) {
     const { dispatch } = useStore();
 
     const editing = ref(false);
@@ -36,12 +36,9 @@ export default {
       setTimeout(() => {
         editing.value = false;
       }, 250);
-
-      emit('on-editing-change', false);
     }
 
     function openEditing() {
-      emit('on-editing-change', true);
       editing.value = true;
     }
 

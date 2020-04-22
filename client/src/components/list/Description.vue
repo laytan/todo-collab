@@ -32,7 +32,7 @@ export default {
       required: true,
     },
   },
-  setup(props, { emit }) {
+  setup(props) {
     const { dispatch } = useStore();
 
     const editing = ref(false);
@@ -40,16 +40,12 @@ export default {
     const internalDescription = ref(props.description);
 
     function closeEditing() {
-      emit('on-editing-change', false);
-
       setTimeout(() => {
         editing.value = false;
       }, 250);
     }
 
     function openEditing() {
-      emit('on-editing-change', true);
-
       editing.value = true;
       window.M.textareaAutoResize(window.$(textarea.value));
     }
