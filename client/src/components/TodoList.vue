@@ -94,6 +94,30 @@ function useDraggableOrder(itemsProp) {
     itemIdToElMap[closest._id].classList.add(topOrBottomClass);
   });
 
+
+  /**
+   * Sorts the items by their offset and assigns the right order to them
+   */
+  function reOrder(toOrder) {
+    toOrder.sort((a, b) => itemIdToElMap[a._id].offsetTop - itemIdToElMap[b._id].offsetTop);
+    toOrder.forEach((item, i) => {
+      // If the order is already fine, return
+      if (item.order === i) return;
+
+      item.order = i;
+
+      // Update the order on the server and other clients
+      // TODO: Method to update the whole list, instead of multiple listitem requests
+      dispatch(actions.PATCH_ITEM, {
+        id: item._id,
+        patchData: {
+          order: item.order,
+        },
+      });
+    });
+    return toOrder;
+  }
+
   /**
    * Start the dragging of an item
    */
@@ -142,29 +166,6 @@ function useDraggableOrder(itemsProp) {
       onEndDrag(oldDragging);
     }
   });
-
-  /**
-   * Sorts the items by their offset and assigns the right order to them
-   */
-  function reOrder(toOrder) {
-    toOrder.sort((a, b) => itemIdToElMap[a._id].offsetTop - itemIdToElMap[b._id].offsetTop);
-    toOrder.forEach((item, i) => {
-      // If the order is already fine, return
-      if (item.order === i) return;
-
-      item.order = i;
-
-      // Update the order on the server and other clients
-      // TODO: Method to update the whole list, instead of multiple listitem requests
-      dispatch(actions.PATCH_ITEM, {
-        id: item._id,
-        patchData: {
-          order: item.order,
-        },
-      });
-    });
-    return toOrder;
-  }
 
   // Called in template on clicking an item and sets everything in motion
   function mouseDownItem(itemId) {
