@@ -2,36 +2,37 @@
   <div class="register">
     <h2>Register</h2>
     <form @submit.prevent="registerWithCreds">
-        <input type="email" placeholder="Email" v-model="state.email">
-        <input type="password" placeholder="Password" v-model="state.password">
+        <input type="email" placeholder="Email" v-model="credentials.email">
+        <input type="password" placeholder="Password" v-model="credentials.password">
         <input type="submit" value="register">
     </form>
   </div>
 </template>
 
 <script>
-import { reactive } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
-import types from '../types';
+import { reactive } from 'vue';
+
+import { useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { REGISTER } = useActions([types.REGISTER]);
+    const { dispatch } = useStore();
 
-    const state = reactive({
+    const credentials = reactive({
       email: '',
       password: '',
     });
 
     function registerWithCreds() {
-      REGISTER({
-        email: state.email,
-        password: state.password,
+      dispatch(actions.REGISTER, {
+        email: credentials.email,
+        password: credentials.password,
       });
     }
 
     return {
-      state,
+      credentials,
       registerWithCreds,
     };
   },

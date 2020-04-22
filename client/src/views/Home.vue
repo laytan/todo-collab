@@ -68,10 +68,11 @@
 </template>
 
 <script>
-import { onMounted } from '@vue/composition-api';
-import { useState } from '@u3u/vue-hooks';
-import CreateTodo from '../components/CreateTodo.vue';
-import Navigation from '../components/Navigation.vue';
+import { onMounted } from 'vue';
+
+import { mapState } from '@/store';
+import CreateTodo from '@/components/CreateTodo.vue';
+import Navigation from '@/components/Navigation.vue';
 
 export default {
   name: 'home',
@@ -80,7 +81,7 @@ export default {
     Navigation,
   },
   setup() {
-    const { user } = useState(['user']);
+    const user = mapState('user');
 
     function todoAnimation() {
       // Get the checkboxes

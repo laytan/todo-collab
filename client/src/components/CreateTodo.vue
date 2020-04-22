@@ -1,52 +1,55 @@
 <template>
   <div class="create-todo">
     <form @submit.prevent="create">
-      <input type="text" v-model="state.name" placeholder="Name">
-      <input type="textarea" v-model="state.description" placeholder="Description">
-      <input type="password" v-model="state.password" placeholder="Password">
+      <input type="text" v-model="todo.name" placeholder="Name">
+      <input type="textarea" v-model="todo.description" placeholder="Description">
+      <input type="password" v-model="todo.password" placeholder="Password">
       <input type="submit" value="Create">
     </form>
-    <div v-if="state.createdTodo.name">
-      <p>Todolist {{ state.createdTodo.name }} has been created!</p>
-      <router-link :to="{ name: 'list', params: { id: state.createdTodo._id }}">Link</router-link>
+    <div v-if="createdTodo.name">
+      <p>Todolist {{ createdTodo.name }} has been created!</p>
+      <router-link :to="{ name: 'list', params: { id: createdTodo._id }}">Link</router-link>
       <p>Give this link and the password to your friends / collegues for them to join! </p>
     </div>
   </div>
 </template>
 
 <script>
-import { reactive } from '@vue/composition-api';
-import { useState, useActions } from '@u3u/vue-hooks';
-import types from '../types';
+import { reactive, ref } from 'vue';
+
+import { useStore, mapState } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { ADD_LIST } = useActions([types.ADD_LIST]);
+    const { dispatch } = useStore();
 
-    const state = reactive({
+    const user = mapState('user');
+
+    const todo = reactive({
       name: '',
       description: '',
       password: '',
-      createdTodo: {},
     });
 
-    const { user } = useState(['user']);
+    const createdTodo = ref({});
 
     async function create() {
-      const res = await ADD_LIST({
-        name: state.name,
-        description: state.description,
-        password: state.password,
+      const res = await dispatch(actions.ADD_LIST, {
+        name: todo.name,
+        description: todo.description,
+        password: todo.password,
         access: [
           user.value.email,
         ],
       });
       console.log(res);
-      state.createdTodo = res;
+      createdTodo.value = res;
     }
 
     return {
-      state,
+      todo,
+      createdTodo,
       create,
     };
   },

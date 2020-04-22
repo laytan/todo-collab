@@ -1,7 +1,7 @@
 // Application hooks that run for every service
 
 const logRequest = async context => {
-  console.log(`${context.method} Request on: ${context.path}`);
+  console.log(`[${new Date().toLocaleTimeString()}] ${context.method.toUpperCase()} ${context.path}`);
   return context;
 };
 

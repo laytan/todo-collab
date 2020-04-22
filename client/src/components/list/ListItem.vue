@@ -1,9 +1,12 @@
 <template>
-  <div class="todolist-item section z-depth-2">
+  <div :data-id="itemData._id" class="todolist-item section z-depth-2">
     <item-label :label-color="itemData.color" :label-text="itemData.label" />
     <div class="todolist-item-body">
       <name :todoId="itemData._id" :name="itemData.name"/>
-      <description :todoId="itemData._id" :description="itemData.description" />
+      <description
+        :todoId="itemData._id"
+        :description="itemData.description"
+      />
       <div class="item-details" @click="showMore = !showMore">
         <item-detail
         v-if="itemData.done"
@@ -30,14 +33,15 @@
   </div>
 </template>
 <script>
-import { ref } from '@vue/composition-api';
-import { useActions } from '@u3u/vue-hooks';
-import types from '../../types';
+import { ref } from 'vue';
 
-import itemLabel from './ItemLabel.vue';
-import name from './Name.vue';
-import description from './Description.vue';
-import itemDetail from './ItemDetail.vue';
+import { useStore } from '@/store';
+import { actions } from '@/types';
+
+import itemLabel from '@/components/list/ItemLabel.vue';
+import name from '@/components/list/Name.vue';
+import description from '@/components/list/Description.vue';
+import itemDetail from '@/components/list/ItemDetail.vue';
 
 export default {
   components: {
@@ -52,7 +56,7 @@ export default {
     },
   },
   setup(props) {
-    const { PATCH_ITEM } = useActions([types.PATCH_ITEM]);
+    const { dispatch } = useStore();
 
     const showMore = ref(false);
 
@@ -64,7 +68,12 @@ export default {
     async function toggleDone() {
       props.itemData.done = !props.itemData.done;
 
-      PATCH_ITEM({ id: props.itemData._id, patchData: { done: props.itemData.done } });
+      dispatch(actions.PATCH_ITEM, {
+        id: props.itemData._id,
+        patchData: {
+          done: props.itemData.done,
+        },
+      });
     }
 
     return {

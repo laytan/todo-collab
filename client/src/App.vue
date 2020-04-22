@@ -1,33 +1,30 @@
 <template>
   <div id="app">
-    <router-view/>
+    <router-view />
     <div class="loading-spinner">
       <i class="material-icons" v-if="loading">autorenew</i>
     </div>
   </div>
 </template>
 <script>
-import { useState, useActions } from '@u3u/vue-hooks';
-import { onMounted } from '@vue/composition-api';
-import types from './types';
+import { onMounted } from 'vue';
+
+import { mapState, useStore } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { TRY_AUTH, INIT, SYNC_LISTS } = useActions([
-      types.TRY_AUTH,
-      types.INIT,
-      types.SYNC_LISTS,
-    ]);
-    const { user, loading } = useState(['user', 'loading']);
+    const { dispatch } = useStore();
+    const [loading, user] = mapState(['loading', 'user']);
 
     function onLogin() {
-      INIT();
-      SYNC_LISTS();
+      dispatch(actions.INIT);
+      dispatch(actions.SYNC_LISTS);
     }
 
     onMounted(async () => {
       if (!user.id) {
-        const loggedIn = await TRY_AUTH();
+        const loggedIn = await dispatch(actions.TRY_AUTH);
         if (loggedIn) {
           onLogin();
         }
@@ -35,7 +32,6 @@ export default {
         onLogin();
       }
     });
-
 
     return {
       loading,

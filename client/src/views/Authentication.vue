@@ -12,9 +12,9 @@
 </template>
 
 <script>
-import { useState } from '@u3u/vue-hooks';
-import Login from '../components/Login.vue';
-import Register from '../components/Register.vue';
+import { mapState } from '@/store';
+import Login from '@/components/Login.vue';
+import Register from '@/components/Register.vue';
 
 export default {
   name: 'authentication',
@@ -23,7 +23,7 @@ export default {
     Register,
   },
   setup() {
-    const { user } = useState(['user']);
+    const user = mapState('user');
 
     return {
       user,

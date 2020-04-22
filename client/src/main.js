@@ -1,17 +1,6 @@
-import Vue from 'vue';
-import VueCompositionAPI from '@vue/composition-api';
-import hooks from '@u3u/vue-hooks';
-import App from './App.vue';
-import router from './router';
-import store from './store';
+import { createApp } from 'vue';
+import { store } from '@/store';
+import { router } from '@/router';
+import App from '@/App.vue';
 
-Vue.config.productionTip = false;
-
-Vue.use(hooks);
-Vue.use(VueCompositionAPI);
-
-new Vue({
-  router,
-  store,
-  render: h => h(App),
-}).$mount('#app');
+createApp(App).use(router).use(store).mount('#app');

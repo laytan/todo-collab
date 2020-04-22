@@ -30,21 +30,21 @@
   </div>
 </template>
 <script>
-import { onMounted } from '@vue/composition-api';
-import { useState, useActions } from '@u3u/vue-hooks';
-import types from '../types';
+import { onMounted } from 'vue';
+import { useStore, mapState } from '@/store';
+import { actions } from '@/types';
 
 export default {
   setup() {
-    const { user } = useState(['user']);
-    const { LOGOUT, TRY_AUTH } = useActions([types.LOGOUT, types.TRY_AUTH]);
+    const { dispatch } = useStore();
+    const user = mapState('user');
 
     function logout() {
-      LOGOUT();
+      dispatch(actions.LOGOUT);
     }
 
     onMounted(() => {
-      TRY_AUTH();
+      dispatch(actions.TRY_AUTH);
       window.$('.dropdown-trigger').dropdown();
     });
 
