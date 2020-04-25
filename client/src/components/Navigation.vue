@@ -44,7 +44,6 @@ export default {
     }
 
     onMounted(() => {
-      dispatch(actions.TRY_AUTH);
       window.$('.dropdown-trigger').dropdown();
     });
 

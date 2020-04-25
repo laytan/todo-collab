@@ -4,6 +4,7 @@ import { services, client } from '@/feathers';
 export default {
   mutations: {
     [mutations.SET_USER](state, user) {
+      console.log(user);
       state.user = user;
     },
   },
@@ -19,10 +20,11 @@ export default {
         commit(mutations.SET_LOADING, true);
         const res = await client.authenticate({ strategy: 'local', ...user });
         commit(mutations.SET_USER, res.user);
-        commit(mutations.SET_LOADING, false);
         return { error: null, user: res };
       } catch (error) {
         return { error, user: null };
+      } finally {
+        commit(mutations.SET_LOADING, false);
       }
     },
     [actions.LOGOUT]({ commit }) {
@@ -30,15 +32,12 @@ export default {
       client.logout();
     },
     [actions.TRY_AUTH]({ commit }) {
-      console.log('Trying authentication');
       return client.reAuthenticate()
         .then((res) => {
-          console.log('Authentication succeeded');
           commit(mutations.SET_USER, res.user);
           return true;
         })
         .catch(() => {
-          console.log('Authentication failed');
           commit(mutations.SET_USER, {});
           return false;
         });

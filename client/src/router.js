@@ -1,5 +1,25 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import Home from './views/Home.vue';
+import { mapState, useStore } from '@/store';
+import Home from '@/views/Home.vue';
+import { actions } from '@/types';
+
+function redirectIfLoggedIn(to, from, next) {
+  const user = mapState('user');
+  if (user.value._id) {
+    next('/');
+  } else {
+    next();
+  }
+}
+
+async function redirectIfNotLoggedIn(to, from, next) {
+  const user = mapState('user');
+  if (user.value._id) {
+    next();
+  } else {
+    next('/authentication');
+  }
+}
 
 export const router = createRouter({
   history: createWebHashHistory(),
@@ -20,6 +40,7 @@ export const router = createRouter({
     {
       path: '/authentication',
       name: 'authentication',
+      beforeEnter: redirectIfLoggedIn,
       // route level code-splitting
       // this generates a separate chunk (about.[hash].js) for this route
       // which is lazy-loaded when the route is visited.
@@ -28,9 +49,33 @@ export const router = createRouter({
     {
       path: '/lists/:id',
       name: 'list',
+      beforeEnter: redirectIfNotLoggedIn,
       component: () => import(/* webpackChunkName: "list" */ './views/List.vue'),
     },
   ],
+});
+
+router.beforeEach(async (to, from, next) => {
+  const { dispatch } = useStore();
+  const user = mapState('user');
+
+  function initState() {
+    dispatch(actions.INIT);
+    dispatch(actions.SYNC_LISTS);
+  }
+
+  if (!user.value.id) {
+    // Try to log in
+    const loggedIn = await dispatch(actions.TRY_AUTH);
+    if (loggedIn) {
+      initState();
+    }
+  } else {
+    // Already loggedIn
+    initState();
+  }
+
+  next();
 });
 
 export function useRouter() {

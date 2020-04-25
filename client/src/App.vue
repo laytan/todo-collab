@@ -7,31 +7,11 @@
   </div>
 </template>
 <script>
-import { onMounted } from 'vue';
-
-import { mapState, useStore } from '@/store';
-import { actions } from '@/types';
+import { mapState } from '@/store';
 
 export default {
   setup() {
-    const { dispatch } = useStore();
-    const [loading, user] = mapState(['loading', 'user']);
-
-    function onLogin() {
-      dispatch(actions.INIT);
-      dispatch(actions.SYNC_LISTS);
-    }
-
-    onMounted(async () => {
-      if (!user.id) {
-        const loggedIn = await dispatch(actions.TRY_AUTH);
-        if (loggedIn) {
-          onLogin();
-        }
-      } else {
-        onLogin();
-      }
-    });
+    const loading = mapState('loading');
 
     return {
       loading,
@@ -82,5 +62,13 @@ export default {
 
 .m-0 {
   margin: 0;
+}
+
+.half-width {
+  width: 50%;
+}
+
+.full-width {
+  width: 100%;
 }
 </style>
