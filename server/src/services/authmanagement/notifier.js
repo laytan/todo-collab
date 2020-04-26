@@ -17,12 +17,7 @@ module.exports = function notifier(app) {
 
   function template(path, context) {
     return new Promise((resolve, reject) => {
-      const additionalContext = {
-        clientURL: process.env.CLIENT_URL,
-        unsubscribeURL: 'todo',
-      };
-
-      templates.render(path, { ...context, ...additionalContext }, (err, html, text, subject) => {
+      templates.render(path, context, (err, html, text, subject) => {
         if (err) {
           reject(err);
         }
@@ -31,68 +26,44 @@ module.exports = function notifier(app) {
     });
   }
 
+  async function sendTemplateTo(templatePath, user, context = {}) {
+    const additionalContext = {
+      clientURL: process.env.CLIENT_URL,
+      appName: process.env.APP_NAME,
+      unsubscribeURL: 'todo',
+      user,
+    };
+
+    const { html, text, subject } = await template(templatePath, {
+      ...context,
+      ...additionalContext,
+    });
+
+    return sendEmail({
+      from: process.env.MAIL_FROM,
+      to: user.email,
+      subject,
+      text,
+      html,
+    });
+  }
+
   return {
     async notifier(type, user) {
-      let tokenLink;
-      let email;
-      let compiledTemplate;
+      const handlers = {
+        // Email verification
+        resendVerifySignup: () => sendTemplateTo('resendVerifySignup.html', user, {
+          tokenLink: getLink('verify', user.verifyToken),
+        }),
+        verifySignup: () => sendTemplateTo('verifySignup.html', user),
+        // Password reset
+        sendResetPwd: () => sendTemplateTo('sendResetPwd.html', user, {
+          tokenLink: getLink('reset', user.resetToken),
+        }),
+        resetPwd: () => sendTemplateTo('resetPwd.html', user),
+      };
 
-      switch (type) {
-        // Sending the user the verification email
-        case 'resendVerifySignup':
-          tokenLink = getLink('verify', user.verifyToken);
-          compiledTemplate = await template('resendVerifySignup.html', { user, tokenLink });
-          email = {
-            from: process.env.MAIL_FROM,
-            to: user.email,
-            subject: 'Verify Your Email',
-            html: compiledTemplate.html,
-            text: compiledTemplate.text,
-          };
-          return sendEmail(email);
-
-        // Confirming the verification
-        case 'verifySignup':
-          tokenLink = getLink('verify', user.verifyToken);
-          compiledTemplate = await template('verifySignup.html', { user });
-          email = {
-            from: process.env.MAIL_FROM,
-            to: user.email,
-            subject: 'Thank you for signing up',
-            html: compiledTemplate.html,
-            text: compiledTemplate.text,
-          };
-          return sendEmail(email);
-
-        // Send pw reset token
-        case 'sendResetPwd':
-          tokenLink = getLink('reset', user.resetToken);
-          compiledTemplate = await template('sendResetPwd.html', { tokenLink, user });
-          email = {
-            from: process.env.MAIL_FROM,
-            to: user.email,
-            subject: 'Password Reset Link',
-            html: compiledTemplate.html,
-            text: compiledTemplate.text,
-          };
-          return sendEmail(email);
-
-        // PW reset confirmation
-        case 'resetPwd':
-          tokenLink = getLink('reset', user.resetToken);
-          compiledTemplate = await template('resetPwd.html', { tokenLink, user });
-          email = {
-            from: process.env.MAIL_FROM,
-            to: user.email,
-            subject: 'Your password has been reset',
-            html: compiledTemplate.html,
-            text: compiledTemplate.text,
-          };
-          return sendEmail(email);
-
-        default:
-          return Promise.reject(new Error(`No notifier handler for type: ${type}`));
-      }
+      return handlers[type] ? handlers[type]() : Promise.reject(new Error(`No notifier handler for type: ${type}`));
     },
   };
 };
