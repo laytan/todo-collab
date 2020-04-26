@@ -10,8 +10,10 @@ module.exports = function notifier(app) {
   async function sendEmail(email) {
     try {
       await app.service('mailer').create(email);
+      return Promise.resolve();
     } catch (err) {
       console.error('Error sending email', err);
+      return Promise.reject(new Error('Message could not be sent.'));
     }
   }
 

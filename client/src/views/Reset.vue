@@ -15,7 +15,7 @@
         </p>
         <form @submit.prevent="resetPassword">
           <div class="input-field">
-            <input type="password" id="new-password" v-model="newPassword">
+            <input type="password" id="new-password" v-model="newPassword" required>
             <label for="new-password">New Password</label>
             <div class="input-field row">
               <button type="submit" class="btn waves-effect waves-light col s12">
@@ -41,7 +41,7 @@
         </p>
         <form @submit.prevent="sendResetPasswordEmail">
           <div class="input-field">
-            <input type="email" id="email" v-model="email">
+            <input type="email" id="email" v-model="email" required>
             <label for="email">Email</label>
           </div>
           <div class="input-field row">
@@ -77,14 +77,31 @@ export default {
       token.value = router.currentRoute.value.query.token;
     });
 
-    function sendResetPasswordEmail() {
-      dispatch(actions.SEND_RESET_PASSWORD, email.value);
-      hasSent.value = true;
+    async function sendResetPasswordEmail() {
+      const res = await dispatch(actions.SEND_RESET_PASSWORD, email.value);
+      if (res.error) {
+        window.M.toast({
+          html: res.error,
+          classes: 'red',
+        });
+      } else {
+        hasSent.value = true;
+      }
     }
 
-    function resetPassword() {
-      dispatch(actions.RESET_PASSWORD, { token: token.value, password: newPassword.value });
-      hasReset.value = true;
+    async function resetPassword() {
+      const res = await dispatch(actions.RESET_PASSWORD, {
+        token: token.value,
+        password: newPassword.value,
+      });
+      if (res.error) {
+        window.M.toast({
+          html: res.error,
+          classes: 'red',
+        });
+      } else {
+        hasReset.value = true;
+      }
     }
 
     return {
