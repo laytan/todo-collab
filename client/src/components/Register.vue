@@ -41,7 +41,6 @@ export default {
       });
 
       if (res.error) {
-        console.warn(res.error);
         window.M.toast({
           html: res.error,
           classes: 'red',
