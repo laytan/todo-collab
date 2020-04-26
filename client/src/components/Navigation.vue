@@ -12,7 +12,7 @@
           </li>
           <li v-show="user.email">
             <a class="dropdown-trigger" href="#" data-target="account-dropdown">
-              {{ user.email }}
+              {{ user.username }}
               <i class="material-icons right">arrow_drop_down</i>
             </a>
             <ul id="account-dropdown" class="dropdown-content" tabindex="0">
