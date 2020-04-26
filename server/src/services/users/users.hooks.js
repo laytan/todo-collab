@@ -19,7 +19,7 @@ const unique = (table, column, errorMsg) => async (context) => {
 
   const query = {};
   query[column] = check;
-  const results = await context.app.service(table).find(query);
+  const results = await context.app.service(table).find({ query });
   if (results.data.length > 0) {
     throw new Error(errorMsg);
   }
