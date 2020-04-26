@@ -1,20 +1,22 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const verifyHooks = require('feathers-authentication-management').hooks;
-const { disallow, iff, isProvider, preventChanges } = require('feathers-hooks-common');
+const {
+  hashPassword, protect,
+} = require('@feathersjs/authentication-local').hooks;
+const {
+  disallow, iff, isProvider, preventChanges,
+} = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
 
-const {
-  hashPassword, protect
-} = require('@feathersjs/authentication-local').hooks;
 
 module.exports = {
   before: {
     all: [],
-    find: [ authenticate('jwt') ],
-    get: [ authenticate('jwt') ],
-    create: [ hashPassword('password'), verifyHooks.addVerification() ],
+    find: [authenticate('jwt')],
+    get: [authenticate('jwt')],
+    create: [hashPassword('password'), verifyHooks.addVerification()],
     // Don't allow any updating from external calls
-    update: [ disallow('external') ],
+    update: [disallow('external')],
     // Don't allow external calls to change verification fields
     patch: [
       iff(
@@ -34,26 +36,26 @@ module.exports = {
         authenticate('jwt'),
       ),
     ],
-    remove: [ authenticate('jwt') ]
+    remove: [authenticate('jwt')],
   },
 
   after: {
-    all: [ 
+    all: [
       // Make sure the password field is never sent to the client
       // Always must be the last hook
-      protect('password')
+      protect('password'),
     ],
     find: [],
     get: [],
     create: [
-      context => {
-        accountService(context.app).notifier('resendVerifySignup', context.result)
+      (context) => {
+        accountService(context.app).notifier('resendVerifySignup', context.result);
       },
       verifyHooks.removeVerification(),
     ],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   error: {
@@ -63,6 +65,6 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
-  }
+    remove: [],
+  },
 };

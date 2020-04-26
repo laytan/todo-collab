@@ -3,7 +3,7 @@ const AuthManagement = require('feathers-authentication-management');
 const hooks = require('./authmanagement.hooks');
 const notifier = require('./notifier');
 
-module.exports = function (app) {
+module.exports = function authmanagement(app) {
   // Initialize our service with any options it requires
   app.configure(AuthManagement(notifier(app)));
 

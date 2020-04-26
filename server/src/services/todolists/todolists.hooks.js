@@ -1,16 +1,16 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 
 const {
-  hashPassword, protect
+  hashPassword, protect,
 } = require('@feathersjs/authentication-local').hooks;
 
-const verifyOwner = async context => {
+const verifyOwner = async (context) => {
   // Verify ownership
   context.params.query.author = context.params.user.email;
   return context;
 };
 
-const verifyAccess = async context => {
+const verifyAccess = async (context) => {
   context.params.query.access = {
     // verify that the email of the user has to be in the access array
     $in: [context.params.user.email],
@@ -18,35 +18,34 @@ const verifyAccess = async context => {
   return context;
 };
 
-const addExistingAccess = async context => {
+const addExistingAccess = async (context) => {
   // If we want to add to access
   if (context.data.access) {
     // Get the user out of the context to pass along with the internal call
     const { user } = context.params;
     // Get the list we are trying to patch
     return context.app.service('todolists').get(context.id, { query: {}, user })
-      .then(list => {
+      .then((list) => {
         // Push the access we got from the request onto the existing access
-        const access = list.access;
+        const { access } = list;
         access.push(context.data.access);
         // Update the context
         context.data.access = access;
         return context;
       });
-  } else {
-    return context;
   }
+  return context;
 };
 
-const revokeAccess = async context => {
+const revokeAccess = async (context) => {
   if (context.data.revoke) {
     // Get the user out of the context to pass along with the internal call
     const { user } = context.params;
     // Get the list we are trying to patch
     return context.app.service('todolists').get(context.id, { query: {}, user })
-      .then(list => {
+      .then((list) => {
         // Push the access we got from the request onto the existing access
-        const access = list.access;
+        const { access } = list;
 
         // Check if the email to revoke is in the array
         const toRemove = context.data.revoke;
@@ -62,27 +61,22 @@ const revokeAccess = async context => {
         delete context.data.revoke;
         return context;
       });
-  } else {
-    return context;
   }
+  return context;
 };
 
 // Merges the todos of this list into an array called items on the result
-const addItemsArray = async context => {
+const addItemsArray = async (context) => {
   if (context.method === 'get') {
     const listId = context.result._id;
-    return context.app.service('todos').find({ query: { listId } }).then(items => {
+    return context.app.service('todos').find({ query: { listId } }).then((items) => {
       context.result.items = items.data;
       return context;
     });
-  } else if (context.method === 'find') {
-    for (let i = 0; i < context.result.data.length; i++) {
-      const list = context.result.data[i];
-      const items = await context.app.service('todos').find({ query: { listId: list._id } });
-      list.items = items.data;
-      // eslint-disable-next-line require-atomic-updates
-      context.result.data[i] = list;
-    }
+  } if (context.method === 'find') {
+    const todosPromises = context.result.data.map((list) => context.app.service('todos').find({ query: { listId: list._id } }));
+    const todos = await Promise.all(todosPromises);
+    todos.forEach((todoItems, i) => { context.result.data[i] = todoItems; });
     return context;
   }
   return context;
@@ -96,7 +90,7 @@ module.exports = {
     create: [hashPassword('password')],
     update: [verifyOwner, hashPassword('password')],
     patch: [verifyOwner, addExistingAccess, revokeAccess, hashPassword('password')],
-    remove: [verifyOwner]
+    remove: [verifyOwner],
   },
 
   after: {
@@ -106,7 +100,7 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
+    remove: [],
   },
 
   error: {
@@ -116,6 +110,6 @@ module.exports = {
     create: [],
     update: [],
     patch: [],
-    remove: []
-  }
+    remove: [],
+  },
 };

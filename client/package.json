@@ -41,9 +41,9 @@
       "@vue/airbnb"
     ],
     "rules": {
-      "no-console": "off",
-      "no-underscore-dangle": "off",
-      "no-param-reassign": "off"
+      "no-underscore-dangle": ["error", { "allow": ["_id"] }],
+      "no-console": ["error", { "allow": ["warn", "error"] }],
+      "no-param-reassign": ["error", { "props": false }]
     },
     "parserOptions": {
       "parser": "babel-eslint"

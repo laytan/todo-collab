@@ -3,13 +3,13 @@ const { Todolists } = require('./todolists.class');
 const createModel = require('../../models/todolists.model');
 const hooks = require('./todolists.hooks');
 
-module.exports = function (app) {
+module.exports = function todolists(app) {
   const Model = createModel(app);
   const paginate = app.get('paginate');
 
   const options = {
     Model,
-    paginate
+    paginate,
   };
 
   // Initialize our service with any options it requires

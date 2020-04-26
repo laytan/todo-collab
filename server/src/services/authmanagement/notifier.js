@@ -1,17 +1,18 @@
 const EmailTemplates = require('swig-email-templates');
+
 const templates = new EmailTemplates({ root: 'src/mail' });
 
-module.exports = function(app) {
+module.exports = function notifier(app) {
   function getLink(type, hash) {
     return `${process.env.CLIENT_URL}/${type}?token=${hash}`;
   }
 
-  function sendEmail(email) {
-    return app.service('mailer').create(email).then(function (result) {
-      console.log('Sent email', result);
-    }).catch(err => {
+  async function sendEmail(email) {
+    try {
+      await app.service('mailer').create(email);
+    } catch (err) {
       console.error('Error sending email', err);
-    })
+    }
   }
 
   function template(path, context) {
@@ -21,7 +22,7 @@ module.exports = function(app) {
         unsubscribeURL: 'todo',
       };
 
-      templates.render(path, {...context, ...additionalContext}, (err, html, text, subject) => {
+      templates.render(path, { ...context, ...additionalContext }, (err, html, text, subject) => {
         if (err) {
           reject(err);
         }
@@ -31,7 +32,7 @@ module.exports = function(app) {
   }
 
   return {
-    notifier: async function(type, user) {
+    async notifier(type, user) {
       let tokenLink;
       let email;
       let compiledTemplate;
@@ -62,7 +63,7 @@ module.exports = function(app) {
             text: compiledTemplate.text,
           };
           return sendEmail(email);
-        
+
         // Send pw reset token
         case 'sendResetPwd':
           tokenLink = getLink('reset', user.resetToken);
@@ -88,26 +89,10 @@ module.exports = function(app) {
             text: compiledTemplate.text,
           };
           return sendEmail(email);
-        
-        // case 'passwordChange':
-        //   email = {
-        //     from: process.env.MAIL_FROM,
-        //     to: user.email,
-        //     subject: 'Password Change',
-        //     html: 'password change',
-        //   };
-        //   return sendEmail(email);
 
-        // case 'identityChange':
-        //   tokenLink = getLink('verifyChanges', user.verifyToken);
-        //   email = {
-        //     from: process.env.MAIL_FROM,
-        //     to: user.email,
-        //     subject: 'Identity Change',
-        //     html: 'Identity Change',
-        //   };
-        //   return sendEmail(email);
-      };
+        default:
+          return Promise.reject(new Error(`No notifier handler for type: ${type}`));
+      }
     },
   };
 };

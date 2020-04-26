@@ -3,13 +3,13 @@ const { Todos } = require('./todos.class');
 const createModel = require('../../models/todos.model');
 const hooks = require('./todos.hooks');
 
-module.exports = function (app) {
+module.exports = function todos(app) {
   const Model = createModel(app);
   const paginate = app.get('paginate');
 
   const options = {
     Model,
-    paginate
+    paginate,
   };
 
   // Initialize our service with any options it requires
