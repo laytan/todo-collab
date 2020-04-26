@@ -32,7 +32,12 @@ module.exports = {
     all: [],
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
-    create: [hashPassword('password'), unique('users', 'email', 'Email is already used.'), verifyHooks.addVerification()],
+    create: [
+      hashPassword('password'),
+      unique('users', 'username', 'Username is already in use.'),
+      unique('users', 'email', 'Email is already in use.'),
+      verifyHooks.addVerification(),
+    ],
     // Don't allow any updating from external calls
     update: [disallow('external')],
     // Don't allow external calls to change verification fields
