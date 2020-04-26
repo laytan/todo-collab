@@ -2,11 +2,11 @@
   <form @submit.prevent="registerWithCreds">
     <h2>Register</h2>
     <div class="input-field">
-      <input v-model="credentials.email" id="email" type="text">
+      <input v-model="credentials.email" id="email" type="email" required>
       <label for="email" class="grey-text text-darken-4">Email</label>
     </div>
     <div class="input-field">
-      <input v-model="credentials.password" id="password" type="password">
+      <input v-model="credentials.password" id="password" type="password" required>
       <label for="password" class="grey-text text-darken-4">Password</label>
     </div>
     <div class="row">
@@ -34,11 +34,20 @@ export default {
       password: '',
     });
 
-    function registerWithCreds() {
-      dispatch(actions.REGISTER, {
+    async function registerWithCreds() {
+      const res = await dispatch(actions.REGISTER, {
         email: credentials.email,
         password: credentials.password,
       });
+
+      if (res.error) {
+        console.warn(res.error);
+        window.M.toast({
+          html: res.error,
+          classes: 'red',
+        });
+        return;
+      }
 
       redirectedFromOr('/', useRouter());
     }

@@ -8,13 +8,31 @@ const {
 } = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
 
+/**
+ * Set a unique contraint
+ */
+const unique = (table, column, errorMsg) => async (context) => {
+  const check = context.data[column];
+  if (!check) {
+    return context;
+  }
+
+  const query = {};
+  query[column] = check;
+  const results = await context.app.service(table).find(query);
+  if (results.data.length > 0) {
+    throw new Error(errorMsg);
+  }
+
+  return context;
+};
 
 module.exports = {
   before: {
     all: [],
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
-    create: [hashPassword('password'), verifyHooks.addVerification()],
+    create: [hashPassword('password'), unique('users', 'email', 'Email is already used.'), verifyHooks.addVerification()],
     // Don't allow any updating from external calls
     update: [disallow('external')],
     // Don't allow external calls to change verification fields

@@ -2,11 +2,11 @@
   <form @submit.prevent="loginWithCreds">
       <h2>Login</h2>
       <div class="input-field">
-        <input v-model="credentials.email" id="email" type="text">
+        <input v-model="credentials.email" id="email" type="email" required>
         <label for="email">Email</label>
       </div>
       <div class="input-field">
-        <input v-model="credentials.password" id="password" type="password">
+        <input v-model="credentials.password" id="password" type="password" required>
         <label for="password">Password</label>
       </div>
       <p class="right-align">
@@ -17,12 +17,11 @@
           Login
         </button>
       </div>
-      <p class="red-text" v-if="error.length > 0">{{ error }}</p>
   </form>
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive } from 'vue';
 
 import { useStore } from '@/store';
 import { useRouter } from '@/router';
@@ -38,18 +37,17 @@ export default {
       password: '',
     });
 
-    const error = ref('');
-
     async function loginWithCreds() {
-      error.value = '';
-
       const errOrUser = await dispatch(actions.LOGIN_WITH_CREDENTIALS, {
         email: credentials.email,
         password: credentials.password,
       });
 
       if (errOrUser.error) {
-        error.value = errOrUser.error.message;
+        window.M.toast({
+          html: errOrUser.error.message,
+          classes: 'red',
+        });
         return;
       }
 
@@ -59,7 +57,6 @@ export default {
 
     return {
       credentials,
-      error,
       loginWithCreds,
     };
   },

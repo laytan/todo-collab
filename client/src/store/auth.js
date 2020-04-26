@@ -10,9 +10,15 @@ export default {
   actions: {
     async [actions.REGISTER]({ commit }, user) {
       commit(mutations.SET_LOADING, true);
-      const res = await services.users.create(user);
-      commit(mutations.SET_USER, res);
-      commit(mutations.SET_LOADING, false);
+      try {
+        const res = await services.users.create(user);
+        commit(mutations.SET_USER, res);
+        return { error: null, user: res };
+      } catch (error) {
+        return { error: error.message, user: null };
+      } finally {
+        commit(mutations.SET_LOADING, false);
+      }
     },
     async [actions.LOGIN_WITH_CREDENTIALS]({ commit }, user) {
       try {
