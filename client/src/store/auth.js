@@ -42,5 +42,42 @@ export default {
           return false;
         });
     },
+    async [actions.VERIFY_EMAIL]({ commit }, token) {
+      commit(mutations.SET_LOADING, true);
+      try {
+        const user = await services.authManagement.create({
+          action: 'verifySignupLong',
+          value: token,
+        });
+        return { user, error: null };
+      } catch (e) {
+        return { user: null, error: e.message };
+      } finally {
+        commit(mutations.SET_LOADING, false);
+      }
+    },
+    [actions.SEND_RESET_PASSWORD](_, email) {
+      try {
+        services.authManagement.create({
+          action: 'sendResetPwd',
+          value: { email },
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
+    [actions.RESET_PASSWORD](_, { token, password }) {
+      try {
+        services.authManagement.create({
+          action: 'resetPwdLong',
+          value: {
+            token,
+            password,
+          },
+        });
+      } catch (e) {
+        console.error(e);
+      }
+    },
   },
 };

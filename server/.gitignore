@@ -110,3 +110,6 @@ $RECYCLE.BIN/
 lib/
 data/
 test/data/
+*.env
+.env.*
+!.env.example

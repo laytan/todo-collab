@@ -1,23 +1,24 @@
 <template>
-  <!-- <div> -->
-    <form @submit.prevent="loginWithCreds">
-        <h2>Login</h2>
-        <div class="input-field">
-          <input v-model="credentials.email" id="email" type="text" class="validate">
-          <label for="email">Email</label>
-        </div>
-        <div class="input-field">
-          <input v-model="credentials.password" id="password" type="password" class="validate">
-          <label for="password">Password</label>
-        </div>
-        <div class="row">
-          <button class="btn waves-effect waves-light blue col s12" type="submit" name="action">
-            Login
-          </button>
-        </div>
-        <p class="red-text" v-if="error.length > 0">{{ error }}</p>
-    </form>
-  <!-- </div> -->
+  <form @submit.prevent="loginWithCreds">
+      <h2>Login</h2>
+      <div class="input-field">
+        <input v-model="credentials.email" id="email" type="text">
+        <label for="email">Email</label>
+      </div>
+      <div class="input-field">
+        <input v-model="credentials.password" id="password" type="password">
+        <label for="password">Password</label>
+      </div>
+      <p class="right-align">
+        <router-link to="/reset">Forgot Password?</router-link>
+      </p>
+      <div class="row">
+        <button class="btn waves-effect waves-light blue col s12" type="submit" name="action">
+          Login
+        </button>
+      </div>
+      <p class="red-text" v-if="error.length > 0">{{ error }}</p>
+  </form>
 </template>
 
 <script>

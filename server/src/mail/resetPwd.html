@@ -1,0 +1,72 @@
+<head>
+  <link rel="stylesheet" type="text/css" href="mail.css" />
+</head>
+
+<body class="">
+  <span class="preheader">
+    The password for {{ user.email }} has been reset.
+  </span>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+      <td>&nbsp;</td>
+      <td class="container">
+        <div class="content">
+          <!-- START CENTERED WHITE CONTAINER -->
+          <table role="presentation" class="main">
+            <!-- START MAIN CONTENT AREA -->
+            <tr>
+              <td class="wrapper">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td>
+                      <p>Hello {{ user.email }},</p>
+                      <p>
+                        Your password has been reset on Todo Collab.
+                      </p>
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <tbody>
+                          <tr>
+                            <td align="left">
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <a href="{{ clientURL }}/authentication" target="_blank">Log in!</a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- END MAIN CONTENT AREA -->
+          </table>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <!-- START FOOTER -->
+          <div class="footer">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="content-block">
+                  <span class="apple-link">&copy; 2020 Todo Collab</span>
+                  <br />
+                  Do you not have an account on Todo Collab or want to
+                  unsubscribe to all emails? <a href="{{ unsubscribeURL }}">Unsubscribe</a>.
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- END FOOTER -->
+        </div>
+      </td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</body>

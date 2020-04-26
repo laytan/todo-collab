@@ -52,6 +52,16 @@ export const router = createRouter({
       beforeEnter: redirectIfNotLoggedIn,
       component: () => import(/* webpackChunkName: "list" */ './views/List.vue'),
     },
+    {
+      path: '/verify',
+      name: 'verify',
+      component: () => import(/* webpackChunkName: "verify" */ './views/Verify.vue'),
+    },
+    {
+      path: '/reset',
+      name: 'reset',
+      component: () => import(/* webpackChunkName: "reset" */ './views/Reset.vue'),
+    },
   ],
 });
 

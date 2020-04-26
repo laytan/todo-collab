@@ -13,4 +13,5 @@ export const services = {
   users: client.service('users'),
   todolists: client.service('todolists'),
   todos: client.service('todos'),
+  authManagement: client.service('authManagement'),
 };

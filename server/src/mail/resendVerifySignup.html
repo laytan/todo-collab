@@ -1,0 +1,78 @@
+<head>
+  <link rel="stylesheet" type="text/css" href="mail.css" />
+</head>
+
+<body class="">
+  <span class="preheader">
+    Email verification for Todo Collab.
+  </span>
+  <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="body">
+    <tr>
+      <td>&nbsp;</td>
+      <td class="container">
+        <div class="content">
+          <!-- START CENTERED WHITE CONTAINER -->
+          <table role="presentation" class="main">
+            <!-- START MAIN CONTENT AREA -->
+            <tr>
+              <td class="wrapper">
+                <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td>
+                      <p>Hello {{ user.email }},</p>
+                      <p>
+                        This email is send to verify that you created an account on <a href="{{ clientURL }}">Todo Collab.</a>
+                      </p>
+                      <p>
+                        If you created an account please verify your email by clicking on the button below.
+                      </p>
+                      <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="btn btn-primary">
+                        <tbody>
+                          <tr>
+                            <td align="left">
+                              <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+                                <tbody>
+                                  <tr>
+                                    <td>
+                                      <a href="{{ tokenLink }}" target="_blank">Verify your email</a>
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </table>
+                            </td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <p>
+                        If that does not work please copy the following link into your browser:<br> {{ tokenLink }}
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- END MAIN CONTENT AREA -->
+          </table>
+          <!-- END CENTERED WHITE CONTAINER -->
+
+          <!-- START FOOTER -->
+          <div class="footer">
+            <table role="presentation" border="0" cellpadding="0" cellspacing="0">
+              <tr>
+                <td class="content-block">
+                  <span class="apple-link">&copy; 2020 Todo Collab</span>
+                  <br />
+                  Do you not have an account on Todo Collab or want to
+                  unsubscribe to all emails? <a href="{{ unsubscribeURL }}">Unsubscribe</a>.
+                </td>
+              </tr>
+            </table>
+          </div>
+          <!-- END FOOTER -->
+        </div>
+      </td>
+      <td>&nbsp;</td>
+    </tr>
+  </table>
+</body>
