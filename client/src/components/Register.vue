@@ -2,6 +2,10 @@
   <form @submit.prevent="registerWithCreds">
     <h2>Register</h2>
     <div class="input-field">
+      <input type="text" id="username" v-model="credentials.username" required>
+      <label for="username" class="grey-text text-darken-4">Username</label>
+    </div>
+    <div class="input-field">
       <input v-model="credentials.email" id="email" type="email" required>
       <label for="email" class="grey-text text-darken-4">Email</label>
     </div>
@@ -21,21 +25,21 @@
 import { reactive } from 'vue';
 
 import { useStore } from '@/store';
-import { useRouter } from '@/router';
 import { actions } from '@/types';
-import { redirectedFromOr } from '@/helpers';
 
 export default {
   setup() {
     const { dispatch } = useStore();
 
     const credentials = reactive({
+      username: '',
       email: '',
       password: '',
     });
 
     async function registerWithCreds() {
       const res = await dispatch(actions.REGISTER, {
+        username: credentials.username,
         email: credentials.email,
         password: credentials.password,
       });
@@ -48,7 +52,13 @@ export default {
         return;
       }
 
-      redirectedFromOr('/', useRouter());
+      credentials.username = '';
+      credentials.email = '';
+      credentials.password = '';
+      window.M.toast({
+        html: 'Account has been registered.',
+        classes: 'green',
+      });
     }
 
     return {
