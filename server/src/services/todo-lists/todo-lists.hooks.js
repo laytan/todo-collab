@@ -12,6 +12,20 @@ const todoListItemsSchema = {
     nameAs: 'items',
     parentField: 'id',
     childField: 'list_id',
+    useInnerPopulate: true,
+  },
+};
+
+const todoListEventsSchema = {
+  include: {
+    service: 'events',
+    nameAs: 'events',
+    parentField: 'id',
+    childField: 'id_in_service',
+    useInnerPopulate: true,
+    query: {
+      service: 'todo-lists',
+    },
   },
 };
 
@@ -28,7 +42,7 @@ module.exports = {
 
   after: {
     all: [],
-    find: [populate({ schema: todoListItemsSchema }), convertPopulateOutputToArr('items')],
+    find: [populate({ schema: todoListItemsSchema }), populate({ schema: todoListEventsSchema }), convertPopulateOutputToArr('items'), convertPopulateOutputToArr('events')],
     get: [populate({ schema: todoListItemsSchema }), convertPopulateOutputToArr('items')],
     create: [addAccessForOwner, registerEvent({})],
     update: [],

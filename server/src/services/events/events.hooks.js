@@ -1,5 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { disallow } = require('feathers-hooks-common');
+const { disallow, populate } = require('feathers-hooks-common');
+
+const eventsEmitterSchema = {
+  include: {
+    service: 'users',
+    nameAs: 'emitter',
+    parentField: 'emitter_id',
+    childField: 'id',
+  },
+};
 
 module.exports = {
   before: {
@@ -14,7 +23,7 @@ module.exports = {
 
   after: {
     all: [],
-    find: [],
+    find: [populate({ schema: eventsEmitterSchema })],
     get: [],
     create: [],
     update: [],

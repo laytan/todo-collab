@@ -13,7 +13,7 @@
         </div>
         <div class="col s3">
           <div>
-            <ul id="list-accordion" class="collapsible">
+            <ul ref="listAccordion" id="list-accordion" class="collapsible">
               <li>
                 <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
                     Users
@@ -67,7 +67,23 @@
                   </div>
                 </div>
                 <div class="collapsible-body cyan lighten-5">
-
+                  <h4>List</h4>
+                  <ul>
+                    <li v-for="event in list.events" :key="event.id">
+                      {{ event.emitter.username }}
+                      {{ event.type.toLowerCase() }}d the list. <br>
+                      <small>{{ new Date(event.created_at).toLocaleString() }}</small>
+                    </li>
+                  </ul>
+                  <h4>Items</h4>
+                  <ul v-for="item in itemsWithEvents" :key="item.id">
+                    <h5>{{ item.name }}</h5>
+                    <li v-for="event in item.events" :key="event.id">
+                      {{ event.emitter.username }}
+                      {{ event.type.toLowerCase() }}d the item. <br>
+                      <small>{{ new Date(event.created_at).toLocaleString() }}</small>
+                    </li>
+                  </ul>
                 </div>
               </li>
             </ul>
@@ -79,7 +95,7 @@
 </template>
 
 <script>
-import { onMounted, ref, computed } from 'vue';
+import { watch, ref, computed } from 'vue';
 
 import { mapState } from '@/store';
 import { useRouter } from '@/router';
@@ -97,11 +113,18 @@ export default {
     const listId = parseInt(router.currentRoute.value.params.id, 10);
     const currentList = computed(() => lists.value.filter((list) => list.id === listId)[0]);
 
+    const itemsWithEvents = computed(
+      () => currentList.value.items.filter((item) => item.events.length > 0),
+    );
+
     const giveAccessEmail = ref('');
 
-    onMounted(async () => {
-      const acc = document.getElementById('list-accordion');
-      window.M.Collapsible.init(acc);
+    const listAccordion = ref(null);
+    watch(listAccordion, (val) => {
+      if (!val) {
+        return;
+      }
+      window.M.Collapsible.init(val);
     });
 
     // TODO: As state action, need f5 to see changes now
@@ -124,6 +147,8 @@ export default {
       revokeAccess,
       giveAccess,
       list: currentList,
+      itemsWithEvents,
+      listAccordion,
     };
   },
 };
