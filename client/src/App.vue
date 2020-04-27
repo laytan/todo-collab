@@ -1,8 +1,8 @@
 <template>
   <div id="app">
     <router-view />
-    <div class="loading-spinner">
-      <i class="material-icons" v-if="loading">autorenew</i>
+    <div class="loading-spinner" v-if="loading">
+      <i class="material-icons">autorenew</i>
     </div>
   </div>
 </template>
