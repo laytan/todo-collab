@@ -6,7 +6,7 @@
           <div v-if="list.name">
             <h1>{{ list.name }}</h1>
             <p>{{ list.description }}</p>
-            <p>{{ list.author }}</p>
+            <p>{{ list.owner_id }}</p>
           </div>
 
           <todo-list :list="list" v-if="list.name"></todo-list>
@@ -94,8 +94,8 @@ export default {
     const lists = mapState('lists');
 
     const router = useRouter();
-    const listId = router.currentRoute.value.params.id;
-    const currentList = computed(() => lists.value.filter((list) => list._id === listId)[0]);
+    const listId = parseInt(router.currentRoute.value.params.id, 10);
+    const currentList = computed(() => lists.value.filter((list) => list.id === listId)[0]);
 
     const giveAccessEmail = ref('');
 
@@ -107,14 +107,14 @@ export default {
     // TODO: As state action, need f5 to see changes now
     // eslint-disable-next-line
     async function revokeAccess(email) {
-      // await services.todolists.patch(list._id, {
+      // await services.todolists.patch(list.id, {
       //   revoke: email,
       // });
     }
 
     // TODO: As state action, need f5 to see changes now
     async function giveAccess() {
-      // await services.todolists.patch(list._id, {
+      // await services.todolists.patch(list.id, {
       //   access: state.giveAccessEmail,
       // });
     }

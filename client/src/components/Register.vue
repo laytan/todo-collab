@@ -48,6 +48,7 @@ export default {
         window.M.toast({
           html: res.error,
           classes: 'red',
+          displayLength: 999999,
         });
         return;
       }

@@ -6,9 +6,9 @@
       <progress-bar v-if="list.items" :items="list.items"/>
       <list-item
         v-for="item in listItems"
-        :key="item._id"
+        :key="item.id"
         :item-data="item"
-        @mousedown="(e) => mouseDownItem(item._id, e)"
+        @mousedown="(e) => mouseDownItem(item.id, e)"
       />
     <div class="buttons flex between">
       <button class="btn-floating btn-large waves-effect waves-light red lighten-3">
@@ -48,14 +48,14 @@ function useDraggableOrder(itemsProp) {
   // The currently dragging element
   const dragging = ref(false);
 
-  // Access with item._id to get the DOM element
+  // Access with item.id to get the DOM element
   let itemIdToElMap = {};
   onMounted(() => {
     // Keep itemIdToElMap up to date when items changes by adding or removing items for example
     watchEffect(() => {
       itemIdToElMap = {};
       items.value.forEach((item) => {
-        itemIdToElMap[item._id] = document.querySelector(`[data-id="${item._id}"]`);
+        itemIdToElMap[item.id] = document.querySelector(`[data-id="${item.id}"]`);
       });
     });
   });
@@ -73,25 +73,29 @@ function useDraggableOrder(itemsProp) {
     itemIdToElMap[dragging.value].style.left = `${newX}px`;
     itemIdToElMap[dragging.value].style.top = `${newY}px`;
 
+    if (items.value.length === 1) {
+      return;
+    }
+
     // Calculate the closest element to the current position of the mouse (dragging element)
     const closest = items.value.reduce((aggr, curr) => {
       // Don't check the dragging element
-      if (curr._id === dragging.value) return aggr;
+      if (curr.id === dragging.value) return aggr;
 
       // Remove classes here instead of looping again after this
-      itemIdToElMap[curr._id].classList.remove('dragging-bottom', 'dragging-top');
+      itemIdToElMap[curr.id].classList.remove('dragging-bottom', 'dragging-top');
 
       // If it is the first iteration
       if (!aggr) return curr;
 
-      const offsetWithAggr = Math.abs(itemIdToElMap[aggr._id].offsetTop - y.value);
-      const offsetWithCurr = Math.abs(itemIdToElMap[curr._id].offsetTop - y.value);
+      const offsetWithAggr = Math.abs(itemIdToElMap[aggr.id].offsetTop - y.value);
+      const offsetWithCurr = Math.abs(itemIdToElMap[curr.id].offsetTop - y.value);
       return (offsetWithAggr > offsetWithCurr) ? curr : aggr;
     }, null);
 
     // Add class to show position of dragging element if it where to be dropped
-    const topOrBottomClass = ((itemIdToElMap[closest._id].offsetTop - y.value) < 0) ? 'dragging-bottom' : 'dragging-top';
-    itemIdToElMap[closest._id].classList.add(topOrBottomClass);
+    const topOrBottomClass = ((itemIdToElMap[closest.id].offsetTop - y.value) < 0) ? 'dragging-bottom' : 'dragging-top';
+    itemIdToElMap[closest.id].classList.add(topOrBottomClass);
   });
 
 
@@ -99,7 +103,7 @@ function useDraggableOrder(itemsProp) {
    * Sorts the items by their offset and assigns the right order to them
    */
   function reOrder(toOrder) {
-    toOrder.sort((a, b) => itemIdToElMap[a._id].offsetTop - itemIdToElMap[b._id].offsetTop);
+    toOrder.sort((a, b) => itemIdToElMap[a.id].offsetTop - itemIdToElMap[b.id].offsetTop);
     toOrder.forEach((item, i) => {
       // If the order is already fine, return
       if (item.order === i) return;
@@ -109,7 +113,7 @@ function useDraggableOrder(itemsProp) {
       // Update the order on the server and other clients
       // TODO: Method to update the whole list, instead of multiple listitem requests
       dispatch(actions.PATCH_ITEM, {
-        id: item._id,
+        id: item.id,
         patchData: {
           order: item.order,
         },
@@ -200,7 +204,7 @@ export default {
     const { dispatch } = useStore();
 
     function addItem() {
-      dispatch(actions.ADD_ITEM_TO_LIST, props.list._id);
+      dispatch(actions.ADD_ITEM_TO_LIST, props.list.id);
     }
 
     // Set up for the draggable reordering of items

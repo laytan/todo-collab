@@ -1,15 +1,11 @@
 // Initializes the `users` service on path `/users`
 const { Users } = require('./users.class');
-const createModel = require('../../models/users.model');
 const hooks = require('./users.hooks');
 
-module.exports = function users(app) {
-  const Model = createModel(app);
-  const paginate = app.get('paginate');
-
+module.exports = (app) => {
   const options = {
-    Model,
-    paginate,
+    Model: app.get('knexClient'),
+    paginate: app.get('paginate'),
   };
 
   // Initialize our service with any options it requires
@@ -17,6 +13,5 @@ module.exports = function users(app) {
 
   // Get our initialized service so that we can register hooks
   const service = app.service('users');
-
   service.hooks(hooks);
 };

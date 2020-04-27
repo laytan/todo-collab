@@ -12,9 +12,7 @@ export default {
   },
   actions: {
     [actions.INIT]({ state, commit }) {
-      console.log('initializing');
       if (state.isInitialized) {
-        console.log('already initialized');
         return;
       }
 

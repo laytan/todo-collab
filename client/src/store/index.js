@@ -36,12 +36,9 @@ export function useStore() {
 
 export function mapState(states) {
   const mappedState = [];
+  const arrayStates = Array.isArray(states) ? states : [states];
 
-  if (!Array.isArray(states)) {
-    states = [states];
-  }
-
-  states.forEach((state) => {
+  arrayStates.forEach((state) => {
     mappedState.push(computed(() => store.state[state]));
   });
 

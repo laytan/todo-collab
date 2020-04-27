@@ -1,29 +1,21 @@
 <template>
-  <div :data-id="itemData._id" class="todolist-item section z-depth-2">
+  <div :data-id="itemData.id" class="todolist-item section z-depth-2">
     <item-label :label-color="itemData.color" :label-text="itemData.label" />
     <div class="todolist-item-body">
-      <name :todoId="itemData._id" :name="itemData.name"/>
+      <name :todoId="itemData.id" :name="itemData.name"/>
       <description
-        :todoId="itemData._id"
+        :todoId="itemData.id"
         :description="itemData.description"
       />
       <div class="item-details" @click="showMore = !showMore">
         <item-detail
-        v-if="itemData.done"
-        :date="itemData.doneAt" :user="itemData.doneBy" icon="check" tooltip="Completed" />
-        <item-detail
-        v-if="showMore || !itemData.done"
-        :date="itemData.lastEditedAt"
-        :user="itemData.lastEditedBy"
-        icon="edit" tooltip="Last edit" />
-        <item-detail
-        v-if="showMore"
-        :date="itemData.createdAt" :user="itemData.author" icon="add" tooltip="Created" />
+        v-if="itemData.completed_at"
+        :date="itemData.completed_at" :user="itemData.done_by" icon="check" tooltip="Completed" />
       </div>
     </div>
     <div class="checkbox-wrapper flex column between">
       <label>
-        <input type="checkbox" class="filled-in" :checked="itemData.done"
+        <input type="checkbox" class="filled-in" :checked="itemData.completed_at"
         @click="toggleDone" />
           <!-- This span is required -->
         <span class="checkbox-span"></span>
@@ -62,16 +54,15 @@ export default {
 
     // TODO: implement
     function removeItem() {
-      console.log(props.itemData);
     }
 
     async function toggleDone() {
-      props.itemData.done = !props.itemData.done;
+      props.itemData.completed_at = props.itemData.completed_at ? null : new Date();
 
       dispatch(actions.PATCH_ITEM, {
-        id: props.itemData._id,
+        id: props.itemData.id,
         patchData: {
-          done: props.itemData.done,
+          completed: !!props.itemData.completed_at,
         },
       });
     }

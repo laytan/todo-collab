@@ -7,11 +7,11 @@ export default {
       state.lists.push(list);
     },
     [mutations.REMOVE_LIST](state, list) {
-      state.lists = state.lists.filter((sList) => sList._id !== list._id);
+      state.lists = state.lists.filter((sList) => sList.id !== list.id);
     },
     [mutations.ADD_ITEM_TO_LIST](state, item) {
       state.lists.forEach((list) => {
-        if (list._id !== item.listId) {
+        if (list.id !== item.listId) {
           return;
         }
 
@@ -20,29 +20,17 @@ export default {
     },
   },
   actions: {
-    async [actions.ADD_LIST]({ commit }, listData) {
+    [actions.ADD_LIST]({ commit }, { name, description, password }) {
       commit(mutations.SET_LOADING, true);
-      const res = await services.todolists.create(listData);
-      commit(mutations.SET_LOADING, false);
-      // TODO: error handling
-      console.log(res);
-      // commit(ADD_LIST, res);
-      return res;
+      return services.todolists.create({ name, description, password })
+        .finally(() => commit(mutations.SET_LOADING, false));
     },
     async [actions.ADD_ITEM_TO_LIST]({ commit }, listId) {
       commit(mutations.SET_LOADING, true);
       await services.todos.create({
-        listId,
-        order: 0,
+        list_id: listId,
         name: 'Write your to-do here',
-        label: '',
         description: 'Write your description here',
-        color: 'rgba(0,0,0,1)',
-        createdAt: Date.now(),
-        lastEditedAt: Date.now(),
-        doneAt: Date.now(),
-        doneBy: '',
-        done: false,
       });
       // commit(ADD_ITEM_TO_CURRENT_LIST, item);
       commit(mutations.SET_LOADING, false);
@@ -51,7 +39,7 @@ export default {
     async [actions.SYNC_LISTS]({ commit }) {
       commit(mutations.SET_LOADING, true);
       const lists = await services.todolists.find();
-      lists.data.forEach((list) => commit(mutations.ADD_LIST, list));
+      lists.forEach((list) => commit(mutations.ADD_LIST, list));
       commit(mutations.SET_LOADING, false);
     },
   },

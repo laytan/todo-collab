@@ -6,9 +6,8 @@
       @click="openEditing"
     >{{ internalName }}</div>
     <div v-show="editing">
-      <input @blur="cancel" class="input-field inline" type="text" v-model="internalName" />
+      <input @blur="save" class="input-field inline" type="text" v-model="internalName" />
       <button @click="save" class="waves-effect waves-green green-text btn-flat">Save</button>
-      <button @click="cancel" class="waves-effect waves-red red-text btn-flat">Cancel</button>
     </div>
   </div>
 </template>
@@ -21,7 +20,7 @@ import { actions } from '@/types';
 export default {
   props: {
     todoId: {
-      type: String,
+      type: Number,
       required: true,
     },
     name: String,
@@ -47,15 +46,9 @@ export default {
       closeEditing();
     }
 
-    function cancel() {
-      // TODO: implement
-      closeEditing();
-    }
-
     return {
       editing,
       save,
-      cancel,
       openEditing,
       internalName,
     };

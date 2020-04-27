@@ -16,7 +16,10 @@ import { ref, computed } from 'vue';
 
 export default {
   props: {
-    labelColor: String,
+    labelColor: {
+      type: String,
+      default: '#ddd',
+    },
     labelText: String,
   },
   setup(props) {
@@ -24,6 +27,10 @@ export default {
 
     const textColor = computed(() => {
       let calculationColor = props.labelColor;
+      if (!calculationColor) {
+        return undefined;
+      }
+
       // Variables for red, green, blue values
       let r;
       let g;

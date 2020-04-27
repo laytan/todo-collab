@@ -1,5 +1,14 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { convertCompleted } = require('../../hooks');
+const { populate } = require('feathers-hooks-common');
+
+const userHasAccessListSchema = {
+  include: {
+    service: 'todo-lists',
+    nameAs: 'todoList',
+    parentField: 'list_id',
+    childField: 'id',
+  },
+};
 
 module.exports = {
   before: {
@@ -7,13 +16,13 @@ module.exports = {
     find: [],
     get: [],
     create: [],
-    update: [convertCompleted],
-    patch: [convertCompleted],
+    update: [],
+    patch: [],
     remove: [],
   },
 
   after: {
-    all: [],
+    all: [populate({ schema: userHasAccessListSchema })],
     find: [],
     get: [],
     create: [],

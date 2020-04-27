@@ -10,7 +10,9 @@
 <script>
 export default {
   props: {
-    date: Number,
+    date: {
+      required: true,
+    },
     user: String,
     icon: String,
     tooltip: String,

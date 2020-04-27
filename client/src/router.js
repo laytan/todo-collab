@@ -5,7 +5,7 @@ import { actions } from '@/types';
 
 function redirectIfLoggedIn(to, from, next) {
   const user = mapState('user');
-  if (user.value._id) {
+  if (user.value.id) {
     next('/');
   } else {
     next();
@@ -14,7 +14,7 @@ function redirectIfLoggedIn(to, from, next) {
 
 async function redirectIfNotLoggedIn(to, from, next) {
   const user = mapState('user');
-  if (user.value._id) {
+  if (user.value.id) {
     next();
   } else {
     next('/authentication');

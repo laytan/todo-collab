@@ -8,7 +8,7 @@
     </form>
     <div v-if="createdTodo.name">
       <p>Todolist {{ createdTodo.name }} has been created!</p>
-      <router-link :to="{ name: 'list', params: { id: createdTodo._id }}">Link</router-link>
+      <router-link :to="{ name: 'list', params: { id: createdTodo.id }}">Link</router-link>
       <p>Give this link and the password to your friends / collegues for them to join! </p>
     </div>
   </div>
@@ -17,14 +17,12 @@
 <script>
 import { reactive, ref } from 'vue';
 
-import { useStore, mapState } from '@/store';
+import { useStore } from '@/store';
 import { actions } from '@/types';
 
 export default {
   setup() {
     const { dispatch } = useStore();
-
-    const user = mapState('user');
 
     const todo = reactive({
       name: '',
@@ -34,17 +32,14 @@ export default {
 
     const createdTodo = ref({});
 
-    async function create() {
-      const res = await dispatch(actions.ADD_LIST, {
+    function create() {
+      dispatch(actions.ADD_LIST, {
         name: todo.name,
         description: todo.description,
         password: todo.password,
-        access: [
-          user.value.email,
-        ],
-      });
-      console.log(res);
-      createdTodo.value = res;
+      })
+        .then((list) => { createdTodo.value = list; })
+        .catch(console.error);
     }
 
     return {

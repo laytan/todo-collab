@@ -4,28 +4,10 @@ const {
   hashPassword, protect,
 } = require('@feathersjs/authentication-local').hooks;
 const {
-  disallow, iff, isProvider, preventChanges,
+  disallow, iff, isProvider, preventChanges, discard,
 } = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
-
-/**
- * Set a unique contraint
- */
-const unique = (table, column, errorMsg) => async (context) => {
-  const check = context.data[column];
-  if (!check) {
-    return context;
-  }
-
-  const query = {};
-  query[column] = check;
-  const results = await context.app.service(table).find({ query });
-  if (results.data.length > 0) {
-    throw new Error(errorMsg);
-  }
-
-  return context;
-};
+const { stringifyVerifyChanges, unique } = require('../../hooks');
 
 module.exports = {
   before: {
@@ -37,6 +19,9 @@ module.exports = {
       unique('users', 'username', 'Username is already in use.'),
       unique('users', 'email', 'Email is already in use.'),
       verifyHooks.addVerification(),
+      stringifyVerifyChanges,
+      // FIXME: What are these 0 and 1 keys?
+      discard('0', '1'),
     ],
     // Don't allow any updating from external calls
     update: [disallow('external')],
@@ -58,6 +43,9 @@ module.exports = {
         hashPassword('password'),
         authenticate('jwt'),
       ),
+      // FIXME: What are these 0 and 1 keys?
+      discard('0', '1'),
+      stringifyVerifyChanges,
     ],
     remove: [authenticate('jwt')],
   },

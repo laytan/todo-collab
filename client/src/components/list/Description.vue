@@ -4,17 +4,16 @@
       v-show="!editing"
       class="todolist-item-description"
       @click="openEditing"
-    >{{ description }}</div>
+    >{{ internalDescription }}</div>
     <div v-show="editing">
       <textarea
-        @blur="cancel"
+        @blur="save"
         ref="textarea"
         v-model="internalDescription"
         class="materialize-textarea"
       >
       </textarea>
       <button @click="save" class="waves-effect waves-green green-text btn-flat">Save</button>
-      <button @click="cancel" class="waves-effect waves-red red-text btn-flat">Cancel</button>
     </div>
   </div>
 </template>
@@ -28,7 +27,7 @@ export default {
   props: {
     description: String,
     todoId: {
-      type: String,
+      type: Number,
       required: true,
     },
   },
@@ -60,15 +59,9 @@ export default {
       closeEditing();
     }
 
-    function cancel() {
-      // TODO: implement
-      closeEditing();
-    }
-
     return {
       editing,
       save,
-      cancel,
       openEditing,
       textarea,
       internalDescription,

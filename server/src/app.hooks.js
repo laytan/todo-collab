@@ -1,11 +1,6 @@
+const { logRequest } = require('./hooks');
+
 // Application hooks that run for every service
-
-const logRequest = async (context) => {
-  // eslint-disable-next-line no-console
-  console.log(`[${new Date().toLocaleTimeString()}] ${context.method.toUpperCase()} ${context.path}`);
-  return context;
-};
-
 module.exports = {
   before: {
     all: [logRequest],

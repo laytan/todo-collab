@@ -1,10 +1,10 @@
 const { Service } = require('feathers-knex');
 
-exports.Todos = class Todos extends Service {
+exports.UserHasAccess = class UserHasAccess extends Service {
   constructor(options) {
     super({
       ...options,
-      name: 'todos',
+      name: 'user_has_access',
     });
   }
 };
