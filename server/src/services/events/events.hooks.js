@@ -1,16 +1,15 @@
-// const { iff, isProvider } = require('feathers-hooks-common');
-const { logRequest } = require('./hooks');
+const { authenticate } = require('@feathersjs/authentication').hooks;
+const { disallow } = require('feathers-hooks-common');
 
-// Application hooks that run for every service
 module.exports = {
   before: {
-    all: [logRequest],
+    all: [authenticate('jwt')],
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: [],
+    create: [disallow('external')],
+    update: [disallow('external')],
+    patch: [disallow('external')],
+    remove: [disallow('external')],
   },
 
   after: {

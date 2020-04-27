@@ -4,6 +4,7 @@ const { populate } = require('feathers-hooks-common');
 const {
   addAccessForOwner, setUserId, convertPopulateOutputToArr,
 } = require('../../hooks');
+const { registerEvent } = require('../../hooks/events');
 
 const todoListItemsSchema = {
   include: {
@@ -29,7 +30,7 @@ module.exports = {
     all: [],
     find: [populate({ schema: todoListItemsSchema }), convertPopulateOutputToArr('items')],
     get: [populate({ schema: todoListItemsSchema }), convertPopulateOutputToArr('items')],
-    create: [addAccessForOwner],
+    create: [addAccessForOwner, registerEvent({})],
     update: [],
     patch: [],
     remove: [],
