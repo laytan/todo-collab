@@ -1,12 +1,13 @@
+const {
+  iff, isProvider, required, softDelete,
+} = require('feathers-hooks-common');
+const { Forbidden } = require('@feathersjs/errors');
+const { getIdsEffected, dependsOnMethod } = require('../helpers');
+
 // Sets the logged in user id as column
 const setUserId = (column) => (context) => {
   context.data[column] = context.params.user.id;
 };
-
-const addAccessForOwner = (context) => context.app.service('user-has-access').create({
-  user_id: context.result.owner_id,
-  list_id: context.result.id,
-}).then(() => context).catch((e) => e);
 
 /**
  * Enforce a unique contraint, col can be null
@@ -27,13 +28,6 @@ const unique = (table, column, errorMsg) => async (context) => {
   return context;
 };
 
-const stringifyVerifyChanges = (context) => {
-  if (context.data.verifyChanges) {
-    context.data.verifyChanges = JSON.stringify(context.data.verifyChanges);
-  }
-  return context;
-};
-
 const logRequest = async (context) => {
   // eslint-disable-next-line no-console
   console.log(`[${new Date().toLocaleTimeString()}] ${context.method.toUpperCase()} ${context.path}`);
@@ -48,60 +42,68 @@ const logResult = (context) => {
   return context;
 };
 
-/**
- * Makes sure populate hook output is an array.
- *
- * Populate normally return null on no items and an object on 1 item.
- *
- * Types: GET, FIND
- */
-const convertPopulateOutputToArr = (column) => (context) => {
-  const convert = (record) => {
-    if (!Array.isArray(record[column])) {
-      if (record[column] === null || record[column] === undefined) {
-        record[column] = [];
-      } else {
-        record[column] = [record[column]];
-      }
-    }
-    return record;
+
+const verifyOwner = (userIdColumn = 'user_id', getIds = getIdsEffected) => async (context) => {
+  // Get all ids to check on the service
+  const ids = getIds(context);
+  // Find all the ids where the owner is the user
+  const query = {
+    paginate: false,
+    query: {
+      id: { $in: ids },
+      [userIdColumn]: context.user.id,
+    },
   };
-
-  if (Array.isArray(context.result)) {
-    context.result = context.result.map(convert);
-    return context;
-  }
-
-  context.result = convert(context.result);
-  return context;
-};
-
-// Converts completed boolean into done_by and completed_at
-const convertCompleted = (context) => {
-  if (context.data.completed !== undefined) {
-    const { completed } = context.data;
-    delete context.data.completed;
-
-    if (completed) {
-      context.data.done_by_user_id = context.params.user.id;
-      context.data.completed_at = new Date();
-    } else {
-      context.data.done_by_user_id = null;
-      context.data.completed_at = null;
-    }
+  const records = await context.app.service(context.path).find(query);
+  // If these are not the same length one or more of the ids are not owned by user
+  if (!ids.length === records.length) {
+    throw new Forbidden('You do not own these records');
   }
 
   return context;
 };
 
+/**
+ * Gets the list id from specified column and checks if the list owner is that id
+ *
+ * @param {string} listIdColumn The column name for the id of the list to verify ownership for
+ */
+const verifyListOwner = (listIdColumn) => async (context) => {
+  const list = await dependsOnMethod(
+    context,
+    (listId) => context.app.service('todo-lists').get(listId),
+    listIdColumn,
+  );
+
+  if (list.owner.id !== context.user.id) {
+    throw new Forbidden('You are not the list owner.');
+  }
+
+  return context;
+};
+
+/**
+ * Requires given keys if the provider is external
+ *
+ * @param  {...any} args required keys
+ */
+const externalRequires = (...args) => iff(isProvider('external'), required(...args));
+
+/**
+ * Soft delete on status field
+ */
+const statusSoftDelete = softDelete({
+  deletedQuery: () => ({ status: { $ne: 0 } }),
+  removeData: () => ({ status: 0 }),
+});
 
 module.exports = {
   setUserId,
-  addAccessForOwner,
   unique,
-  stringifyVerifyChanges,
   logRequest,
   logResult,
-  convertPopulateOutputToArr,
-  convertCompleted,
+  externalRequires,
+  verifyOwner,
+  statusSoftDelete,
+  verifyListOwner,
 };

@@ -1,30 +1,48 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { populate } = require('feathers-hooks-common');
+const { populate, disallow } = require('feathers-hooks-common');
+const { verifyOwner, statusSoftDelete, verifyListOwner } = require('../../hooks');
 
-const userHasAccessListSchema = {
-  include: {
-    service: 'todo-lists',
-    nameAs: 'todoList',
-    parentField: 'list_id',
-    childField: 'id',
+const joinList = populate({
+  schema: {
+    include: {
+      service: 'todo-lists',
+      nameAs: 'todoList',
+      parentField: 'list_id',
+      childField: 'id',
+    },
   },
-};
+});
 
 module.exports = {
   before: {
-    all: [authenticate('jwt')],
-    find: [],
-    get: [],
-    create: [],
+    all: [
+      authenticate('jwt'),
+      statusSoftDelete,
+    ],
+    find: [
+      disallow('external'),
+    ],
+    get: [
+      disallow('external'),
+    ],
+    create: [
+      verifyListOwner('list_id'),
+    ],
     update: [],
-    patch: [],
-    remove: [],
+    patch: [
+      disallow('external'),
+    ],
+    remove: [
+      verifyOwner('granter_id'),
+    ],
   },
 
   after: {
-    all: [populate({ schema: userHasAccessListSchema })],
+    all: [],
     find: [],
-    get: [],
+    get: [
+      joinList,
+    ],
     create: [],
     update: [],
     patch: [],

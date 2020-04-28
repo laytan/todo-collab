@@ -1,3 +1,5 @@
+const helpers = require('../helpers');
+
 const methodToType = new Map([['find', 'READ'], ['get', 'READ'], ['create', 'CREATE'], ['update', 'UPDATE'], ['patch', 'UPDATE'], ['remove', 'DELETE']]);
 function methodToEventType(method) {
   return methodToType.get(method);
@@ -12,27 +14,12 @@ const dGetEmitter = ({ params: { user: { id } } }) => id;
 // Use CRUD types
 const dGetType = ({ method }) => methodToEventType(method);
 
-// Extract ids effected from default locations per method
-const dGetIdsEffected = (context) => {
-  let idsEffected = [];
-  if (['get', 'remove', 'update', 'patch'].includes(context.method)) {
-    idsEffected = [context.id];
-  } else if (context.method === 'create') {
-    idsEffected = [context.result.id];
-  } else {
-    // find
-    idsEffected = context.result.map((res) => res.id);
-  }
-  idsEffected.filter((id) => !!id);
-  return idsEffected;
-};
-
 const registerEvent = ({
   types = [],
   shouldAdd = dShouldAdd,
   getEmitterId = dGetEmitter,
   getType = dGetType,
-  getIdsEffected = dGetIdsEffected,
+  getIdsEffected = helpers.getIdsEffected,
 }) => async (context) => {
   // Return on internal calls
   if (!(context.params || {}).provider) {
@@ -70,5 +57,5 @@ const registerEvent = ({
 };
 
 module.exports = {
-  registerEvent, dGetType, dGetEmitter, dGetIdsEffected,
+  registerEvent, dGetType, dGetEmitter,
 };

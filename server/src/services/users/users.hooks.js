@@ -4,14 +4,23 @@ const {
   hashPassword, protect,
 } = require('@feathersjs/authentication-local').hooks;
 const {
-  disallow, iff, isProvider, preventChanges, discard,
+  iff, isProvider, preventChanges, discard,
 } = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
-const { stringifyVerifyChanges, unique } = require('../../hooks');
+const { unique, verifyOwner, statusSoftDelete } = require('../../hooks');
+
+const stringifyVerifyChanges = (context) => {
+  if (context.data.verifyChanges) {
+    context.data.verifyChanges = JSON.stringify(context.data.verifyChanges);
+  }
+  return context;
+};
 
 module.exports = {
   before: {
-    all: [],
+    all: [
+      statusSoftDelete,
+    ],
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
     create: [
@@ -23,8 +32,7 @@ module.exports = {
       // FIXME: What are these 0 and 1 keys?
       discard('0', '1'),
     ],
-    // Don't allow any updating from external calls
-    update: [disallow('external')],
+    update: [],
     // Don't allow external calls to change verification fields
     patch: [
       iff(
@@ -40,6 +48,7 @@ module.exports = {
           'resetShortToken',
           'resetExpires',
         ]),
+        verifyOwner('id'),
         hashPassword('password'),
         authenticate('jwt'),
       ),
@@ -47,7 +56,10 @@ module.exports = {
       discard('0', '1'),
       stringifyVerifyChanges,
     ],
-    remove: [authenticate('jwt')],
+    remove: [
+      authenticate('jwt'),
+      verifyOwner('id'),
+    ],
   },
 
   after: {

@@ -1,4 +1,3 @@
-const { authenticate } = require('@feathersjs/authentication').hooks;
 const { disallow, populate } = require('feathers-hooks-common');
 
 const eventsEmitterSchema = {
@@ -12,19 +11,19 @@ const eventsEmitterSchema = {
 
 module.exports = {
   before: {
-    all: [authenticate('jwt')],
+    all: [disallow('external')],
     find: [],
     get: [],
-    create: [disallow('external')],
-    update: [disallow('external')],
-    patch: [disallow('external')],
-    remove: [disallow('external')],
+    create: [],
+    update: [],
+    patch: [],
+    remove: [],
   },
 
   after: {
     all: [],
-    find: [populate({ schema: eventsEmitterSchema })],
-    get: [],
+    find: [],
+    get: [populate({ schema: eventsEmitterSchema })],
     create: [],
     update: [],
     patch: [],

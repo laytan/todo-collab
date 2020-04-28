@@ -1,4 +1,4 @@
-// const { iff, isProvider } = require('feathers-hooks-common');
+const { disallow } = require('feathers-hooks-common');
 const { logRequest } = require('./hooks');
 
 // Application hooks that run for every service
@@ -8,7 +8,7 @@ module.exports = {
     find: [],
     get: [],
     create: [],
-    update: [],
+    update: [disallow('external')],
     patch: [],
     remove: [],
   },
