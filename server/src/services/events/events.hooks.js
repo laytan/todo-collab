@@ -11,7 +11,9 @@ const eventsEmitterSchema = {
 
 module.exports = {
   before: {
-    all: [disallow('external')],
+    all: [
+      disallow('external'),
+    ],
     find: [],
     get: [],
     create: [],
@@ -23,7 +25,9 @@ module.exports = {
   after: {
     all: [],
     find: [],
-    get: [populate({ schema: eventsEmitterSchema })],
+    get: [
+      populate({ schema: eventsEmitterSchema }),
+    ],
     create: [],
     update: [],
     patch: [],

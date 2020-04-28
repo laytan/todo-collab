@@ -4,11 +4,15 @@ const { logRequest } = require('./hooks');
 // Application hooks that run for every service
 module.exports = {
   before: {
-    all: [logRequest],
+    all: [
+      logRequest,
+    ],
     find: [],
     get: [],
     create: [],
-    update: [disallow('external')],
+    update: [
+      disallow('external'),
+    ],
     patch: [],
     remove: [],
   },
