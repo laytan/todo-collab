@@ -1,7 +1,7 @@
 const {
   iff, isProvider, required, softDelete,
 } = require('feathers-hooks-common');
-const { Forbidden } = require('@feathersjs/errors');
+const { Forbidden, BadRequest } = require('@feathersjs/errors');
 const { getIdsEffected, dependsOnMethod } = require('../helpers');
 
 // Sets the logged in user id as column
@@ -75,7 +75,7 @@ const verifyListOwner = (listIdColumn) => async (context) => {
     listIdColumn,
   );
 
-  if (list.owner.id !== context.user.id) {
+  if (list.owner_id !== context.user.id) {
     throw new Forbidden('You are not the list owner.');
   }
 
@@ -97,6 +97,31 @@ const statusSoftDelete = softDelete({
   removeData: () => ({ status: 0 }),
 });
 
+/**
+ * Validate using Joi
+ *
+ * @param {Joi} schema Joi schema to validate against
+ * @param {boolean} requireAll Set fields to required
+ */
+const validate = (schema, { requireAll }) => async (context) => {
+  try {
+    const options = {
+      abortEarly: false,
+    };
+    if (requireAll) {
+      options.presence = 'required';
+    }
+
+    await schema.validateAsync(context.data, options);
+    return context;
+  } catch (e) {
+    const errors = e.details.map((err) => ({ [err.context.label]: err.message }));
+    throw new BadRequest('Request failed validation.', {
+      errors,
+    });
+  }
+};
+
 module.exports = {
   setUserId,
   unique,
@@ -106,4 +131,5 @@ module.exports = {
   verifyOwner,
   statusSoftDelete,
   verifyListOwner,
+  validate,
 };

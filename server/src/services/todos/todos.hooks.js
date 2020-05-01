@@ -99,7 +99,7 @@ module.exports = {
       joinEvents,
     ],
     create: [
-      registerEvent(),
+      registerEvent({}),
     ],
     update: [],
     patch: [

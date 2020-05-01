@@ -1,16 +1,19 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { hashPassword } = require('@feathersjs/authentication-local').hooks;
-const { populate, protect } = require('feathers-hooks-common');
+const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
+const { populate, iff, isProvider } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
-const { setUserId, statusSoftDelete, verifyListOwner } = require('../../hooks');
+const {
+  setUserId, statusSoftDelete, verifyListOwner, validate,
+} = require('../../hooks');
 const { registerEvent } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');
+const todoListsSchema = require('./todo-lists.schema');
 
 // Add a user_has_access record for the owner of the list
 const addAccessForOwner = (context) => context.app.service('user-has-access').create({
   user_id: context.result.owner_id,
   list_id: context.result.id,
-}).then(() => context).catch((e) => e);
+}).then(() => context);
 
 const joinEvents = populate({
   schema: {
@@ -56,7 +59,6 @@ const verifyListAccess = async (context) => {
   return context;
 };
 
-
 module.exports = {
   before: {
     all: [
@@ -65,14 +67,16 @@ module.exports = {
     ],
     find: [],
     get: [
-      verifyListAccess,
+      iff(isProvider('external'), verifyListAccess),
     ],
     create: [
+      validate(todoListsSchema, { requireAll: true }),
       hashPassword('password'),
       setUserId('owner_id'),
     ],
     update: [],
     patch: [
+      validate(todoListsSchema, {}),
       hashPassword('password'),
       verifyListAccess,
     ],
@@ -92,16 +96,16 @@ module.exports = {
     ],
     create: [
       addAccessForOwner,
-      registerEvent(),
+      registerEvent({}),
     ],
     update: [
-      registerEvent(),
+      registerEvent({}),
     ],
     patch: [
-      registerEvent(),
+      registerEvent({}),
     ],
     remove: [
-      registerEvent(),
+      registerEvent({}),
     ],
   },
 

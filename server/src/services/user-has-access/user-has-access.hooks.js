@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { populate, disallow } = require('feathers-hooks-common');
+const {
+  populate, disallow, iff, isProvider,
+} = require('feathers-hooks-common');
 const { verifyOwner, statusSoftDelete, verifyListOwner } = require('../../hooks');
 
 const joinList = populate({
@@ -26,7 +28,7 @@ module.exports = {
       disallow('external'),
     ],
     create: [
-      verifyListOwner('list_id'),
+      iff(isProvider('external'), verifyListOwner('list_id')),
     ],
     update: [],
     patch: [

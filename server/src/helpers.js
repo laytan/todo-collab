@@ -31,9 +31,14 @@ const getIdsEffected = (context, idField = 'id') => {
  * @param {Function} defaultHandler Function that is passed an id and returns the desired value
  * @param {Object} specificHandlers Object of functions per method to override the defaultHandler
  */
-const dependsOnMethod = async (context, defaultHandler, idField = 'id', specificHandlers) => {
+const dependsOnMethod = async (context, defaultHandler, idField = 'id', specificHandlers = {}) => {
   const ids = getIdsEffected(context, idField);
-  const handlers = ['create', 'get', 'find', 'update', 'patch', 'remove'].map((handler) => specificHandlers[handler] || defaultHandler);
+
+  const handlers = ['create', 'get', 'find', 'update', 'patch', 'remove'].reduce((aggr, handler) => {
+    aggr[handler] = specificHandlers[handler] || defaultHandler;
+    return aggr;
+  }, {});
+
   return Promise.all(ids.map(handlers[context.method]));
 };
 

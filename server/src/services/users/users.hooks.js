@@ -72,7 +72,10 @@ module.exports = {
     get: [],
     create: [
       (context) => {
-        accountService(context.app).notifier('resendVerifySignup', context.result);
+        // Don't send email when @localhost is in the email
+        if (context.result.email.indexOf('@localhost') === -1) {
+          accountService(context.app).notifier('resendVerifySignup', context.result);
+        }
       },
       verifyHooks.removeVerification(),
     ],
