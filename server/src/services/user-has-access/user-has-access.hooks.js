@@ -2,7 +2,8 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const {
   populate, disallow, iff, isProvider,
 } = require('feathers-hooks-common');
-const { verifyOwner, statusSoftDelete, verifyListOwner } = require('../../hooks');
+const { verifyOwner, statusSoftDelete, verifyListOwner, validate } = require('../../hooks');
+const userHasAccessSchema = require('./user-has-access.schema');
 
 const joinList = populate({
   schema: {
@@ -28,6 +29,7 @@ module.exports = {
       disallow('external'),
     ],
     create: [
+      validate(userHasAccessSchema, { requireAll: true, }),
       iff(isProvider('external'), verifyListOwner('list_id')),
     ],
     update: [],
