@@ -7,7 +7,8 @@ const {
   iff, isProvider, preventChanges, discard,
 } = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
-const { unique, verifyOwner, statusSoftDelete } = require('../../hooks');
+const { unique, verifyOwner, statusSoftDelete, validate } = require('../../hooks');
+const usersSchema = require('./users.schema');
 
 const stringifyVerifyChanges = (context) => {
   if (context.data.verifyChanges) {
@@ -24,6 +25,7 @@ module.exports = {
     find: [authenticate('jwt')],
     get: [authenticate('jwt')],
     create: [
+      validate(usersSchema, { requireAll: true }),
       hashPassword('password'),
       unique('users', 'username', 'Username is already in use.'),
       unique('users', 'email', 'Email is already in use.'),
@@ -35,6 +37,7 @@ module.exports = {
     update: [],
     // Don't allow external calls to change verification fields
     patch: [
+      validate(usersSchema, {}),
       iff(
         isProvider('external'),
         preventChanges(true, [
