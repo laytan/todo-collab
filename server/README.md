@@ -1,56 +1,92 @@
-# todo-collab
+# todo-collab server
 
-> 
+Every POST and PATCH request can return a badrequest when required data is not given, the body is empty or when the given data is invalid.
 
-## About
+**EXAMPLE BAD REQUEST RESPONSE**:
 
-This project uses [Feathers](http://feathersjs.com). An open source web framework for building modern real-time applications.
+This is the response you get on POST: /users when the password is not valid.
 
-## Getting Started
-
-Getting up and running is as easy as 1, 2, 3.
-
-1. Make sure you have [NodeJS](https://nodejs.org/) and [npm](https://www.npmjs.com/) installed.
-2. Install your dependencies
-
-    ```
-    cd path/to/todo-collab; npm install
-    ```
-
-3. Start your app
-
-    ```
-    npm start
-    ```
-
-## Testing
-
-Simply run `npm test` and all your tests in the `test/` directory will be run.
-
-## Scaffolding
-
-Feathers has a powerful command line interface. Here are a few things it can do:
-
-```
-$ npm install -g @feathersjs/cli          # Install Feathers CLI
-
-$ feathers generate service               # Generate a new Service
-$ feathers generate hook                  # Generate a new Hook
-$ feathers help                           # Show all commands
+```json
+{
+  "name": "BadRequest",
+  "message": "Request failed validation.",
+  "code": 400,
+  "className": "bad-request",
+  "data": {},
+  "errors": [
+    {
+      "password": "\"password\" length must be at least 6 characters long"
+    }
+  ]
+}
 ```
 
-## Help
+## Create an account
 
-For more information on all the things you can do with Feathers visit [docs.feathersjs.com](http://docs.feathersjs.com).
+Creates an account / registers / sign up
 
-## Changelog
+**URL**: `/users`
 
-__0.1.0__
+**METHOD**: `POST`
 
-- Initial release
+**AUTH REQUIRED**: NO
 
-## License
+**DATA CONSTRAINTS**
 
-Copyright (c) 2018
+Returns a 400 response when validation fails as mentioned in the beginning of this documentation.
 
-Licensed under the [MIT license](LICENSE).
+All fields are **required**
+
+```json
+{
+    "username": "[between 2 and 25 characters]",
+    "email": "[a valid email address]",
+    "password": "[non whitespace between 6 and 200 characters]"
+}
+```
+
+**DATA EXAMPLE**
+
+Register bob
+
+```json
+{
+    "username": "bob",
+    "email": "bob@example.com",
+    "password": "bobspassword"
+}
+```
+
+### SUCCESS RESPONSE
+
+**CODE**: `201 CREATED`
+
+**CONTENT EXAMPLE**
+
+```json
+{
+  "username": "bob",
+  "email": "bob@example.com",
+  "isVerified": 0,
+  "id": 1,
+  "created_at": "2020-05-14T21:34:34.000Z",
+  "updated_at": "2020-05-14T21:34:34.000Z",
+  "status": 1
+}
+```
+
+### ERROR RESPONSE
+
+Returns a 409 response when the username or email is already in use.
+
+**CODE**: `409 CONFLICT`
+
+```json
+{
+  "name": "Conflict",
+  "message": "[Username|email] is already in use.",
+  "code": 409,
+  "className": "conflict",
+  "errors": {}
+}
+```
