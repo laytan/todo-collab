@@ -1,9 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { populate, iff, isProvider } = require('feathers-hooks-common');
+const { populate, iff, isProvider, preventChanges } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');
-const { statusSoftDelete } = require('../../hooks');
+const { statusSoftDelete, validate } = require('../../hooks');
+const todosSchema = require('./todos.schema');
 
 // Converts completed boolean into done_by and completed_at
 const convertCompleted = (context) => {
@@ -37,7 +38,7 @@ const verifyListAccess = async (context) => {
     },
   );
 
-  const userHasAccesses = await Promise.all(lists.map((list) => context.app.service('user-has-access').find({ paginate: false, query: { user_id: context.user.id, list_id: list.id } })));
+  const userHasAccesses = await Promise.all(lists.map((list) => context.app.service('user-has-access').find({ paginate: false, query: { user_id: context.params.user.id, list_id: list.id } })));
 
   if (userHasAccesses.length !== lists.length) {
     throw new Forbidden('You do not have access to the list of this item.');
@@ -84,9 +85,13 @@ module.exports = {
     ],
     find: [],
     get: [],
-    create: [],
+    create: [
+      validate(todosSchema, { requireAll: true }),
+    ],
     update: [],
     patch: [
+      preventChanges(true, 'list_id'),
+      validate(todosSchema, {}),
       convertCompleted,
     ],
     remove: [],
