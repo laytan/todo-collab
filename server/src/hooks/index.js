@@ -104,6 +104,10 @@ const statusSoftDelete = softDelete({
  * @param {boolean} requireAll Set fields to required
  */
 const validate = (schema, { requireAll }) => async (context) => {
+  if (Object.keys(context.data).length === 0) {
+    throw new BadRequest('Empty body not allowed');
+  }
+
   try {
     const options = {
       abortEarly: false,
