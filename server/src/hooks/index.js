@@ -1,7 +1,7 @@
 const {
   iff, isProvider, required, softDelete,
 } = require('feathers-hooks-common');
-const { Forbidden, BadRequest } = require('@feathersjs/errors');
+const { Forbidden, BadRequest, Conflict } = require('@feathersjs/errors');
 const { getIdsEffected, dependsOnMethod } = require('../helpers');
 
 // Sets the logged in user id as column
@@ -22,7 +22,7 @@ const unique = (table, column, errorMsg) => async (context) => {
   query[column] = check;
   const results = await context.app.service(table).find({ query });
   if (results.data.length > 0) {
-    throw new Error(errorMsg);
+    throw new Conflict(errorMsg);
   }
 
   return context;
