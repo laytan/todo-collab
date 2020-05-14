@@ -43,8 +43,6 @@ Register bob
 
 **CODE**: `201 CREATED`
 
-**CONTENT EXAMPLE**
-
 ```json
 {
   "username": "bob",
@@ -111,8 +109,6 @@ Log in with bob
 ### SUCCESS RESPONSE
 
 **CODE**: `201 CREATED`
-
-**CONTENT EXAMPLE**
 
 ```json
 {
