@@ -20,7 +20,7 @@ const stringifyVerifyChanges = (context) => {
 };
 
 const verifySelf = (context) => {
-  const id = getIdsEffected(context)[0];
+  const id = parseInt(getIdsEffected(context)[0], 10);
   if (id !== context.params.user.id) {
     throw new Forbidden('You can only delete your own account.');
   }
@@ -66,9 +66,9 @@ module.exports = {
           'resetShortToken',
           'resetExpires',
         ]),
+        authenticate('jwt'),
         verifySelf,
         hashPassword('password'),
-        authenticate('jwt'),
       ),
       // FIXME: What are these 0 and 1 keys?
       discard('0', '1'),
