@@ -11,26 +11,6 @@ const setUserId = (column) => (context) => {
   context.data[column] = context.params.user.id;
 };
 
-/**
- * Enforce a unique contraint, col can be null
- */
-const unique = (table, column, errorMsg) => async (context) => {
-  console.error('deprecated');
-  const check = context.data[column];
-  if (!check) {
-    return context;
-  }
-
-  const query = {};
-  query[column] = check;
-  const results = await context.app.service(table).find({ query });
-  if (results.data.length > 0) {
-    throw new Conflict(errorMsg);
-  }
-
-  return context;
-};
-
 const niceUniqueConstraintError = (find, call) => (context) => {
   if (context.error.message.includes(find) && context.error.message.includes('Duplicate entry')) {
     throw new Conflict(`${call} is already in use.`);
@@ -154,7 +134,6 @@ const validate = (schema, { requireAll }) => async (context) => {
 
 module.exports = {
   setUserId,
-  unique,
   logRequest,
   logResult,
   externalRequires,
