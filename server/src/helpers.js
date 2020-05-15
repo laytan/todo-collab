@@ -1,7 +1,12 @@
-const { BadRequest } = require('@feathersjs/errors');
+const { checkContext } = require('feathers-hooks-common');
 
 // Extract ids effected from default locations per method
 const getIdsEffected = (context, idField = 'id') => {
+  // Don't find on before
+  if (context.type === 'before') {
+    checkContext(context, 'before', ['create', 'get', 'update', 'patch', 'delete'], 'getIdsEffected');
+  }
+
   let idsEffected = [];
   if (['get', 'remove', 'update', 'patch'].includes(context.method)) {
     if (idField !== 'id') {
@@ -18,15 +23,14 @@ const getIdsEffected = (context, idField = 'id') => {
     // find
     const result = context.result.data || context.result;
     idsEffected = result.map((res) => res[idField]);
-    if (context.type === 'before') {
-      throw new BadRequest('Can not get ID\'s effected on find in before hook.');
-    }
   }
   idsEffected.filter((id) => !!id);
   return idsEffected;
 };
 
 /**
+ * Specify a default function to run on all id's effected and optionally override it per method
+ *
  * @param {Object} context Hook context
  * @param {Function} defaultHandler Function that is passed an id and returns the desired value
  * @param {Object} specificHandlers Object of functions per method to override the defaultHandler
