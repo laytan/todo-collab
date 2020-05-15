@@ -2,6 +2,8 @@
 
 Every POST and PATCH request can return a badrequest when required data is not given, the body is empty or when the given data is invalid.
 
+Every authorized request returns a 401 UNAUTHORIZED when the bearer token is invalid.
+
 **EXAMPLE BAD REQUEST RESPONSE**:
 
 This is the response you get on POST: /users when the password is not valid.

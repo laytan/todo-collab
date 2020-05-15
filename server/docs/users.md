@@ -1,7 +1,13 @@
 # Users API
 
+**UNAUTHORIZED**
+
 * [Create an account](#create-an-account)
 * [Log in](#log-in)
+
+**AUTHORIZED**
+
+* [Remove your account](#remove-your-account)
 
 ## <a name="create-an-account"></a>Create an account
 
@@ -147,6 +153,44 @@ Returns a 401 response when the email or password is wrong.
   "message": "Invalid login",
   "code": 401,
   "className": "not-authenticated",
+  "errors": {}
+}
+```
+
+## <a name="remove-your-account"></a>Remove your account
+
+**URL**: `/users/[id]`
+
+**METHOD**: `DELETE`
+
+**AUTH REQUIRED**: `BEARER`
+
+### SUCCESS RESPONSE
+
+**CODE**: `404 NOT FOUND`
+
+```json
+{
+  "name": "NotFound",
+  "message": "No record found for id '[id]'",
+  "code": 404,
+  "className": "not-found",
+  "errors": {}
+}
+```
+
+### ERROR RESPONSE
+
+When the authenticated user is not the user being deleted
+
+**CODE**: `403 FORBIDDEN`
+
+```json
+{
+  "name": "Forbidden",
+  "message": "You can only delete your own account.",
+  "code": 403,
+  "className": "forbidden",
   "errors": {}
 }
 ```

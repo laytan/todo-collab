@@ -7,8 +7,10 @@ const {
   iff, isProvider, preventChanges, discard,
 } = require('feathers-hooks-common');
 const accountService = require('../authmanagement/notifier');
-const { unique, verifyOwner, statusSoftDelete, validate } = require('../../hooks');
+const { niceUniqueConstraintError, statusSoftDelete, validate } = require('../../hooks');
 const usersSchema = require('./users.schema');
+const { Forbidden } = require('@feathersjs/errors');
+const { getIdsEffected } = require('../../helpers');
 
 const stringifyVerifyChanges = (context) => {
   if (context.data.verifyChanges) {
@@ -17,18 +19,30 @@ const stringifyVerifyChanges = (context) => {
   return context;
 };
 
+const verifySelf = (context) => {
+  const id = getIdsEffected(context)[0];
+  if (id !== context.params.user.id) {
+    throw new Forbidden('You can only delete your own account.');
+  }
+  return context;
+}
+
 module.exports = {
   before: {
     all: [
+    ],
+    find: [
+      authenticate('jwt'),
       statusSoftDelete,
     ],
-    find: [authenticate('jwt')],
-    get: [authenticate('jwt')],
+    get: [
+      authenticate('jwt'),
+      statusSoftDelete,
+    ],
     create: [
       validate(usersSchema, { requireAll: true }),
+      statusSoftDelete,
       hashPassword('password'),
-      unique('users', 'username', 'Username is already in use.'),
-      unique('users', 'email', 'Email is already in use.'),
       verifyHooks.addVerification(),
       stringifyVerifyChanges,
       // FIXME: What are these 0 and 1 keys?
@@ -37,9 +51,10 @@ module.exports = {
     update: [],
     // Don't allow external calls to change verification fields
     patch: [
-      validate(usersSchema, {}),
+      statusSoftDelete,
       iff(
         isProvider('external'),
+        validate(usersSchema, {}),
         preventChanges(true, [
           'email',
           'isVerified',
@@ -51,7 +66,7 @@ module.exports = {
           'resetShortToken',
           'resetExpires',
         ]),
-        verifyOwner('id'),
+        verifySelf,
         hashPassword('password'),
         authenticate('jwt'),
       ),
@@ -61,7 +76,8 @@ module.exports = {
     ],
     remove: [
       authenticate('jwt'),
-      verifyOwner('id'),
+      verifySelf,
+      statusSoftDelete,
     ],
   },
 
@@ -91,9 +107,15 @@ module.exports = {
     all: [],
     find: [],
     get: [],
-    create: [],
+    create: [
+      niceUniqueConstraintError('username', 'Username'),
+      niceUniqueConstraintError('email', 'Email'),
+    ],
     update: [],
-    patch: [],
+    patch: [
+      niceUniqueConstraintError('username', 'Username'),
+      niceUniqueConstraintError('email', 'Email'),
+    ],
     remove: [],
   },
 };

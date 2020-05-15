@@ -28,7 +28,7 @@ module.exports = {
   },
 
   error: {
-    all: [],
+    // all: [(c) => console.error(c.error)],
     find: [],
     get: [],
     create: [],
