@@ -1,5 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { populate, iff, isProvider, preventChanges } = require('feathers-hooks-common');
+const {
+  populate, iff, isProvider, preventChanges,
+} = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');

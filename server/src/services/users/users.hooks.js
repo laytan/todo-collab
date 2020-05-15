@@ -6,10 +6,10 @@ const {
 const {
   iff, isProvider, preventChanges, discard,
 } = require('feathers-hooks-common');
+const { Forbidden } = require('@feathersjs/errors');
 const accountService = require('../authmanagement/notifier');
 const { niceUniqueConstraintError, statusSoftDelete, validate } = require('../../hooks');
 const usersSchema = require('./users.schema');
-const { Forbidden } = require('@feathersjs/errors');
 const { getIdsEffected } = require('../../helpers');
 
 const stringifyVerifyChanges = (context) => {
@@ -25,7 +25,7 @@ const verifySelf = (context) => {
     throw new Forbidden('You can only delete your own account.');
   }
   return context;
-}
+};
 
 module.exports = {
   before: {
