@@ -1,3 +1,10 @@
+/**
+ * Channels:
+ *
+ * authenticated: all the users that are logged in
+ * lists/[id]: every list has it's own channel, todos are also published here
+ */
+
 module.exports = function channels(app) {
   if (typeof app.channel !== 'function') {
     // If no real-time functionality has been configured just return
@@ -12,19 +19,20 @@ module.exports = function channels(app) {
     }
 
     // Obtain the logged in user from the connection
-    // const { user } = connection;
+    const { user } = connection;
 
     // Add it to the authenticated user channel
     app.channel('authenticated').join(connection);
 
-    // find all todolists where the user is in the access array
-    // const authorizedLists = await app.service('todo-lists').find({
-    //   query: {},
-    //   user,
-    // });
+    // Get all lists the user has access to
+    const authorizedLists = await app.service('user-has-access').find({
+      query: {
+        user_id: user.id,
+      },
+    });
 
-    // // add the user to the lists channel
-    // authorizedLists.data.forEach((list) => app.channel(`lists/${list.id}`).join(connection));
+    // add the user to the lists channel
+    authorizedLists.data.forEach((list) => app.channel(`lists/${list.id}`).join(connection));
   });
 
   app.on('logout', async (authResult, { connection }) => {
@@ -38,22 +46,10 @@ module.exports = function channels(app) {
   // Publish all todolists service events only to its list channel
   app.service('todo-lists').publish((list) => app.channel(`lists/${list.id}`));
 
-  // add all users in access to new lists channel
-  app.service('todo-lists').on('created', (list) => {
-    // Returns all current connections that have access to this list
-    const { connections } = app.channel(app.channels).filter(
-      (connection) => list.access.includes(connection.user.email),
-    );
-
-    connections.map((conn) => app.channel(`lists/${list.id}`).join(conn));
+  // Leave the list's channel when your access has been removed
+  app.service('user-has-access').on('removed', (revokedAccess) => {
+    app.channel(`lists/${revokedAccess.list_id}`).leave((conn) => conn.user.id === revokedAccess.user_id);
   });
-
-  // Make all connections without access leave the channel
-  function onUpdateList(list) {
-    app.channel(`lists/${list.id}`).leave((conn) => !(list.access.includes(conn.user.email)));
-  }
-  app.service('todo-lists').on('updated', onUpdateList);
-  app.service('todo-lists').on('patched', onUpdateList);
 
   // Make every connection leave this lists channel
   app.service('todo-lists').on('removed', (list) => {
