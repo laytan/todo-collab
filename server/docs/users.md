@@ -8,6 +8,8 @@
 **AUTHORIZED**
 
 * [Remove your account](#remove-your-account)
+* [Change your profile data](#change-profile)
+* [Get a single user](#get-user)
 
 ## <a name="create-an-account"></a>Create an account
 
@@ -163,7 +165,7 @@ Returns a 401 response when the email or password is wrong.
 
 **METHOD**: `DELETE`
 
-**AUTH REQUIRED**: `BEARER`
+**AUTH REQUIRED**: BEARER
 
 ### SUCCESS RESPONSE
 
@@ -191,6 +193,111 @@ When the authenticated user is not the user being deleted
   "message": "You can only delete your own account.",
   "code": 403,
   "className": "forbidden",
+  "errors": {}
+}
+```
+
+## <a name="change-profile"></a>Change your profile data
+
+**URL**: `/users/[id]`
+
+**METHOD**: `PATCH`
+
+**AUTH REQUIRED**: BEARER
+
+**DATA CONSTRAINTS**
+
+Returns a 400 response when validation fails as mentioned in the beginning of this documentation.
+
+All fields are **optional**
+
+```json
+{
+    "username": "[between 2 and 25 characters]",
+    "email": "[a valid email address]",
+    "password": "[non whitespace between 6 and 200 characters]"
+}
+```
+
+**DATA EXAMPLE**
+
+Changing the username to bobby and password to password
+
+```json
+{
+    "username": "bobby",
+    "password": "password"
+}
+```
+
+### SUCCESS RESPONSE
+
+**CODE**: `200 OK`
+
+```json
+{
+  "username": "bobby",
+  "email": "someone@example.com",
+  "isVerified": 0,
+  "id": 1,
+  "created_at": "2020-05-15T18:42:34.000Z",
+  "updated_at": "2020-05-15T18:42:34.000Z",
+  "status": 1
+}
+```
+
+### ERROR RESPONSE
+
+When the authenticated user is not the user being deleted
+
+**CODE**: `403 FORBIDDEN`
+
+```json
+{
+  "name": "Forbidden",
+  "message": "You can only delete your own account.",
+  "code": 403,
+  "className": "forbidden",
+  "errors": {}
+}
+```
+
+## <a name="get-user"></a>Get user
+
+**URL**: `/users/[id]`
+
+**METHOD**: `GET`
+
+**AUTH REQUIRED**: BEARER
+
+### SUCCESS RESPONSE
+
+**CODE**: `200 OK`
+
+```json
+{
+  "username": "bobby",
+  "email": "someone@example.com",
+  "isVerified": 0,
+  "id": 1,
+  "created_at": "2020-05-15T18:42:34.000Z",
+  "updated_at": "2020-05-15T18:42:34.000Z",
+  "status": 1
+}
+```
+
+### ERROR RESPONSE
+
+When there is no user with that id
+
+**CODE**: `404 NOT FOUND`
+
+```json
+{
+  "name": "NotFound",
+  "message": "No record found for id '1'",
+  "code": 404,
+  "className": "not-found",
   "errors": {}
 }
 ```
