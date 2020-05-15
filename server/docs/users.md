@@ -10,6 +10,7 @@
 * [Remove your account](#remove-your-account)
 * [Change your profile data](#change-profile)
 * [Get a single user](#get-user)
+* [Find users](#find-users)
 
 ## <a name="create-an-account"></a>Create an account
 
@@ -301,3 +302,69 @@ When there is no user with that id
   "errors": {}
 }
 ```
+
+## <a name="find-users"></a>Find users
+
+**URL**: `/users/[query]`
+
+**METHOD**: `GET`
+
+**AUTH REQUIRED**: BEARER
+
+Look at [KnexJS docs](https://github.com/feathersjs-ecosystem/feathers-knex#querying) for the possible queries.
+
+### SUCCESS RESPONSE
+
+The data array will be empty when there are no results, it will still be status `200 OK`.
+
+**CODE**: `200 OK`
+
+```json
+{
+  "total": 4,
+  "limit": 10,
+  "skip": 0,
+  "data": [
+    {
+      "username": "bobs13",
+      "email": "bobs13@example.com",
+      "isVerified": 0,
+      "id": 26,
+      "created_at": "2020-05-15T18:13:26.000Z",
+      "updated_at": "2020-05-15T18:13:26.000Z",
+      "status": 1
+    },
+    {
+      "username": "bobs15",
+      "email": "bobs15@example.com",
+      "isVerified": 0,
+      "id": 28,
+      "created_at": "2020-05-15T18:20:29.000Z",
+      "updated_at": "2020-05-15T18:20:29.000Z",
+      "status": 1
+    },
+    {
+      "username": "bobby",
+      "email": "someone@example.com",
+      "isVerified": 0,
+      "id": 29,
+      "created_at": "2020-05-15T18:42:34.000Z",
+      "updated_at": "2020-05-15T18:42:34.000Z",
+      "status": 1
+    },
+    {
+      "username": "bobs155",
+      "email": "bobs155@example.com",
+      "isVerified": 0,
+      "id": 33,
+      "created_at": "2020-05-15T19:45:27.000Z",
+      "updated_at": "2020-05-15T19:45:27.000Z",
+      "status": 1
+    }
+  ]
+}
+```
+
+### ERROR RESPONSE
+
+No specific error responses
