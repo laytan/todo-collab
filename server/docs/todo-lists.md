@@ -5,6 +5,7 @@ All endpoints require authorization with a bearer token and will return a 401 UN
 * [Create a list](#create)
 * [Search lists](#find)
 * [Get the full info on a list](#get)
+* [Remove a list](#remove)
 
 ## <a name="create"></a>Create a list
 
@@ -165,6 +166,42 @@ When there is no list with that id
 ```
 
 When the user does not own the list
+
+**CODE**: `403 FORBIDDEN`
+
+```json
+{
+  "name": "Forbidden",
+  "message": "You do not have access to this list.",
+  "code": 403,
+  "className": "forbidden",
+  "errors": {}
+}
+
+```
+## <a name="remove"></a>Remove a list
+
+**URL**: `/todo-lists/[id]`
+
+**METHOD**: `DELETE`
+
+### SUCCESS RESPONSE
+
+**CODE**: `404 NOT FOUND`
+
+```json
+{
+  "name": "NotFound",
+  "message": "No record found for id '[id]'",
+  "code": 404,
+  "className": "not-found",
+  "errors": {}
+}
+```
+
+### ERROR RESPONSE
+
+When the authenticated user does not own the list.
 
 **CODE**: `403 FORBIDDEN`
 
