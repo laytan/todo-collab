@@ -19,7 +19,7 @@ exports.TodoLists = class TodoLists extends Service {
     if (params.provider) {
       const userId = params.user.id;
       
-      const accessableListIds = await getAccessibleLists(userId);
+      const accessableListIds = await getAccessibleLists(userId, this.app);
 
       // Return the lists matching the user's query that the user has access to
       const query = { ...params.query, id: { $in: accessableListIds } };
