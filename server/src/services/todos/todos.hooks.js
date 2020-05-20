@@ -5,7 +5,7 @@ const {
 const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');
-const { statusSoftDelete, validate } = require('../../hooks');
+const { statusSoftDelete, validate, withoutProvider } = require('../../hooks');
 const todosSchema = require('./todos.schema');
 
 // Converts completed boolean into done_by and completed_at
@@ -83,27 +83,32 @@ module.exports = {
     all: [
       authenticate('jwt'),
       statusSoftDelete,
-      iff(isProvider('external'), verifyListAccess),
     ],
     find: [],
-    get: [],
+    get: [
+      iff(isProvider('external'), verifyListAccess),
+    ],
     create: [
       validate(todosSchema, { requireAll: true }),
+      iff(isProvider('external'), verifyListAccess),
     ],
     update: [],
     patch: [
       preventChanges(true, 'list_id'),
       validate(todosSchema, {}),
+      iff(isProvider('external'), verifyListAccess),
       convertCompleted,
     ],
-    remove: [],
+    remove: [
+      iff(isProvider('external'), verifyListAccess),
+    ],
   },
 
   after: {
     all: [],
     find: [],
     get: [
-      joinEvents,
+      withoutProvider(joinEvents),
     ],
     create: [
       registerEvent({}),
