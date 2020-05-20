@@ -6,6 +6,7 @@ All endpoints require authorization with a bearer token and will return a 401 UN
 * [Search lists](#find)
 * [Get the full info on a list](#get)
 * [Remove a list](#remove)
+* [Update a list](#patch)
 
 ## <a name="create"></a>Create a list
 
@@ -177,8 +178,8 @@ When the user does not own the list
   "className": "forbidden",
   "errors": {}
 }
-
 ```
+
 ## <a name="remove"></a>Remove a list
 
 **URL**: `/todo-lists/[id]`
@@ -202,6 +203,69 @@ When the user does not own the list
 ### ERROR RESPONSE
 
 When the authenticated user does not own the list.
+
+**CODE**: `403 FORBIDDEN`
+
+```json
+{
+  "name": "Forbidden",
+  "message": "You do not have access to this list.",
+  "code": 403,
+  "className": "forbidden",
+  "errors": {}
+}
+```
+
+## <a name="patch"></a>Update a list
+
+**URL**: `/todo-lists/[id]`
+
+**METHOD**: `PATCH`
+
+**DATA CONSTRAINTS**
+
+Returns a 400 response when validation fails as mentioned in the beginning of this documentation.
+
+All fields are **optional**
+
+```json
+{
+  "name": "[between 2 and 100 characters]",
+  "description": "[can be empty, max 500 characters]",
+  "password": "[non whitespace between 6 and 200 characters]"
+}
+```
+
+**DATA EXAMPLE**
+
+Changing the password to supersecret and the description to empty
+
+```json
+{
+    "description": "",
+    "password": "supersecret"
+}
+```
+
+### SUCCESS RESPONSE
+
+**CODE**: `200 OK`
+
+```json
+{
+  "name": "Groceries",
+  "description": "",
+  "id": 1,
+  "created_at": "2020-05-20T21:05:50.000Z",
+  "updated_at": "2020-05-20T21:05:50.000Z",
+  "status": 1,
+  "owner_id": 1
+}
+```
+
+### ERROR RESPONSE
+
+When the user does not own the list
 
 **CODE**: `403 FORBIDDEN`
 
