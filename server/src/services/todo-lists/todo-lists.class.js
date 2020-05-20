@@ -13,15 +13,21 @@ exports.TodoLists = class TodoLists extends Service {
   /**
    * If the call is external, only return the lists that the user has access to
    *
-   * TODO: This voids the params.query passed so it will always return all results
    */
   async find(params) {
     if (params.provider) {
       const userId = params.user.id;
-      return this.app.service('user-has-access').find({ query: { user_id: userId } })
-        .then((res) => res.data.map((userHasAccess) => userHasAccess.todoList))
-        .catch((e) => e);
+      
+      // Retrieve the list id's for all lists the user has access to
+      const { data: accessObjects } = await this.app.service('user-has-access').find({ query: { user_id: userId, $select: ['list_id'], } });
+      const accessableListIds = accessObjects.map(accessObject => accessObject.list_id);
+
+      // Return the lists matching the user's query that the user has access to
+      const query = { ...params.query, id: { $in: accessableListIds } };
+      const lists = this.app.service('todo-lists').find({ query });
+      return lists;
     }
+
     return this._find(params);
   }
 };
