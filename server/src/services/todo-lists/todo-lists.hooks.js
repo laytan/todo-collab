@@ -73,7 +73,7 @@ module.exports = {
     ],
     update: [],
     patch: [
-      validate(todoListsSchema, {}),
+      iff(isProvider('external'), validate(todoListsSchema, {})),
       hashPassword('password'),
       verifyListAccess,
     ],
