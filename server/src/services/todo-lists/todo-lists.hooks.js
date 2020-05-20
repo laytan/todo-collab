@@ -1,12 +1,12 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
-const { populate, iff, isProvider } = require('feathers-hooks-common');
+const { populate, iff, isProvider, checkContext } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const {
-  setUserId, statusSoftDelete, verifyListOwner, validate,
+  setUserId, statusSoftDelete, verifyListOwner, validate, withoutProvider,
 } = require('../../hooks');
 const { registerEvent } = require('../../hooks/events');
-const { dependsOnMethod } = require('../../helpers');
+const { getAccessibleLists } = require('../../helpers');
 const todoListsSchema = require('./todo-lists.schema');
 
 // Add a user_has_access record for the owner of the list
@@ -17,7 +17,7 @@ const addAccessForOwner = (context) => context.app.service('user-has-access').cr
 
 const joinEvents = populate({
   schema: {
-    clude: {
+    include: {
       service: 'events',
       nameAs: 'events',
       parentField: 'id',
@@ -45,14 +45,11 @@ const joinItems = populate({
 });
 
 const verifyListAccess = async (context) => {
-  const lists = await dependsOnMethod(
-    context,
-    (listId) => context.app.service('todo-lists').get(listId),
-  );
+  checkContext(context, 'before', ['get', 'patch'], 'verifyListAccess');
+  const listId = context.id;
+  const access = await getAccessibleLists(context.params.user.id, context.app);
 
-  const userHasAccesses = await Promise.all(lists.map((list) => context.app.service('user-has-access').find({ paginate: false, query: { user_id: context.user.id, list_id: list.id } })));
-
-  if (userHasAccesses.length !== lists.length) {
+  if (!access.includes(listId)) {
     throw new Forbidden('You do not have access to this list.');
   }
 
@@ -91,8 +88,9 @@ module.exports = {
     ],
     find: [],
     get: [
-      joinEvents,
-      joinItems,
+      withoutProvider(joinEvents),
+      // Can join without provider because all lists are already verified accessible so the items asswel
+      withoutProvider(joinItems),
     ],
     create: [
       addAccessForOwner,
