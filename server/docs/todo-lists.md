@@ -4,6 +4,7 @@ All endpoints require authorization with a bearer token and will return a 401 UN
 
 * [Create a list](#create)
 * [Search lists](#find)
+* [Get the full info on a list](#get)
 
 ## <a name="create"></a>Create a list
 
@@ -78,7 +79,7 @@ The data array will be empty when there are no results, it will still be status 
   "skip": 0,
   "data": [
     {
-      "name": "groceries",
+      "name": "Groceries",
       "description": "Groceries for September",
       "id": 1,
       "created_at": "2020-05-20T18:44:19.000Z",
@@ -93,3 +94,86 @@ The data array will be empty when there are no results, it will still be status 
 ### ERROR RESPONSE
 
 No specific error responses
+
+## <a name="get"></a>Get the full info on a list
+
+**URL**: `/todo-lists/[id]`
+
+**METHOD**: `GET`
+
+### SUCCESS RESPONSE
+
+This method will return all related data to the list (events and items) also.
+
+**CODE**: `200 OK`
+
+```json
+{
+  "name": "Groceries",
+  "description": "Groceries for September",
+  "id": 1,
+  "created_at": "2020-05-20T18:44:19.000Z",
+  "updated_at": "2020-05-20T18:44:19.000Z",
+  "status": 1,
+  "owner_id": 1,
+  "events": [
+    {
+      "type": "CREATE",
+      "service": "todo-lists",
+      "id_in_service": 1,
+      "description": null,
+      "id": 1,
+      "created_at": "2020-05-20T18:44:19.000Z",
+      "updated_at": "2020-05-20T18:44:19.000Z",
+      "status": 1,
+      "emitter_id": 1
+    }
+  ],
+  "items": [
+    {
+      "order": 0,
+      "name": "cheese",
+      "description": "",
+      "label": "Refrigerated",
+      "color": "#fff",
+      "completed_at": null,
+      "id": 1,
+      "created_at": "2020-05-20T20:41:31.000Z",
+      "updated_at": "2020-05-20T20:41:31.000Z",
+      "status": 1,
+      "done_by_user_id": null,
+      "list_id": 1
+    }
+  ]
+}
+```
+
+### ERROR RESPONSE
+
+When there is no list with that id
+
+**CODE**: `404 NOT FOUND`
+
+```json
+{
+  "name": "NotFound",
+  "message": "No record found for id '1'",
+  "code": 404,
+  "className": "not-found",
+  "errors": {}
+}
+```
+
+When the user does not own the list
+
+**CODE**: `403 FORBIDDEN`
+
+```json
+{
+  "name": "Forbidden",
+  "message": "You do not have access to this list.",
+  "code": 403,
+  "className": "forbidden",
+  "errors": {}
+}
+```
