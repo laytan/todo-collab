@@ -91,6 +91,7 @@ module.exports = {
       withoutProvider(joinEvents),
       // Can join without provider because all lists are already verified accessible so the items asswel
       withoutProvider(joinItems),
+      protect('_include'),
     ],
     create: [
       addAccessForOwner,
