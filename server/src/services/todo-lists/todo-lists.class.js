@@ -1,4 +1,5 @@
 const { Service } = require('feathers-knex');
+const { getAccessibleLists } = require('../../helpers');
 
 exports.TodoLists = class TodoLists extends Service {
   constructor(options, app) {
@@ -18,9 +19,7 @@ exports.TodoLists = class TodoLists extends Service {
     if (params.provider) {
       const userId = params.user.id;
       
-      // Retrieve the list id's for all lists the user has access to
-      const accessObjects = await this.app.service('user-has-access').find({ paginate: false, query: { user_id: userId, $select: ['list_id'], } });
-      const accessableListIds = accessObjects.map(accessObject => accessObject.list_id);
+      const accessableListIds = await getAccessibleLists(userId);
 
       // Return the lists matching the user's query that the user has access to
       const query = { ...params.query, id: { $in: accessableListIds } };
