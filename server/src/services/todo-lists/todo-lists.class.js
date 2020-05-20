@@ -19,7 +19,7 @@ exports.TodoLists = class TodoLists extends Service {
       const userId = params.user.id;
       
       // Retrieve the list id's for all lists the user has access to
-      const { data: accessObjects } = await this.app.service('user-has-access').find({ query: { user_id: userId, $select: ['list_id'], } });
+      const accessObjects = await this.app.service('user-has-access').find({ paginate: false, query: { user_id: userId, $select: ['list_id'], } });
       const accessableListIds = accessObjects.map(accessObject => accessObject.list_id);
 
       // Return the lists matching the user's query that the user has access to
