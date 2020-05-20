@@ -169,6 +169,21 @@ const validate = (schema, { requireAll }) => async (context) => {
   }
 };
 
+/**
+ * Runs the given hook without context to bypass disallow or other context dependant checks
+ *
+ * @param {Function} hook hook to run without context
+ */
+const withoutProvider = (hook) => async (context) => {
+  const { params: { provider } } = context;
+  delete context.params.provider;
+
+  context = await hook(context);
+
+  context.params.provider = provider;
+  return context;
+};
+
 module.exports = {
   setUserId,
   logRequest,
@@ -177,4 +192,5 @@ module.exports = {
   verifyListOwner,
   validate,
   niceUniqueConstraintError,
+  withoutProvider,
 };
