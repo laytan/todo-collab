@@ -12,9 +12,9 @@ exports.Todos = class Todos extends Service {
   }
 
   async find(params) {
-    if(params.provider) {
+    if (params.provider) {
       const userId = params.user.id;
-  
+
       // get lists the user has access to
       const access = await getAccessibleLists(userId, this.app);
       // query todos scoped to the lists that the user has access to on list_id

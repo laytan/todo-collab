@@ -1,6 +1,8 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
-const { populate, iff, isProvider, checkContext } = require('feathers-hooks-common');
+const {
+  populate, iff, isProvider, checkContext,
+} = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const {
   setUserId, statusSoftDelete, verifyListOwner, validate, withoutProvider,
@@ -89,7 +91,7 @@ module.exports = {
     find: [],
     get: [
       withoutProvider(joinEvents),
-      // Can join without provider because all lists are already verified accessible so the items asswel
+      // Can join without provider because all lists are already verified accessible
       withoutProvider(joinItems),
       protect('_include'),
     ],

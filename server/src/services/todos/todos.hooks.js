@@ -1,7 +1,7 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
 const { protect } = require('@feathersjs/authentication-local').hooks;
 const {
-  populate, iff, isProvider, preventChanges,
+  populate, iff, isProvider,
 } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');

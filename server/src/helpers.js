@@ -48,15 +48,15 @@ const dependsOnMethod = async (context, defaultHandler, idField = 'id', specific
 
 /**
  * Returns an array of lists id's the user has access to
- * 
+ *
  * @param {String} userId User to get lists of
  * @param {} app The Feathers app object
- * 
+ *
  * @returns {Promise<Array<String>>}
  */
 const getAccessibleLists = async (userId, app) => {
-  const accessObjects = await app.service('user-has-access').find({ paginate: false, query: { user_id: userId, $select: ['list_id'], } });
-  const accessableListIds = accessObjects.map(accessObject => accessObject.list_id.toString());
+  const accessObjects = await app.service('user-has-access').find({ paginate: false, query: { user_id: userId, $select: ['list_id'] } });
+  const accessableListIds = accessObjects.map((accessObject) => accessObject.list_id.toString());
   return accessableListIds;
 };
 

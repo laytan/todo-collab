@@ -2,11 +2,11 @@ const { authenticate } = require('@feathersjs/authentication').hooks;
 const {
   populate, disallow, iff, isProvider,
 } = require('feathers-hooks-common');
+const { BadRequest } = require('@feathersjs/errors');
 const {
   statusSoftDelete, verifyListOwner, validate, setUserId, verifyExists,
 } = require('../../hooks');
 const userHasAccessSchema = require('./user-has-access.schema');
-const { BadRequest } = require('@feathersjs/errors');
 
 const joinList = populate({
   schema: {
@@ -19,10 +19,11 @@ const joinList = populate({
   },
 });
 
-const verifyNotAlreadyAccess = async context => {
-  const { user_id, list_id } = context.data;
-  const access = await context.app.service('user-has-access').find({ paginate: false, query: { $select: ['id'], user_id, list_id } });
-  if(access.length > 0) {
+const verifyNotAlreadyAccess = async (context) => {
+  const { user_id: userId, list_id: listId } = context.data;
+  const query = { $select: ['id'], user_id: userId, list_id: listId };
+  const access = await context.app.service('user-has-access').find({ paginate: false, query });
+  if (access.length > 0) {
     throw new BadRequest('User already has access to this list.');
   }
   return context;

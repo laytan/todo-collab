@@ -179,6 +179,7 @@ const withoutProvider = (hook) => async (context) => {
   const { params: { provider } } = context;
   delete context.params.provider;
 
+  // eslint-disable-next-line no-param-reassign
   context = await hook(context);
 
   context.params.provider = provider;
@@ -189,11 +190,11 @@ const verifyExists = (service, idField) => async (context) => {
   await dependsOnMethod(
     context,
     (id) => context.app.service(service).get(id),
-    idField
-  )
+    idField,
+  );
 
   return context;
-}
+};
 
 module.exports = {
   setUserId,
