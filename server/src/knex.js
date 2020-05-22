@@ -1,8 +1,14 @@
 const knex = require('knex');
+const config = require('../knexfile.js');
 
 module.exports = (app) => {
-  const { client, connection } = app.get('mysql');
-  const db = knex({ client, connection });
+  const environment = process.env.NODE_ENV || 'development';
+  const environmentConfig = config[environment];
+  const db = knex(environmentConfig);
 
-  app.set('knexClient', db);
+  if (app) {
+    app.set('knexClient', db);
+  }
+
+  return db;
 };

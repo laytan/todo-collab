@@ -42,10 +42,12 @@ const niceUniqueConstraintError = (find, call) => (context) => {
  * Methods: all
  */
 const logRequest = async (context) => {
-  checkContext(context, 'before', undefined, 'logRequest');
+  if (!process.env.NODE_ENV === 'test') {
+    checkContext(context, 'before', undefined, 'logRequest');
 
-  // eslint-disable-next-line no-console
-  console.log(`[${new Date().toLocaleTimeString()}] ${context.method.toUpperCase()} ${context.path}`);
+    // eslint-disable-next-line no-console
+    console.log(`[${new Date().toLocaleTimeString()}] ${context.method.toUpperCase()} ${context.path}`);
+  }
   return context;
 };
 

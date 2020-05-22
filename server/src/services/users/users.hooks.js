@@ -92,8 +92,8 @@ module.exports = {
     get: [],
     create: [
       (context) => {
-        // Don't send email when @localhost is in the email
-        if (context.result.email.indexOf('@localhost') === -1) {
+        // Don't send email when @localhost is in the email or we are testing
+        if (context.result.email.indexOf('@localhost') === -1 && process.env.NODE_ENV !== 'test') {
           accountService(context.app).notifier('resendVerifySignup', context.result);
         }
       },

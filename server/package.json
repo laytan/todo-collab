@@ -23,13 +23,14 @@
     "npm": ">= 3.0.0"
   },
   "scripts": {
-    "test": "npm run eslint && npm run jest",
-    "clean": "shx rm -rf test/data/",
+    "test": "set NODE_ENV=test&& jest --bail --forceExit",
+    "test:watch": "set NODE_ENV=test&& jest --watch --forceExit",
     "eslint": "eslint src/. test/. --config .eslintrc.json",
     "eslint:fix": "eslint src/. test/. --config .eslintrc.json --fix",
     "dev": "nodemon src/",
     "start": "node src/",
-    "jest": "npm run clean && SET NODE_ENV=test&& jest  --forceExit"
+    "migrate": "knex migrate:latest --env development",
+    "migrate:test": "knex migrate:latest --env test"
   },
   "dependencies": {
     "@feathersjs/authentication": "^4.5.3",
@@ -62,7 +63,14 @@
     "eslint-config-airbnb": "^18.1.0",
     "eslint-plugin-import": "^2.20.1",
     "jest": "^25.4.0",
+    "knex-cleaner": "^1.3.0",
     "nodemon": "^2.0.3",
     "shx": "^0.3.2"
+  },
+  "jest": {
+    "setupFilesAfterEnv": [
+      "./test/setup.js"
+    ],
+    "testEnvironment": "node"
   }
 }
