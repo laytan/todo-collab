@@ -98,13 +98,14 @@ const verifyOwner = (userIdColumn = 'user_id', getIds = getIdsEffected) => async
 const verifyListOwner = (listIdColumn) => async (context) => {
   checkContext(context, 'before', ['create', 'get', 'patch', 'remove', 'update'], 'verifyListOwner');
 
-  const list = await dependsOnMethod(
+  const list = (await dependsOnMethod(
     context,
-    (listId) => context.app.service('todo-lists').get(listId),
+    // Find instead of get so it does not need to join the foreign keys
+    (listId) => context.app.service('todo-lists').find({ paginate: false, query: { id: listId, $select: ['owner_id'] } }),
     listIdColumn,
-  );
+  ))[0][0];
 
-  if (list.owner_id !== context.user.id) {
+  if (list.owner_id !== context.params.user.id) {
     throw new Forbidden('You are not the list owner.');
   }
 
@@ -184,6 +185,16 @@ const withoutProvider = (hook) => async (context) => {
   return context;
 };
 
+const verifyExists = (service, idField) => async (context) => {
+  await dependsOnMethod(
+    context,
+    (id) => context.app.service(service).get(id),
+    idField
+  )
+
+  return context;
+}
+
 module.exports = {
   setUserId,
   logRequest,
@@ -193,4 +204,5 @@ module.exports = {
   validate,
   niceUniqueConstraintError,
   withoutProvider,
+  verifyExists,
 };
