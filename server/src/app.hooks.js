@@ -28,7 +28,12 @@ module.exports = {
   },
 
   error: {
-    // all: [(c) => console.error(c.error)],
+    all: [(c) => {
+      // Log out 500 errors
+      if (c.code >= 500 && c.code < 600) {
+        console.error(c);
+      }
+    }],
     find: [],
     get: [],
     create: [],
