@@ -1,4 +1,5 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
+const { protect } = require('@feathersjs/authentication-local').hooks;
 const {
   populate, iff, isProvider, preventChanges,
 } = require('feathers-hooks-common');
@@ -6,7 +7,7 @@ const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');
 const { statusSoftDelete, validate, withoutProvider } = require('../../hooks');
-const todosSchema = require('./todos.schema');
+const { todosSchema, updateTodosSchema } = require('./todos.schema');
 
 // Converts completed boolean into done_by and completed_at
 const convertCompleted = (context) => {
@@ -94,9 +95,7 @@ module.exports = {
     ],
     update: [],
     patch: [
-      preventChanges(true, 'list_id'),
-      validate(todosSchema, {}),
-      iff(isProvider('external'), verifyListAccess),
+      iff(isProvider('external'), validate(updateTodosSchema, {}), verifyListAccess),
       convertCompleted,
     ],
     remove: [
@@ -109,6 +108,7 @@ module.exports = {
     find: [],
     get: [
       withoutProvider(joinEvents),
+      protect('_include'),
     ],
     create: [
       registerEvent({}),
