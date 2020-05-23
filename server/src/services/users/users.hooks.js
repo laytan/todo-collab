@@ -83,13 +83,16 @@ module.exports = {
 
   after: {
     all: [
-      verifyHooks.removeVerification(),
       // Make sure the password field is never sent to the client
       // Always must be the last hook
       protect('password'),
     ],
-    find: [],
-    get: [],
+    find: [
+      verifyHooks.removeVerification(),
+    ],
+    get: [
+      verifyHooks.removeVerification(),
+    ],
     create: [
       (context) => {
         // Don't send email when @localhost is in the email or we are testing
@@ -97,10 +100,15 @@ module.exports = {
           accountService(context.app).notifier('resendVerifySignup', context.result);
         }
       },
+      verifyHooks.removeVerification(),
     ],
     update: [],
-    patch: [],
-    remove: [],
+    patch: [
+      verifyHooks.removeVerification(),
+    ],
+    remove: [
+      verifyHooks.removeVerification(),
+    ],
   },
 
   error: {
