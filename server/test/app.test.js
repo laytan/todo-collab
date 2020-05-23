@@ -1,19 +1,11 @@
 const axios = require('axios');
-const url = require('url');
 const cheerio = require('cheerio');
 const app = require('../src/app');
-
-const port = app.get('port') || 8998;
-const getUrl = (pathname) => url.format({
-  hostname: app.get('host') || 'localhost',
-  protocol: 'http',
-  port,
-  pathname,
-});
+const { getPort, getUrl } = require('./helpers')(app);
 
 let server;
 beforeAll((done) => {
-  server = app.listen(port);
+  server = app.listen(getPort());
   server.once('listening', () => done());
 });
 
@@ -32,22 +24,20 @@ describe('setup', () => {
 });
 
 describe('DOCS', () => {
-  it('shows the readme when getting /', async () => {
-    expect.assertions(1);
-
+  it('shows the readme when getting /', async (done) => {
     const { data } = await axios.get(getUrl());
     const $ = cheerio.load(data);
-    expect($('.back').length).toBeTruthy();
+    expect($('.back').length).toBe(1);
+    done();
   });
 
-  it('has working links to deeper pages', async () => {
-    expect.assertions(1);
-
+  it('has working links to deeper pages', async (done) => {
     const { data } = await axios.get(getUrl());
     let $ = cheerio.load(data);
     const firstUrlNotBack = $('a:not(.back)').attr('href');
     const { data: firstUrlData } = await axios.get(getUrl(firstUrlNotBack));
     $ = cheerio.load(firstUrlData);
     expect($('.back').length).toBeTruthy();
+    done();
   });
 });
