@@ -114,7 +114,11 @@ export default {
     const currentList = computed(() => lists.value.filter((list) => list.id === listId)[0]);
 
     const itemsWithEvents = computed(
-      () => currentList.value.items.filter((item) => item.events.length > 0),
+      () => (
+        (currentList.value.items)
+          ? currentList.value.items.filter((item) => item.events.length > 0)
+          : []
+      ),
     );
 
     const giveAccessEmail = ref('');

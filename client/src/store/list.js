@@ -31,6 +31,9 @@ export default {
         list_id: listId,
         name: 'Write your to-do here',
         description: 'Write your description here',
+        order: 0,
+        label: 'Blue',
+        color: '#0000ff',
       });
       // commit(ADD_ITEM_TO_CURRENT_LIST, item);
       commit(mutations.SET_LOADING, false);
@@ -39,7 +42,7 @@ export default {
     async [actions.SYNC_LISTS]({ commit }) {
       commit(mutations.SET_LOADING, true);
       const lists = await services.todolists.find();
-      lists.forEach((list) => commit(mutations.ADD_LIST, list));
+      lists.data.forEach((list) => commit(mutations.ADD_LIST, list));
       commit(mutations.SET_LOADING, false);
     },
   },

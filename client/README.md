@@ -1,6 +1,12 @@
 # client
 
-## Project setup
+## Roadmap
+
+* Don't put all lists in state
+
+## Commands
+
+### Project setup
 ```
 npm install
 ```

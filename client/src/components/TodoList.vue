@@ -30,7 +30,6 @@ import {
   watchEffect,
   ref,
   onMounted,
-  computed,
 } from 'vue';
 
 import { useStore } from '@/store';
@@ -53,6 +52,7 @@ function useDraggableOrder(itemsProp) {
   onMounted(() => {
     // Keep itemIdToElMap up to date when items changes by adding or removing items for example
     watchEffect(() => {
+      if (!items.value) return;
       itemIdToElMap = {};
       items.value.forEach((item) => {
         itemIdToElMap[item.id] = document.querySelector(`[data-id="${item.id}"]`);
@@ -186,8 +186,8 @@ function useDraggableOrder(itemsProp) {
     });
   }
 
-  const listItems = computed(() => items.value.sort((a, b) => a.order - b.order));
-  return { listItems, mouseDownItem };
+  // const listItems = computed(() => items.value.sort((a, b) => a.order - b.order));
+  return { listItems: items, mouseDownItem };
 }
 
 export default {
