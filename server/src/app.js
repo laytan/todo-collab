@@ -1,7 +1,5 @@
 require('dotenv').config();
 
-const path = require('path');
-const favicon = require('serve-favicon');
 const compress = require('compression');
 const helmet = require('helmet');
 const cors = require('cors');
@@ -12,6 +10,7 @@ const express = require('@feathersjs/express');
 const socketio = require('@feathersjs/socketio');
 const logger = require('./logger');
 
+const { sendMarkdown } = require('./docs');
 
 const middleware = require('./middleware');
 const services = require('./services');
@@ -32,9 +31,15 @@ app.use(cors());
 app.use(compress());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(favicon(path.join(app.get('public'), 'favicon.ico')));
-// Host the public folder
-app.use('/', express.static(app.get('public')));
+
+// Match / and /docs
+app.get(/^(\/|\/docs)$/, (_, res, next) => { sendMarkdown('README.md', res, next); });
+
+app.get('/docs/:doc', (req, res, next) => {
+  const mdPath = `docs/${req.params.doc}`;
+
+  sendMarkdown(mdPath, res, next);
+});
 
 // Set up Plugins and providers
 app.configure(express.rest());
