@@ -64,7 +64,6 @@ export default {
       return hsp > 127.5 ? '#141414' : '#fafafa';
     });
 
-
     function toggleLabel() {
       labelExpanded.value = !labelExpanded.value;
     }

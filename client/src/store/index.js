@@ -29,7 +29,6 @@ export const store = createStore({
   ...mergedStores([auth, general, item, list]),
 });
 
-
 export function useStore() {
   return store;
 }

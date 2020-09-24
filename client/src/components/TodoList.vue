@@ -98,7 +98,6 @@ function useDraggableOrder(itemsProp) {
     itemIdToElMap[closest.id].classList.add(topOrBottomClass);
   });
 
-
   /**
    * Sorts the items by their offset and assigns the right order to them
    */

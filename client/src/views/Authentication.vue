@@ -115,7 +115,6 @@ html {
   }
 }
 
-
 .slide-out-left-enter-active,
 .slide-out-left-leave-active,
 .slide-out-right-enter-active,
