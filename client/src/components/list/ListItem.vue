@@ -1,26 +1,33 @@
 <template>
-  <div :data-id="itemData.id" class="todolist-item section z-depth-2">
-    <item-label :label-color="itemData.color" :label-text="itemData.label" />
+  <div :data-id="item.id" class="todolist-item section z-depth-2">
+    <item-label :label-color="item.color" :label-text="item.label" />
     <div class="todolist-item-body">
-      <name :todoId="itemData.id" :name="itemData.name"/>
-      <description
-        :todoId="itemData.id"
-        :description="itemData.description"
-      />
+      <name :todoId="item.id" :name="item.name" />
+      <description :todoId="item.id" :description="item.description" />
       <div class="item-details" @click="showMore = !showMore">
         <item-detail
-        v-if="itemData.completed_at"
-        :date="itemData.completed_at" :user="itemData.done_by" icon="check" tooltip="Completed" />
+          v-if="item.completed_at"
+          :date="item.completed_at"
+          :user="item.done_by"
+          icon="check"
+          tooltip="Completed"
+        />
       </div>
     </div>
     <div class="checkbox-wrapper flex column between">
       <label>
-        <input type="checkbox" class="filled-in" :checked="itemData.completed_at"
-        @click="toggleDone" />
-          <!-- This span is required -->
+        <input
+          type="checkbox"
+          class="filled-in"
+          :checked="item.completed_at"
+          @click="toggleDone"
+        />
+        <!-- This span is required -->
         <span class="checkbox-span"></span>
       </label>
-      <i @click="removeItem" class="material-icons red-text remove">delete_forever</i>
+      <i @click="removeItem" class="material-icons red-text remove"
+        >delete_forever</i
+      >
     </div>
   </div>
 </template>
@@ -52,17 +59,18 @@ export default {
 
     const showMore = ref(false);
 
+    const item = ref({ ...props.itemData });
+
     // TODO: implement
-    function removeItem() {
-    }
+    function removeItem() {}
 
     async function toggleDone() {
-      props.itemData.completed_at = props.itemData.completed_at ? null : new Date();
+      item.value.completed_at = item.value.completed_at ? null : new Date();
 
       dispatch(actions.PATCH_ITEM, {
-        id: props.itemData.id,
+        id: item.value.id,
         patchData: {
-          completed: !!props.itemData.completed_at,
+          completed: !!item.value.completed_at,
         },
       });
     }
@@ -71,6 +79,7 @@ export default {
       showMore,
       removeItem,
       toggleDone,
+      item,
     };
   },
 };
@@ -80,7 +89,7 @@ export default {
   display: flex;
   padding: 0;
   margin: 1.5rem;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255, 255, 255, 0.85);
 }
 
 .item-details {
@@ -88,12 +97,12 @@ export default {
   background-color: rgba(255, 255, 255, 0.247);
 
   > div {
-    margin: .5rem 0;
+    margin: 0.5rem 0;
   }
 }
 
 .checkbox-wrapper {
-  margin: .5rem 0 .5rem auto;
+  margin: 0.5rem 0 0.5rem auto;
 }
 
 .todolist-item-body {
