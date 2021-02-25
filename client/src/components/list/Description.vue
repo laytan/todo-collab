@@ -1,10 +1,8 @@
 <template>
   <div>
-    <div
-      v-show="!editing"
-      class="todolist-item-description"
-      @click="openEditing"
-    >{{ internalDescription }}</div>
+    <div v-show="!editing" class="todolist-item-description" @click="openEditing">
+      {{ internalDescription }}
+    </div>
     <div v-show="editing">
       <textarea
         @blur="save"
@@ -46,7 +44,6 @@ export default {
 
     function openEditing() {
       editing.value = true;
-      window.M.textareaAutoResize(window.$(textarea.value));
     }
 
     function save() {
@@ -72,7 +69,7 @@ export default {
 <style lang="scss" scoped>
 .todolist-item-description {
   font-size: 95%;
-  text-align:justify;
+  text-align: justify;
   margin: 0 1rem 0 2rem;
 }
 </style>

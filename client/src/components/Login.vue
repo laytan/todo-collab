@@ -1,23 +1,27 @@
 <template>
-  <form @submit.prevent="loginWithCreds">
-      <h2>Login</h2>
-      <div class="input-field">
-        <input v-model="credentials.email" id="email" type="email" required>
-        <label for="email">Email</label>
-      </div>
-      <div class="input-field">
-        <input v-model="credentials.password" id="password" type="password" required>
-        <label for="password">Password</label>
-      </div>
-      <p class="right-align">
-        <router-link to="/reset">Forgot Password?</router-link>
-      </p>
-      <div class="row">
-        <button class="btn waves-effect waves-light blue col s12" type="submit" name="action">
-          Login
-        </button>
-      </div>
-  </form>
+  <div>
+    <Error
+      v-if="error.value.length"
+      :dismissed="error.dismissed"
+      :on-dismiss="() => (error.dismissed = true)"
+      >{{ error.value }}</Error
+    >
+    <form @submit.prevent="loginWithCreds">
+      <h2 class="h1 text-red-400">Login</h2>
+
+      <label for="email">Email</label>
+      <input v-model="credentials.email" id="email" type="email" required />
+
+      <label for="password">Password</label>
+      <input v-model="credentials.password" id="password" type="password" required />
+
+      <router-link class="text-right block text-sm" to="/reset">Forgot Password?</router-link>
+
+      <Button type="submit" name="action">
+        Login
+      </Button>
+    </form>
+  </div>
 </template>
 
 <script>
@@ -28,7 +32,14 @@ import { useRouter } from '@/router';
 import { redirectedFromOr } from '@/helpers';
 import { actions } from '@/types';
 
+import Button from './Button.vue';
+import Error from './messages/Error.vue';
+
 export default {
+  components: {
+    Button,
+    Error,
+  },
   setup() {
     const { dispatch } = useStore();
 
@@ -37,17 +48,22 @@ export default {
       password: '',
     });
 
+    const error = reactive({
+      dismissed: false,
+      value: '',
+    });
+
     async function loginWithCreds() {
+      error.value = '';
+      error.dismissed = false;
+
       const errOrUser = await dispatch(actions.LOGIN_WITH_CREDENTIALS, {
         email: credentials.email,
         password: credentials.password,
       });
 
       if (errOrUser.error) {
-        window.M.toast({
-          html: errOrUser.error.message,
-          classes: 'red',
-        });
+        error.value = errOrUser.error;
         return;
       }
 
@@ -58,6 +74,7 @@ export default {
     return {
       credentials,
       loginWithCreds,
+      error,
     };
   },
 };

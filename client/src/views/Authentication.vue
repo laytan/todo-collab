@@ -1,32 +1,30 @@
 <template>
-  <div ref="rootElement" class="authenticate">
-    <div class="login">
+  <div ref="rootElement" class="authenticate h-screen grid">
+    <div class="flex items-center justify-center px-1 relative transition-all delay-500">
       <transition name="slide-out-left">
-        <div v-if="isViewLogin" class="half-width slide-from-left">
+        <div v-if="isViewLogin" class="w-1/2 slide-from-left">
           <login></login>
         </div>
       </transition>
       <transition name="slide-out-right">
         <div v-if="!isViewLogin" class="slide-from-right">
-          <h4 :style="{ whiteSpace: 'nowrap' }">Already have an account?</h4>
-          <button class="btn waves-effect waves-light blue" @click="isViewLogin = true">
-            Login!
-          </button>
+          <h2 class="h2 whitespace-nowrap">Already have an account?</h2>
+          <Button @click="isViewLogin = true">Login!</Button>
         </div>
       </transition>
     </div>
-    <div class="register">
+    <div class="register flex items-center justify-center">
       <transition name="slide-out-right">
-        <div v-if="!isViewLogin" class="half-width slide-from-right">
+        <div v-if="!isViewLogin" class="w-1/2 slide-from-right">
           <register></register>
         </div>
       </transition>
       <transition name="slide-out-left">
         <div v-if="isViewLogin" class="slide-from-left">
-          <h4 :style="{ whiteSpace: 'nowrap' }">Don't have an account?</h4>
-          <button class="btn waves-effect waves-light red" @click="isViewLogin = false">
+          <h2 class="h2 whitespace-nowrap">Don't have an account?</h2>
+          <Button @click="isViewLogin = false">
             Sign up!
-          </button>
+          </Button>
         </div>
       </transition>
     </div>
@@ -38,12 +36,14 @@ import { ref, watch } from 'vue';
 
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
+import Button from '@/components/Button.vue';
 
 export default {
   name: 'authentication',
   components: {
     Login,
     Register,
+    Button,
   },
   setup() {
     const rootElement = ref(null);
@@ -73,8 +73,7 @@ export default {
 };
 </script>
 <style lang="scss">
-
-$animation-duration: .5s;
+$animation-duration: 0.5s;
 
 html {
   overflow: hidden;
@@ -82,25 +81,11 @@ html {
 
 .authenticate {
   max-width: 100vw;
-  height: 100vh;
-  display: grid;
   grid-template-columns: 55% 45%;
   transition: grid-template-columns 0.5s ease;
 }
 
-.login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0 1rem;
-  transition: all 0.5s;
-  position: relative;
-}
-
 .register {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   background: linear-gradient(50deg, #2196f3, #3f51b5);
   clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
 

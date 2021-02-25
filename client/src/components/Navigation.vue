@@ -30,7 +30,6 @@
   </div>
 </template>
 <script>
-import { onMounted } from 'vue';
 import { useStore, mapState } from '@/store';
 import { actions } from '@/types';
 
@@ -42,10 +41,6 @@ export default {
     function logout() {
       dispatch(actions.LOGOUT);
     }
-
-    onMounted(() => {
-      window.$('.dropdown-trigger').dropdown();
-    });
 
     return {
       user,

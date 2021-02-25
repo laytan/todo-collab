@@ -20,16 +20,20 @@
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.4",
+    "@tailwindcss/postcss7-compat": "^2.0.3",
     "@vue/cli-plugin-babel": "^4.5.11",
     "@vue/cli-plugin-eslint": "^4.5.11",
     "@vue/cli-service": "^4.5.11",
     "@vue/compiler-sfc": "^3.0.6",
     "@vue/eslint-config-airbnb": "^5.3.0",
+    "autoprefixer": "^9.8.6",
     "eslint": "^6.8.0",
     "eslint-plugin-vue": "^7.6.0",
     "eslint-webpack-plugin": "^2.5.2",
     "node-sass": "^5.0.0",
-    "sass-loader": "^10.1.1"
+    "postcss": "^7.0.35",
+    "sass-loader": "^10.1.1",
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.0.3"
   },
   "eslintConfig": {
     "root": true,
@@ -59,11 +63,6 @@
     },
     "parserOptions": {
       "parser": "@babel/eslint-parser"
-    }
-  },
-  "postcss": {
-    "plugins": {
-      "autoprefixer": {}
     }
   },
   "browserslist": [

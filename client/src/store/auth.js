@@ -15,7 +15,10 @@ export default {
         commit(mutations.SET_USER, res);
         return { error: null, user: res };
       } catch (error) {
-        return { error: error.message, user: null };
+        // TODO: Extract out for other actions with validation to use
+        const errMsg = `<div>${error.message}<br><span class="text-sm">${error.errors.flatMap((v) => Object.values(v)).join('<br>')}</span></div>`;
+
+        return { error: errMsg, user: null };
       } finally {
         commit(mutations.SET_LOADING, false);
       }
@@ -27,7 +30,7 @@ export default {
         commit(mutations.SET_USER, res.user);
         return { error: null, user: res };
       } catch (error) {
-        return { error, user: null };
+        return { error: error.message, user: null };
       } finally {
         commit(mutations.SET_LOADING, false);
       }
