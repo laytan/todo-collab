@@ -62,6 +62,11 @@ export const router = createRouter({
       name: 'reset',
       component: () => import(/* webpackChunkName: "reset" */ './views/Reset.vue'),
     },
+    {
+      path: '/lists',
+      name: 'lists',
+      component: () => import(/* webpackChunkName: "lists" */ './views/Lists.vue'),
+    },
   ],
 });
 
