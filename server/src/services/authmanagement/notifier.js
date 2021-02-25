@@ -32,7 +32,6 @@ module.exports = function notifier(app) {
     const additionalContext = {
       clientURL: process.env.CLIENT_URL,
       appName: process.env.APP_NAME,
-      unsubscribeURL: 'todo',
       user,
     };
 
