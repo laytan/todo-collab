@@ -2,17 +2,34 @@ import io from 'socket.io-client';
 import feathers from '@feathersjs/feathers';
 import socketio from '@feathersjs/socketio-client';
 import auth from '@feathersjs/authentication-client';
+import { iff, discard } from 'feathers-hooks-common';
+import feathersVuex from '@feathersjs/vuex';
 
-const socket = io('http://localhost:3030');
-export const client = feathers();
+export function setupFeathers() {
+  // TODO: Extract
+  const apiUrl = 'http://localhost:3030';
+  const socket = io(apiUrl, { transports: ['websocket'] });
 
-client.configure(socketio(socket));
-client.configure(auth());
+  const apiClient = feathers()
+    .configure(socketio(socket))
+    .configure(auth())
+    .hooks({
+      before: {
+        all: [
+          // Don't send FeathersVuex temp attributes to the server.
+          iff(
+            (context) => ['create', 'update', 'patch'].includes(context.method),
+            discard('__id', '__isTemp'),
+          ),
+        ],
+      },
+    });
 
-export const services = {
-  users: client.service('users'),
-  todolists: client.service('todo-lists'),
-  todos: client.service('todos'),
-  authManagement: client.service('authManagement'),
-  userHasAccess: client.service('user-has-access'),
-};
+  // setup feathers-vuex
+  const apiVuex = feathersVuex(apiClient, {
+    idField: 'id',
+    whitelist: ['$regex', '$options'],
+  });
+
+  return { apiClient, apiVuex };
+}

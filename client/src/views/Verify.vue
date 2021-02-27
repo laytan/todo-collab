@@ -14,8 +14,8 @@
 </template>
 <script>
 import { ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 import { useRouter } from '@/router';
-import { useStore } from '@/store';
 import { actions } from '@/types';
 
 export default {
@@ -23,7 +23,7 @@ export default {
     const router = useRouter();
     const { token } = router.currentRoute.value.query;
 
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const success = ref(false);
 

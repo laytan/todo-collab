@@ -7,7 +7,7 @@
   </div>
 </template>
 <script>
-import { mapState } from '@/store';
+import { mapState } from './store';
 
 export default {
   setup() {

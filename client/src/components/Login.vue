@@ -7,7 +7,7 @@
       >{{ error.value }}</Error
     >
     <form @submit.prevent="loginWithCreds">
-      <h2 class="h1 text-red-400">Login</h2>
+      <h2 class="text-red-400 h1">Login</h2>
 
       <label for="email">Email</label>
       <input v-model="credentials.email" id="email" type="email" required />
@@ -15,7 +15,7 @@
       <label for="password">Password</label>
       <input v-model="credentials.password" id="password" type="password" required />
 
-      <router-link class="text-right block text-sm" to="/reset">Forgot Password?</router-link>
+      <router-link class="block text-sm text-right" to="/reset">Forgot Password?</router-link>
 
       <Button type="submit" name="action">
         Login
@@ -26,8 +26,8 @@
 
 <script>
 import { reactive } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from '@/store';
 import { useRouter } from '@/router';
 import { redirectedFromOr } from '@/helpers';
 import { actions } from '@/types';
@@ -41,7 +41,7 @@ export default {
     Error,
   },
   setup() {
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const credentials = reactive({
       email: '',

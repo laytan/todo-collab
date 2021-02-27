@@ -14,27 +14,20 @@
         />
       </div>
     </div>
-    <div class="checkbox-wrapper flex column between">
+    <div class="flex checkbox-wrapper column between">
       <label>
-        <input
-          type="checkbox"
-          class="filled-in"
-          :checked="item.completed_at"
-          @click="toggleDone"
-        />
+        <input type="checkbox" class="filled-in" :checked="item.completed_at" @click="toggleDone" />
         <!-- This span is required -->
         <span class="checkbox-span"></span>
       </label>
-      <i @click="removeItem" class="material-icons red-text remove"
-        >delete_forever</i
-      >
+      <i @click="removeItem" class="material-icons red-text remove">delete_forever</i>
     </div>
   </div>
 </template>
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from '@/store';
 import { actions } from '@/types';
 
 import itemLabel from '@/components/list/ItemLabel.vue';
@@ -55,7 +48,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const showMore = ref(false);
 

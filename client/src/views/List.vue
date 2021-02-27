@@ -16,8 +16,8 @@
             <ul ref="listAccordion" id="list-accordion" class="collapsible">
               <li>
                 <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                    Users
-                  <div class="icon-stack ml-auto">
+                  Users
+                  <div class="ml-auto icon-stack">
                     <i class="material-icons">person_outline</i>
                     <i class="material-icons arrow-down">arrow_drop_down</i>
                     <i class="material-icons arrow-up">arrow_drop_up</i>
@@ -36,31 +36,27 @@
               <li>
                 <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
                   Add Collaborators
-                  <div class="icon-stack ml-auto">
+                  <div class="ml-auto icon-stack">
                     <i class="material-icons">supervisor_account</i>
                     <i class="material-icons arrow-down">arrow_drop_down</i>
                     <i class="material-icons arrow-up">arrow_drop_up</i>
                   </div>
                 </div>
                 <div class="collapsible-body cyan lighten-5">
-                  <p>Enter your collaborators emails here: </p>
+                  <p>Enter your collaborators emails here:</p>
                   <form @submit.prevent="giveAccess">
-                    <input type="email" placeholder="Email" v-model="giveAccessEmail">
-                      <button
-                        class="btn waves-effect yellow black-text"
-                        type="submit"
-                        name="action"
-                      >
-                        Give access
-                        <i class="material-icons right">add</i>
-                      </button>
+                    <input type="email" placeholder="Email" v-model="giveAccessEmail" />
+                    <button class="btn waves-effect yellow black-text" type="submit" name="action">
+                      Give access
+                      <i class="material-icons right">add</i>
+                    </button>
                   </form>
                 </div>
               </li>
               <li>
                 <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
                   Events
-                  <div class="icon-stack ml-auto">
+                  <div class="ml-auto icon-stack">
                     <i class="material-icons">view_stream</i>
                     <i class="material-icons arrow-down">arrow_drop_down</i>
                     <i class="material-icons arrow-up">arrow_drop_up</i>
@@ -71,7 +67,7 @@
                   <ul>
                     <li v-for="event in list.events" :key="event.id">
                       {{ event.emitter.username }}
-                      {{ event.type.toLowerCase() }}d the list. <br>
+                      {{ event.type.toLowerCase() }}d the list. <br />
                       <small>{{ new Date(event.created_at).toLocaleString() }}</small>
                     </li>
                   </ul>
@@ -80,7 +76,7 @@
                     <h5>{{ item.name }}</h5>
                     <li v-for="event in item.events" :key="event.id">
                       {{ event.emitter.username }}
-                      {{ event.type.toLowerCase() }}d the item. <br>
+                      {{ event.type.toLowerCase() }}d the item. <br />
                       <small>{{ new Date(event.created_at).toLocaleString() }}</small>
                     </li>
                   </ul>
@@ -97,7 +93,6 @@
 <script>
 import { watch, ref, computed } from 'vue';
 
-import { mapState } from '@/store';
 import { useRouter } from '@/router';
 
 import todoList from '@/components/TodoList.vue';
@@ -107,19 +102,18 @@ export default {
     todoList,
   },
   setup() {
-    const lists = mapState('lists');
+    const lists = [];
 
     const router = useRouter();
     const listId = parseInt(router.currentRoute.value.params.id, 10);
     const currentList = computed(() => lists.value.filter((list) => list.id === listId)[0]);
 
-    const itemsWithEvents = computed(
-      () => (
-        (currentList.value.items)
-          ? currentList.value.items.filter((item) => item.events.length > 0)
-          : []
-      ),
-    );
+    const itemsWithEvents = computed(() => {
+      if (currentList.value.items) {
+        return currentList.value.items.filter((item) => item.events.length > 0);
+      }
+      return [];
+    });
 
     const giveAccessEmail = ref('');
 

@@ -21,7 +21,6 @@
 </template>
 
 <script>
-import { mapState } from '@/store';
 import Navigation from '@/components/Navigation.vue';
 
 export default {
@@ -29,7 +28,7 @@ export default {
     Navigation,
   },
   setup() {
-    const lists = mapState('lists');
+    const lists = [];
 
     return { lists };
   },

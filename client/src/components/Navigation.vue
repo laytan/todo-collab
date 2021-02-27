@@ -30,13 +30,14 @@
   </div>
 </template>
 <script>
-import { useStore, mapState } from '@/store';
+import { useStore } from 'vuex';
+
 import { actions } from '@/types';
 
 export default {
   setup() {
-    const { dispatch } = useStore();
-    const user = mapState('user');
+    const dispatch = useStore();
+    const user = {};
 
     function logout() {
       dispatch(actions.LOGOUT);

@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
-import { mapState, useStore } from '@/store';
 import Home from '@/views/Home.vue';
-import { actions } from '@/types';
+import { mapState } from '@/store';
 
 function redirectIfLoggedIn(to, from, next) {
   const user = mapState('user');
@@ -70,28 +69,28 @@ export const router = createRouter({
   ],
 });
 
-router.beforeEach(async (to, from, next) => {
-  const { dispatch } = useStore();
-  const user = mapState('user');
+// router.beforeEach(async (to, from, next) => {
+//   const dispatch = useStore();
+//   const user = mapState('user');
 
-  function initState() {
-    dispatch(actions.INIT);
-    dispatch(actions.SYNC_LISTS);
-  }
+//   function initState() {
+//     dispatch(actions.INIT);
+//     dispatch(actions.SYNC_LISTS);
+//   }
 
-  if (!user.value.id) {
-    // Try to log in
-    const loggedIn = await dispatch(actions.TRY_AUTH);
-    if (loggedIn) {
-      initState();
-    }
-  } else {
-    // Already loggedIn
-    initState();
-  }
+//   if (!user.value.id) {
+//     // Try to log in
+//     const loggedIn = await dispatch(actions.TRY_AUTH);
+//     if (loggedIn) {
+//       initState();
+//     }
+//   } else {
+//     // Already loggedIn
+//     initState();
+//   }
 
-  next();
-});
+//   next();
+// });
 
 export function useRouter() {
   return router;

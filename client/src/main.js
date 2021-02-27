@@ -1,7 +1,15 @@
 import { createApp } from 'vue';
-import { store } from '@/store';
-import { router } from '@/router';
-import App from '@/App.vue';
 import './style/index.pcss';
+import App from '@/App.vue';
+import { router } from '@/router';
+import { setupFeathers } from '@/feathers';
+import { setupStore } from '@/store';
 
-createApp(App).use(router).use(store).mount('#app');
+const app = createApp(App);
+const feathers = setupFeathers();
+const store = setupStore({ feathers });
+
+app
+  .use(router)
+  .use(store)
+  .mount('#app');

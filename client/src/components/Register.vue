@@ -13,7 +13,7 @@
       >{{ success.value }}</Success
     >
     <form @submit.prevent="registerWithCreds">
-      <h2 class="h1 text-red-400">Register</h2>
+      <h2 class="text-red-400 h1">Register</h2>
       <label for="username">Username</label>
       <input type="text" id="username" v-model="credentials.username" required />
 
@@ -32,8 +32,8 @@
 
 <script>
 import { reactive } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from '@/store';
 import { actions } from '@/types';
 
 import Button from '@/components/Button.vue';
@@ -47,7 +47,7 @@ export default {
     Success,
   },
   setup() {
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const credentials = reactive({
       username: '',

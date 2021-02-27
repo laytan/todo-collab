@@ -1,10 +1,12 @@
-import { createStore } from 'vuex';
 import { computed } from 'vue';
+import { createStore, useStore } from 'vuex';
 
-import auth from '@/store/auth';
 import general from '@/store/general';
-import item from '@/store/item';
-import list from '@/store/list';
+
+import { lists } from '@/store/services/lists';
+import { todos } from '@/store/services/todos';
+import { userHasAccess } from '@/store/services/user-has-access';
+import { users } from '@/store/services/users';
 
 /**
  * Merges seperate mutations and actions objects into one
@@ -19,21 +21,28 @@ function mergedStores(stores) {
   }, { mutations: {}, actions: {} });
 }
 
-export const store = createStore({
-  state: {
-    user: {},
-    loading: false,
-    lists: [],
-    isInitialized: false,
-  },
-  ...mergedStores([auth, general, item, list]),
-});
+export function setupStore({ feathers }) {
+  const store = createStore({
+    state() {
+      return {
+        loading: false,
+      };
+    },
+    ...mergedStores([general]),
+    plugins: [
+      lists({ feathers }),
+      todos({ feathers }),
+      userHasAccess({ feathers }),
+      users({ feathers }),
+    ],
+  });
 
-export function useStore() {
   return store;
 }
 
 export function mapState(states) {
+  const store = useStore();
+
   const mappedState = [];
   const arrayStates = Array.isArray(states) ? states : [states];
 

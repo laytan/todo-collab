@@ -3,19 +3,21 @@
     <h2 class="name">
       {{ list.name }}
     </h2>
-      <progress-bar v-if="list.items" :items="list.items"/>
-      <list-item
-        v-for="item in listItems"
-        :key="item.id"
-        :item-data="item"
-        @mousedown="(e) => mouseDownItem(item.id, e)"
-      />
-    <div class="buttons flex between">
+    <progress-bar v-if="list.items" :items="list.items" />
+    <list-item
+      v-for="item in listItems"
+      :key="item.id"
+      :item-data="item"
+      @mousedown="(e) => mouseDownItem(item.id, e)"
+    />
+    <div class="flex buttons between">
       <button class="btn-floating btn-large waves-effect waves-light red lighten-3">
         <i class="material-icons">security</i>
       </button>
-      <button @click="addItem"
-      class="btn-floating btn-large waves-effect waves-light red lighten-3">
+      <button
+        @click="addItem"
+        class="btn-floating btn-large waves-effect waves-light red lighten-3"
+      >
         <i class="material-icons">add</i>
       </button>
       <button class="btn-floating btn-large waves-effect waves-light red lighten-3">
@@ -25,14 +27,10 @@
   </div>
 </template>
 <script>
-import {
-  watch,
-  watchEffect,
-  ref,
-  onMounted,
-} from 'vue';
+// eslint-disable-next-line object-curly-newline
+import { watch, watchEffect, ref, onMounted } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from '@/store';
 import progressBar from '@/components/list/ProgressBar.vue';
 import listItem from '@/components/list/ListItem.vue';
 import { actions } from '@/types';
@@ -40,7 +38,7 @@ import useMousePosition from '@/composition/useMousePosition';
 import { onNoMouseUp } from '@/helpers';
 
 function useDraggableOrder(itemsProp) {
-  const { dispatch } = useStore();
+  const dispatch = useStore();
 
   const items = ref(itemsProp);
 
@@ -61,12 +59,8 @@ function useDraggableOrder(itemsProp) {
   });
 
   // Reactive mouse position
-  const {
-    x,
-    y,
-    listen,
-    stopListen,
-  } = useMousePosition();
+  // eslint-disable-next-line object-curly-newline
+  const { x, y, listen, stopListen } = useMousePosition();
 
   // Watch mouse position and update the ui according to the current position of the dragging item
   watch([x, y], ([newX, newY]) => {
@@ -90,11 +84,13 @@ function useDraggableOrder(itemsProp) {
 
       const offsetWithAggr = Math.abs(itemIdToElMap[aggr.id].offsetTop - y.value);
       const offsetWithCurr = Math.abs(itemIdToElMap[curr.id].offsetTop - y.value);
-      return (offsetWithAggr > offsetWithCurr) ? curr : aggr;
+      return offsetWithAggr > offsetWithCurr ? curr : aggr;
     }, null);
 
     // Add class to show position of dragging element if it where to be dropped
-    const topOrBottomClass = ((itemIdToElMap[closest.id].offsetTop - y.value) < 0) ? 'dragging-bottom' : 'dragging-top';
+    // eslint-disable-next-line operator-linebreak
+    const topOrBottomClass =
+      itemIdToElMap[closest.id].offsetTop - y.value < 0 ? 'dragging-bottom' : 'dragging-top';
     itemIdToElMap[closest.id].classList.add(topOrBottomClass);
   });
 
@@ -151,10 +147,14 @@ function useDraggableOrder(itemsProp) {
     itemIdToElMap[itemId].classList.remove('dragging');
 
     // Remove all dragging-clones that we find
-    document.querySelectorAll('.dragging-clone').forEach((node) => node.parentElement.removeChild(node));
+    document
+      .querySelectorAll('.dragging-clone')
+      .forEach((node) => node.parentElement.removeChild(node));
 
     // Remove dragging-top and dragging-bottom of any items that got it
-    document.querySelectorAll('.dragging-bottom, .dragging-top').forEach((el) => { el.classList.remove('dragging-bottom', 'dragging-top'); });
+    document.querySelectorAll('.dragging-bottom, .dragging-top').forEach((el) => {
+      el.classList.remove('dragging-bottom', 'dragging-top');
+    });
   }
 
   /**
@@ -200,7 +200,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     function addItem() {
       dispatch(actions.ADD_ITEM_TO_LIST, props.list.id);
@@ -217,7 +217,6 @@ export default {
     };
   },
 };
-
 </script>
 <style lang="scss" scoped>
 .todo-list {
@@ -229,10 +228,10 @@ export default {
 
 .name {
   margin: 0 1.5rem;
-  padding: 1.5rem 0 .5rem 0;
+  padding: 1.5rem 0 0.5rem 0;
   font-size: 2.5rem;
   text-transform: uppercase;
-  color: #EF9A9A;
+  color: #ef9a9a;
 }
 
 .buttons {
@@ -247,11 +246,13 @@ export default {
   opacity: 0.5;
 }
 
-.dragging-bottom, .dragging-top {
+.dragging-bottom,
+.dragging-top {
   position: relative;
 }
 
-.dragging-bottom::after, .dragging-top::before {
+.dragging-bottom::after,
+.dragging-top::before {
   content: '';
   display: block;
   background: rgba(239, 154, 154, 0.5);

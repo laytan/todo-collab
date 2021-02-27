@@ -12,11 +12,13 @@
     "@feathersjs/feathers": "^4.5.11",
     "@feathersjs/rest-client": "^4.5.11",
     "@feathersjs/socketio-client": "^4.5.11",
+    "@feathersjs/vuex": "^4.0.1-pre.11",
     "core-js": "^3.9.0",
+    "feathers-hooks-common": "^5.0.5",
     "socket.io-client": "^2.4.0",
-    "vue": "^3.0.0",
-    "vue-router": "^4.0.0-beta.11",
-    "vuex": "^4.0.0-alpha.1"
+    "vue": "^3.0.5",
+    "vue-router": "^4.0.3",
+    "vuex": "^4.0.0"
   },
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.4",
@@ -59,7 +61,8 @@
         {
           "props": false
         }
-      ]
+      ],
+      "import/prefer-default-export": "off"
     },
     "parserOptions": {
       "parser": "@babel/eslint-parser"

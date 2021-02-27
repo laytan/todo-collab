@@ -1,17 +1,20 @@
 <template>
   <div class="home">
     <div class="hero white-text">
-      <navigation/>
-      <div class="row container valign-wrapper">
+      <navigation />
+      <div class="container row valign-wrapper">
         <div class="col s4">
           <h1 class="red-text text-lighten-3">Todo Collab</h1>
           <p>
-            Lorem ipsum dolor sit amet, bibendum a enim vitae, tempus scelerisque purus.
-            Nunc vel eros elementum, feugiat magna viverra, placerat ante. Praesent non enim orci.
-            Nullam vitae luctus quam.
+            Lorem ipsum dolor sit amet, bibendum a enim vitae, tempus scelerisque purus. Nunc vel
+            eros elementum, feugiat magna viverra, placerat ante. Praesent non enim orci. Nullam
+            vitae luctus quam.
           </p>
-          <router-link v-if="user.email" to="/lists"
-          class="waves-effect waves-light btn red-border">
+          <router-link
+            v-if="user.email"
+            to="/lists"
+            class="waves-effect waves-light btn red-border"
+          >
             My todos
           </router-link>
           <router-link v-else to="/authentication" class="waves-effect waves-light btn red-border">
@@ -58,8 +61,7 @@
       </div>
     </div>
     <h1>Todo Collab</h1>
-    <div class="container list-container">
-    </div>
+    <div class="container list-container"></div>
     <div v-if="user.email">
       <h2>Create a todo!</h2>
       <create-todo></create-todo>
@@ -70,7 +72,6 @@
 <script>
 import { onMounted } from 'vue';
 
-import { mapState } from '@/store';
 import CreateTodo from '@/components/CreateTodo.vue';
 import Navigation from '@/components/Navigation.vue';
 
@@ -81,7 +82,7 @@ export default {
     Navigation,
   },
   setup() {
-    const user = mapState('user');
+    const user = {};
 
     function todoAnimation() {
       // Get the checkboxes

@@ -15,7 +15,7 @@
         </p>
         <form @submit.prevent="resetPassword">
           <div class="input-field">
-            <input type="password" id="new-password" v-model="newPassword" required>
+            <input type="password" id="new-password" v-model="newPassword" required />
             <label for="new-password">New Password</label>
             <div class="input-field row">
               <button type="submit" class="btn waves-effect waves-light col s12">
@@ -29,19 +29,17 @@
     <div v-else>
       <div v-if="hasSent">
         <h2>An Email has been sent</h2>
-        <p>
-          An email has been sent to {{ email }} with a link to reset your password.
-        </p>
+        <p>An email has been sent to {{ email }} with a link to reset your password.</p>
       </div>
       <div v-else>
         <h2>Reset Your Password</h2>
         <p>
-          Forgot your password?
-          No problem, enter your email below and we will send you a reset link.
+          Forgot your password? No problem, enter your email below and we will send you a reset
+          link.
         </p>
         <form @submit.prevent="sendResetPasswordEmail">
           <div class="input-field">
-            <input type="email" id="email" v-model="email" required>
+            <input type="email" id="email" v-model="email" required />
             <label for="email">Email</label>
           </div>
           <div class="input-field row">
@@ -57,7 +55,7 @@
 
 <script>
 import { ref, onMounted } from 'vue';
-import { useStore } from '@/store';
+import { useStore } from 'vuex';
 import { useRouter } from '@/router';
 import { actions } from '@/types';
 
@@ -69,7 +67,7 @@ export default {
     const hasReset = ref(false);
     const hasSent = ref(false);
 
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const router = useRouter();
     const token = ref('');

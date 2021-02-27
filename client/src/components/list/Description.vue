@@ -17,8 +17,8 @@
 </template>
 <script>
 import { ref } from 'vue';
+import { useStore } from 'vuex';
 
-import { useStore } from '@/store';
 import { actions } from '@/types';
 
 export default {
@@ -30,7 +30,7 @@ export default {
     },
   },
   setup(props) {
-    const { dispatch } = useStore();
+    const dispatch = useStore();
 
     const editing = ref(false);
     const textarea = ref(null);
