@@ -1,6 +1,6 @@
 <template>
-  <div ref="rootElement" class="authenticate h-screen grid">
-    <div class="flex items-center justify-center px-1 relative transition-all delay-500">
+  <div ref="rootElement" class="grid h-screen authenticate">
+    <div class="relative flex items-center justify-center px-1 transition-all delay-500">
       <transition name="slide-out-left">
         <div v-if="isViewLogin" class="w-1/2 slide-from-left">
           <login></login>
@@ -13,7 +13,7 @@
         </div>
       </transition>
     </div>
-    <div class="register flex items-center justify-center">
+    <div class="flex items-center justify-center register">
       <transition name="slide-out-right">
         <div v-if="!isViewLogin" class="w-1/2 slide-from-right">
           <register></register>
@@ -32,7 +32,10 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted } from 'vue';
+
+import { mustBeLoggedOut } from '@/helpers';
+import { mapState } from '@/store';
 
 import Login from '@/components/Login.vue';
 import Register from '@/components/Register.vue';
@@ -46,6 +49,11 @@ export default {
     Button,
   },
   setup() {
+    // Ensure user is not on this page when logged in
+    onMounted(mustBeLoggedOut);
+    const user = mapState('auth.user');
+    watch(user, mustBeLoggedOut);
+
     const rootElement = ref(null);
     const isViewLogin = ref(true);
 

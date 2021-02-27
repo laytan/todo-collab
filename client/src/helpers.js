@@ -1,3 +1,6 @@
+import { mapState } from '@/store';
+import { useRouter } from '@/router';
+
 /**
  * Only calls fn at most every delay ms
  *
@@ -46,4 +49,20 @@ export function redirectedFromOr(path, router) {
 
   // redirect to path
   router.push(path);
+}
+
+export function mustBeLoggedOut() {
+  const router = useRouter();
+  const user = mapState('auth.user');
+  if (user) {
+    router.push('/');
+  }
+}
+
+export function mustBeLoggedIn() {
+  const router = useRouter();
+  const user = mapState('auth.user');
+  if (!user) {
+    router.push('/authentication');
+  }
 }

@@ -1,6 +1,15 @@
 <template>
   <div class="home">
-    <div class="hero white-text">
+    <div class="container max-w-md px-2 mx-auto">
+      <span class="text-xl font-semibold text-red-600" v-if="user">
+        Hello, {{ user.username }}!
+        <button class="text-blue hover:underline" @click="logout">Logout</button>
+      </span>
+      <router-link class="text-blue hover:underline" v-else to="/authentication"
+        >Authenticate</router-link
+      >
+    </div>
+    <!-- <div class="hero white-text">
       <navigation />
       <div class="container row valign-wrapper">
         <div class="col s4">
@@ -65,64 +74,70 @@
     <div v-if="user.email">
       <h2>Create a todo!</h2>
       <create-todo></create-todo>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script>
-import { onMounted } from 'vue';
-
-import CreateTodo from '@/components/CreateTodo.vue';
-import Navigation from '@/components/Navigation.vue';
-
+// import { useStore } from 'vuex';
+import { mapState } from '@/store';
+import { useStore } from 'vuex';
+// import { watch } from 'vue';
+// import CreateTodo from '@/components/CreateTodo.vue';
+// import Navigation from '@/components/Navigation.vue';
 export default {
   name: 'home',
-  components: {
-    CreateTodo,
-    Navigation,
-  },
   setup() {
-    const user = {};
+    const { dispatch } = useStore();
+    const user = mapState('auth.user');
 
-    function todoAnimation() {
-      // Get the checkboxes
-      const yesBoxes = Array.from(document.querySelectorAll('.todo .yes'));
-      const noBoxes = Array.from(document.querySelectorAll('.todo .no'));
-
-      // Get the progress bar and progress text
-      const progress = document.querySelector('.todo .determinate');
-      const progressText = document.querySelector('#todo-progress');
-
-      // Keep track of progress
-      const { length } = yesBoxes;
-      const parts = 100 / length;
-      let i = 0;
-
-      const interval = setInterval(() => {
-        // Toggle a checkbox
-        yesBoxes[i].style.display = 'block';
-        noBoxes[i].style.display = 'none';
-
-        // Calculate new percentage
-        const width = `${(parts * (i + 1)).toFixed(0)}%`;
-        progress.style.width = width;
-        progressText.innerText = width;
-
-        // Clearinterval if we are done
-        if (i === length - 1) {
-          clearInterval(interval);
-        }
-
-        i += 1;
-      }, 1000);
+    function logout() {
+      dispatch('auth/logout');
     }
+    // watch(user, console.warn);
+    // const { dispatch } = useStore();
+    // dispatch('auth/authenticate');
 
-    onMounted(() => {
-      setTimeout(todoAnimation, 500);
-    });
+    // function todoAnimation() {
+    //   // Get the checkboxes
+    //   const yesBoxes = Array.from(document.querySelectorAll('.todo .yes'));
+    //   const noBoxes = Array.from(document.querySelectorAll('.todo .no'));
+
+    //   // Get the progress bar and progress text
+    //   const progress = document.querySelector('.todo .determinate');
+    //   const progressText = document.querySelector('#todo-progress');
+
+    //   // Keep track of progress
+    //   const { length } = yesBoxes;
+    //   const parts = 100 / length;
+    //   let i = 0;
+
+    //   const interval = setInterval(() => {
+    //     // Toggle a checkbox
+    //     yesBoxes[i].style.display = 'block';
+    //     noBoxes[i].style.display = 'none';
+
+    //     // Calculate new percentage
+    //     const width = `${(parts * (i + 1)).toFixed(0)}%`;
+    //     progress.style.width = width;
+    //     progressText.innerText = width;
+
+    //     // Clearinterval if we are done
+    //     if (i === length - 1) {
+    //       clearInterval(interval);
+    //     }
+
+    //     i += 1;
+    //   }, 1000);
+    // }
+
+    // onMounted(() => {
+    //   setTimeout(todoAnimation, 500);
+    // });
 
     return {
       user,
+      logout,
     };
   },
 };

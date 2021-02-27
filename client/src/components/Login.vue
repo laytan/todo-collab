@@ -1,10 +1,10 @@
 <template>
   <div>
     <Error
-      v-if="error.value.length"
-      :dismissed="error.dismissed"
-      :on-dismiss="() => (error.dismissed = true)"
-      >{{ error.value }}</Error
+      v-if="error && !error.message.includes('found in storage')"
+      :dismissed="errorDismissed"
+      :on-dismiss="() => (errorDismissed = true)"
+      >{{ error.message }}</Error
     >
     <form @submit.prevent="loginWithCreds">
       <h2 class="text-red-400 h1">Login</h2>
@@ -25,12 +25,10 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { reactive, ref, watch } from 'vue';
 import { useStore } from 'vuex';
-
-import { useRouter } from '@/router';
-import { redirectedFromOr } from '@/helpers';
-import { actions } from '@/types';
+import { mapState } from '@/store';
+import { mutations } from '@/types';
 
 import Button from './Button.vue';
 import Error from './messages/Error.vue';
@@ -41,39 +39,27 @@ export default {
     Error,
   },
   setup() {
-    const dispatch = useStore();
+    const { dispatch, commit } = useStore();
 
     const credentials = reactive({
       email: '',
       password: '',
     });
 
-    const error = reactive({
-      dismissed: false,
-      value: '',
-    });
+    const errorDismissed = ref(false);
 
-    async function loginWithCreds() {
-      error.value = '';
-      error.dismissed = false;
+    const [error, loading] = mapState(['auth.errorOnAuthenticate', 'auth.isAuthenticatePending']);
+    watch(loading, (newLoading) => commit(mutations.SET_LOADING, newLoading));
 
-      const errOrUser = await dispatch(actions.LOGIN_WITH_CREDENTIALS, {
-        email: credentials.email,
-        password: credentials.password,
-      });
-
-      if (errOrUser.error) {
-        error.value = errOrUser.error;
-        return;
-      }
-
-      // Logged in
-      redirectedFromOr('/', useRouter());
+    function loginWithCreds() {
+      errorDismissed.value = false;
+      dispatch('auth/authenticate', { ...credentials, strategy: 'local' }).catch(() => {});
     }
 
     return {
       credentials,
       loginWithCreds,
+      errorDismissed,
       error,
     };
   },

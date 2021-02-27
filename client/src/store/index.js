@@ -7,6 +7,7 @@ import { lists } from '@/store/services/lists';
 import { todos } from '@/store/services/todos';
 import { userHasAccess } from '@/store/services/user-has-access';
 import { users } from '@/store/services/users';
+import { auth } from '@/store/auth';
 
 /**
  * Merges seperate mutations and actions objects into one
@@ -30,6 +31,7 @@ export function setupStore({ feathers }) {
     },
     ...mergedStores([general]),
     plugins: [
+      auth({ feathers }),
       lists({ feathers }),
       todos({ feathers }),
       userHasAccess({ feathers }),
@@ -47,6 +49,19 @@ export function mapState(states) {
   const arrayStates = Array.isArray(states) ? states : [states];
 
   arrayStates.forEach((state) => {
+    if (state.includes('.')) {
+      mappedState.push(computed(() => {
+        const parts = state.split('.').reverse();
+        let stateToMap = store.state;
+        while (parts.length) {
+          const part = parts.pop();
+          stateToMap = stateToMap[part];
+        }
+        return stateToMap;
+      }));
+      return;
+    }
+
     mappedState.push(computed(() => store.state[state]));
   });
 

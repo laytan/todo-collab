@@ -6,12 +6,6 @@
       :on-dismiss="() => (error.dismissed = true)"
       v-html="error.value"
     />
-    <Success
-      v-if="success.value.length"
-      :dismissed="success.dismissed"
-      :on-dismiss="() => (success.dismissed = true)"
-      >{{ success.value }}</Success
-    >
     <form @submit.prevent="registerWithCreds">
       <h2 class="text-red-400 h1">Register</h2>
       <label for="username">Username</label>
@@ -33,21 +27,19 @@
 <script>
 import { reactive } from 'vue';
 import { useStore } from 'vuex';
-
-import { actions } from '@/types';
+import { models } from '@feathersjs/vuex';
 
 import Button from '@/components/Button.vue';
 import Error from '@/components/messages/Error.vue';
-import Success from '@/components/messages/Success.vue';
 
 export default {
   components: {
     Button,
     Error,
-    Success,
   },
   setup() {
-    const dispatch = useStore();
+    const { dispatch } = useStore();
+    const { User } = models.api;
 
     const credentials = reactive({
       username: '',
@@ -60,40 +52,31 @@ export default {
       value: '',
     });
 
-    const success = reactive({
-      dismissed: false,
-      value: '',
-    });
-
     async function registerWithCreds() {
       error.value = '';
       error.dismissed = false;
-      success.value = '';
-      success.dismissed = false;
 
-      const res = await dispatch(actions.REGISTER, {
-        username: credentials.username,
-        email: credentials.email,
-        password: credentials.password,
-      });
-
-      if (res.error) {
-        console.warn(res.error);
-        error.value = res.error;
-        return;
+      try {
+        await new User(credentials).save();
+        await dispatch('auth/authenticate', {
+          strategy: 'local',
+          email: credentials.email,
+          password: credentials.password,
+        });
+      } catch (err) {
+        console.warn(err);
+        error.value = err?.message ?? 'Something went wrong when signing you up, please try again.';
+      } finally {
+        credentials.username = '';
+        credentials.email = '';
+        credentials.password = '';
       }
-
-      credentials.username = '';
-      credentials.email = '';
-      credentials.password = '';
-      success.value = 'Account has been registered.';
     }
 
     return {
       credentials,
       registerWithCreds,
       error,
-      success,
     };
   },
 };
