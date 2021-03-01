@@ -1,191 +1,121 @@
 <template>
   <div class="home">
-    <div class="container max-w-md px-2 mx-auto">
-      <span class="text-xl font-semibold text-red-600" v-if="user">
-        Hello, {{ user.username }}!
-        <button class="text-blue hover:underline" @click="logout">Logout</button>
-      </span>
-      <router-link class="text-blue hover:underline" v-else to="/authentication"
-        >Authenticate</router-link
-      >
-    </div>
-    <!-- <div class="hero white-text">
+    <div>
       <navigation />
-      <div class="container row valign-wrapper">
-        <div class="col s4">
-          <h1 class="red-text text-lighten-3">Todo Collab</h1>
-          <p>
-            Lorem ipsum dolor sit amet, bibendum a enim vitae, tempus scelerisque purus. Nunc vel
-            eros elementum, feugiat magna viverra, placerat ante. Praesent non enim orci. Nullam
-            vitae luctus quam.
-          </p>
-          <router-link
-            v-if="user.email"
-            to="/lists"
-            class="waves-effect waves-light btn red-border"
-          >
-            My todos
-          </router-link>
-          <router-link v-else to="/authentication" class="waves-effect waves-light btn red-border">
-            Login / Register
-          </router-link>
-        </div>
-        <div class="col s8">
-          <div class="todo z-depth-4">
-            <h2 class="red-text text-lighten-3">Features</h2>
-            <ul>
-              <li class="valign-wrapper section todo-item">
-                <i class="material-icons no">check_box_outline_blank</i>
-                <i class="material-icons yes">check_box</i>
-                <span>Easy UI</span>
-              </li>
-              <div class="divider red lighten-3"></div>
-              <li class="valign-wrapper section todo-item">
-                <i class="material-icons no">check_box_outline_blank</i>
-                <i class="material-icons yes">check_box</i>
-                <span>Collaborate</span>
-              </li>
-              <div class="divider red lighten-3"></div>
-              <li class="valign-wrapper section todo-item">
-                <i class="material-icons no">check_box_outline_blank</i>
-                <i class="material-icons yes">check_box</i>
-                <span>Event trace</span>
-              </li>
-              <div class="divider red lighten-3"></div>
-              <li class="valign-wrapper section todo-item">
-                <i class="material-icons no">check_box_outline_blank</i>
-                <i class="material-icons yes">check_box</i>
-                <span>Free</span>
-              </li>
-              <div class="divider red lighten-3"></div>
-            </ul>
-            <div class="section progress-wrapper valign-wrapper">
-              <div class="progress white">
-                <div class="determinate green accent-3" style="width: 0%;"></div>
+      <div class="from-blue-600 to-blue-400 bg-gradient-to-tr">
+        <div class="container grid h-screen grid-cols-2 gap-6 p-2 mx-auto place-items-center">
+          <div class="max-w-md">
+            <h1 class="mb-4 text-6xl text-red-300">Todo Collab</h1>
+            <p class="mb-3 text-lg text-white">
+              Lorem ipsum dolor sit amet, bibendum a enim vitae, tempus scelerisque purus. Nunc vel
+              eros elementum, feugiat magna viverra, placerat ante. Praesent non enim orci. Nullam
+              vitae luctus quam.
+            </p>
+            <Button v-if="user">
+              <router-link class="text-white hover:no-underline" to="/lists">
+                My todos
+              </router-link>
+            </Button>
+            <Button v-else>
+              <router-link class="text-white hover:no-underline" to="/authentication">
+                Login / Register
+              </router-link>
+            </Button>
+          </div>
+          <div>
+            <div class="p-8 pt-8 shadow-xl todo">
+              <h2 class="mb-6 text-6xl text-red-300">Features</h2>
+              <ul class="text-xl text-white">
+                <li
+                  style="min-width: 20vw;"
+                  class="flex items-center gap-8 py-2 border-b border-red-300"
+                  v-for="item in todoItems"
+                  :key="item.text"
+                >
+                  <input
+                    class="text-red-400 rounded"
+                    type="checkbox"
+                    :checked="item.checked"
+                    disabled
+                  />
+                  {{ item.text }}
+                </li>
+              </ul>
+              <div class="flex items-center gap-2 mt-4 text-white">
+                <span class="relative block w-full h-2 bg-gray-200 rounded custom-range">
+                  <span
+                    :style="`width: ${percentageChecked}%;`"
+                    class="block h-2 transition-all bg-green-500 rounded custom-range__filled"
+                  ></span>
+                </span>
+                <span> {{ percentageChecked }}% </span>
               </div>
-              <span id="todo-progress">0%</span>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <h1>Todo Collab</h1>
-    <div class="container list-container"></div>
-    <div v-if="user.email">
-      <h2>Create a todo!</h2>
-      <create-todo></create-todo>
-    </div> -->
   </div>
 </template>
 
 <script>
-// import { useStore } from 'vuex';
+import { onMounted, ref } from 'vue';
+
 import { mapState } from '@/store';
-import { useStore } from 'vuex';
-// import { watch } from 'vue';
-// import CreateTodo from '@/components/CreateTodo.vue';
-// import Navigation from '@/components/Navigation.vue';
+import Navigation from '@/components/Navigation.vue';
+import Button from '@/components/Button.vue';
+
 export default {
   name: 'home',
+  components: {
+    Navigation,
+    Button,
+  },
   setup() {
-    const { dispatch } = useStore();
     const user = mapState('auth.user');
 
-    function logout() {
-      dispatch('auth/logout');
+    const todoItems = ref([
+      {
+        text: 'Easy UI',
+        checked: false,
+      },
+      {
+        text: 'Collaborate',
+        checked: false,
+      },
+      {
+        text: 'Event Trace',
+        checked: false,
+      },
+      {
+        text: 'Free',
+        checked: false,
+      },
+    ]);
+
+    const percentageChecked = ref(0);
+
+    function checkNextTodo() {
+      let done = false;
+      todoItems.value.forEach((item) => {
+        if (done) return;
+        if (item.checked) return;
+        item.checked = true;
+        done = true;
+        percentageChecked.value += 100 / todoItems.value.length;
+      });
+      if (done) setTimeout(checkNextTodo, 1000);
     }
-    // watch(user, console.warn);
-    // const { dispatch } = useStore();
-    // dispatch('auth/authenticate');
 
-    // function todoAnimation() {
-    //   // Get the checkboxes
-    //   const yesBoxes = Array.from(document.querySelectorAll('.todo .yes'));
-    //   const noBoxes = Array.from(document.querySelectorAll('.todo .no'));
-
-    //   // Get the progress bar and progress text
-    //   const progress = document.querySelector('.todo .determinate');
-    //   const progressText = document.querySelector('#todo-progress');
-
-    //   // Keep track of progress
-    //   const { length } = yesBoxes;
-    //   const parts = 100 / length;
-    //   let i = 0;
-
-    //   const interval = setInterval(() => {
-    //     // Toggle a checkbox
-    //     yesBoxes[i].style.display = 'block';
-    //     noBoxes[i].style.display = 'none';
-
-    //     // Calculate new percentage
-    //     const width = `${(parts * (i + 1)).toFixed(0)}%`;
-    //     progress.style.width = width;
-    //     progressText.innerText = width;
-
-    //     // Clearinterval if we are done
-    //     if (i === length - 1) {
-    //       clearInterval(interval);
-    //     }
-
-    //     i += 1;
-    //   }, 1000);
-    // }
-
-    // onMounted(() => {
-    //   setTimeout(todoAnimation, 500);
-    // });
+    onMounted(() => {
+      setTimeout(checkNextTodo, 500);
+    });
 
     return {
       user,
-      logout,
+      todoItems,
+      percentageChecked,
     };
   },
 };
 </script>
-<style lang="scss" scoped>
-.hero {
-  min-height: 100vh;
-  background: linear-gradient(50deg, #2196f3, #3f51b5);
-
-  .navigation {
-    height: 10vh;
-  }
-
-  .row {
-    height: 90vh;
-  }
-}
-
-.todo {
-  padding-right: 2rem;
-  padding-left: 2rem;
-  padding-top: 1rem;
-  max-width: 60%;
-  height: 100%;
-  margin-left: auto;
-}
-
-.todo-item {
-  padding-right: 2rem;
-
-  span {
-    padding-left: 1.5rem;
-  }
-}
-
-.yes {
-  display: none;
-}
-
-.progress-wrapper {
-  display: flex;
-
-  .progress {
-    margin: 0 1rem 0 0;
-  }
-}
-
-.list-container {
-  margin-bottom: 5rem;
-}
-</style>
