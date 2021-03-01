@@ -1,9 +1,10 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { hashPassword, protect } = require('@feathersjs/authentication-local').hooks;
+const { protect } = require('@feathersjs/authentication-local').hooks;
 const {
   populate, iff, isProvider, checkContext,
 } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
+
 const {
   setUserId, statusSoftDelete, verifyListOwner, validate, withoutProvider,
 } = require('../../hooks');
@@ -46,12 +47,25 @@ const joinItems = populate({
   },
 });
 
+const joinAccessors = populate({
+  schema: {
+    include: {
+      service: 'user-has-access',
+      nameAs: 'users_with_access',
+      parentField: 'id',
+      childField: 'list_id',
+      useInnerPopulate: true,
+      asArray: true,
+    },
+  },
+});
+
 const verifyListAccess = async (context) => {
   checkContext(context, 'before', ['get', 'patch'], 'verifyListAccess');
   const listId = context.id;
   const access = await getAccessibleLists(context.params.user.id, context.app);
 
-  if (!access.includes(listId)) {
+  if (!access.includes(listId.toString())) {
     throw new Forbidden('You do not have access to this list.');
   }
 
@@ -70,13 +84,11 @@ module.exports = {
     ],
     create: [
       validate(todoListsSchema, { requireAll: true }),
-      hashPassword('password'),
       setUserId('owner_id'),
     ],
     update: [],
     patch: [
       iff(isProvider('external'), validate(todoListsSchema, {})),
-      hashPassword('password'),
       verifyListAccess,
     ],
     remove: [
@@ -85,14 +97,13 @@ module.exports = {
   },
 
   after: {
-    all: [
-      protect('password'),
-    ],
+    all: [],
     find: [],
     get: [
       withoutProvider(joinEvents),
       // Can join without provider because all lists are already verified accessible
       withoutProvider(joinItems),
+      withoutProvider(joinAccessors),
       protect('_include'),
     ],
     create: [

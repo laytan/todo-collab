@@ -27,7 +27,6 @@ const convertCompleted = (context) => {
   return context;
 };
 
-
 /**
  * Verify that the user making this request has access to the list this todo belongs in
  */
@@ -77,7 +76,6 @@ const registerCompletedEvent = registerEvent({
     return dGetType(context);
   },
 });
-
 
 module.exports = {
   before: {

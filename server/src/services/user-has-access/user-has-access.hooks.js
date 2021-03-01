@@ -29,6 +29,19 @@ const verifyNotAlreadyAccess = async (context) => {
   return context;
 };
 
+const joinUser = populate({
+  schema: {
+    include: {
+      service: 'users',
+      nameAs: 'user',
+      parentField: 'user_id',
+      childField: 'id',
+      useInnerPopulate: false,
+      asArray: false,
+    },
+  },
+});
+
 module.exports = {
   before: {
     all: [
@@ -58,9 +71,12 @@ module.exports = {
 
   after: {
     all: [],
-    find: [],
+    find: [
+      joinUser,
+    ],
     get: [
       joinList,
+      joinUser,
     ],
     create: [],
     update: [],

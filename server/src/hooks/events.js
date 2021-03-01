@@ -51,7 +51,6 @@ const registerEvent = ({
   const emitterId = getEmitterId(context);
   const type = getType(context);
 
-
   // Only run on types specified
   if (types.length > 0) {
     if (!types.includes(type)) {

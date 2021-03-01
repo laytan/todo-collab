@@ -24,7 +24,6 @@ All fields are **required**
 {
     "name": "[between 2 and 100 characters]",
     "description": "[can be empty, max 500 characters]",
-    "password": "[non whitespace between 6 and 200 characters]"
 }
 ```
 
@@ -34,7 +33,6 @@ All fields are **required**
 {
 	"name": "groceries",
 	"description": "",
-	"password": "supersecret"
 }
 ```
 
@@ -105,7 +103,7 @@ No specific error responses
 
 ### SUCCESS RESPONSE
 
-This method will return all related data to the list (events and items) also.
+This method will return all related data to the list (events, items and the users with access) also.
 
 **CODE**: `200 OK`
 
@@ -145,6 +143,32 @@ This method will return all related data to the list (events and items) also.
       "status": 1,
       "done_by_user_id": null,
       "list_id": 1
+    }
+  ],
+  "users_with_access": [
+    {
+      "id": 1,
+      "created_at": "2020-05-20T21:22:22.000Z",
+      "updated_at": "2020-05-20T21:22:22.000Z",
+      "status": 1,
+      "user_id": 4,
+      "list_id": 3
+      "user": {
+        "username": "bob",
+        "email": "bob@example.com",
+        "isVerified": 0,
+        "verifyToken": "d32fdff344f9c03f4662f3664bd13c",
+        "verifyShortToken": "171808",
+        "verifyExpires": 1589924074721,
+        "verifyChanges": "{}",
+        "resetToken": null,
+        "resetShortToken": null,
+        "resetExpires": null,
+        "id": 1,
+        "created_at": "2020-05-14T21:34:34.000Z",
+        "updated_at": "2020-05-14T21:34:34.000Z",
+        "status": 1
+      }
     }
   ]
 }
@@ -231,19 +255,17 @@ All fields are **optional**
 ```json
 {
   "name": "[between 2 and 100 characters]",
-  "description": "[can be empty, max 500 characters]",
-  "password": "[non whitespace between 6 and 200 characters]"
+  "description": "[can be empty, max 500 characters]"
 }
 ```
 
 **DATA EXAMPLE**
 
-Changing the password to supersecret and the description to empty
+Changing the description to be nothing
 
 ```json
 {
     "description": "",
-    "password": "supersecret"
 }
 ```
 
