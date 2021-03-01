@@ -10,14 +10,6 @@ export const router = createRouter({
       component: Home,
     },
     {
-      path: '/about',
-      name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (about.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import(/* webpackChunkName: "about" */ './views/About.vue'),
-    },
-    {
       path: '/authentication',
       name: 'authentication',
       // route level code-splitting
@@ -47,29 +39,6 @@ export const router = createRouter({
     },
   ],
 });
-
-// router.beforeEach(async (to, from, next) => {
-//   const dispatch = useStore();
-//   const user = mapState('user');
-
-//   function initState() {
-//     dispatch(actions.INIT);
-//     dispatch(actions.SYNC_LISTS);
-//   }
-
-//   if (!user.value.id) {
-//     // Try to log in
-//     const loggedIn = await dispatch(actions.TRY_AUTH);
-//     if (loggedIn) {
-//       initState();
-//     }
-//   } else {
-//     // Already loggedIn
-//     initState();
-//   }
-
-//   next();
-// });
 
 export function useRouter() {
   return router;
