@@ -1,3 +1,5 @@
+import format from 'date-fns/format';
+
 import { mapState } from '@/store';
 import { useRouter } from '@/router';
 
@@ -65,4 +67,8 @@ export function mustBeLoggedIn() {
   if (!user) {
     router.push('/authentication');
   }
+}
+
+export function formatDate(date) {
+  return format(new Date(date), 'dd/MM/yyyy - HH:mm');
 }

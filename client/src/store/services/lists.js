@@ -6,7 +6,7 @@ export function lists({ feathers }) {
     static modelName = 'List';
   }
 
-  const servicePath = 'lists';
+  const servicePath = 'todo-lists';
   const vuexPlugin = makeServicePlugin({
     Model: List,
     service: apiClient.service(servicePath),

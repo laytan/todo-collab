@@ -1,89 +1,91 @@
 <template>
   <div>
-    <div v-if="list" class="list">
-      <div class="row">
-        <div class="col s9">
-          <div v-if="list.name">
-            <h1>{{ list.name }}</h1>
-            <p>{{ list.description }}</p>
-            <p>{{ list.owner_id }}</p>
-          </div>
-
-          <todo-list :list="list" v-if="list.name"></todo-list>
+    <Navigation class="mb-6" />
+    <div v-if="list" class="container px-2 mx-auto">
+      <div class="flex items-center justify-between mb-4">
+        <div class="flex items-end gap-4">
+          <h1 class="text-4xl text-red-400">{{ list.name }}</h1>
+          <label class="text-sm">
+            <input v-model="showCompleted" class="w-3 h-3" type="checkbox" />
+            Show completed
+          </label>
         </div>
-        <div class="col s3">
-          <div>
-            <ul ref="listAccordion" id="list-accordion" class="collapsible">
-              <li>
-                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                  Users
-                  <div class="ml-auto icon-stack">
-                    <i class="material-icons">person_outline</i>
-                    <i class="material-icons arrow-down">arrow_drop_down</i>
-                    <i class="material-icons arrow-up">arrow_drop_up</i>
-                  </div>
+        <!-- TODO: Modal or something -->
+        <button @click="createTask" class="text-blue-500 hover:underline">New Item</button>
+      </div>
+      <div class="flex gap-12 p-4 bg-gray-100 shadow">
+        <ul class="flex-grow">
+          <li
+            class="flex items-center gap-6 py-2 border-b border-gray-400"
+            v-for="item in sorteditems"
+            :key="item.id"
+          >
+            <!-- TODO: Show who completed the item -->
+            <input type="checkbox" disabled :checked="item.completed_at !== null" />
+            <div class="flex-grow">
+              <div class="flex items-center justify-between">
+                <div class="flex items-end gap-4 mb-1">
+                  <h2 class="text-2xl">
+                    {{ item.name }}
+                  </h2>
+                  <span
+                    :class="`block px-2 py-1 text-sm rounded-lg ${decideTextColor(item.color)}`"
+                    :style="`background-color: ${item.color};`"
+                  >
+                    {{ item.label }}
+                  </span>
                 </div>
-                <div class="collapsible-body cyan lighten-5">
-                  <p>Accounts with access:</p>
-                  <div v-for="email in list.access" :key="email">
-                    <span>{{ email }}</span>
-                    <span v-if="email !== list.author" @click="revokeAccess(email)">
-                      Revoke access
-                    </span>
-                  </div>
+                <!-- TODO: Implement -->
+                <a href="#" class="text-blue-500 hover:underline">Edit</a>
+              </div>
+              <div class="text-gray-600">
+                <p class="block mb-1">
+                  {{ item.description }}
+                </p>
+                <div class="flex justify-between w-full">
+                  <small class="text-gray-600">
+                    Created at {{ formatDate(item.created_at) }}
+                  </small>
+                  <small class="text-gray-600">
+                    Updated at {{ formatDate(item.updated_at) }}
+                  </small>
+                  <small class="text-gray-600" v-if="item.completed_at !== null">
+                    Completed at {{ formatDate(item.completed_at) }}
+                  </small>
                 </div>
-              </li>
-              <li>
-                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                  Add Collaborators
-                  <div class="ml-auto icon-stack">
-                    <i class="material-icons">supervisor_account</i>
-                    <i class="material-icons arrow-down">arrow_drop_down</i>
-                    <i class="material-icons arrow-up">arrow_drop_up</i>
-                  </div>
-                </div>
-                <div class="collapsible-body cyan lighten-5">
-                  <p>Enter your collaborators emails here:</p>
-                  <form @submit.prevent="giveAccess">
-                    <input type="email" placeholder="Email" v-model="giveAccessEmail" />
-                    <button class="btn waves-effect yellow black-text" type="submit" name="action">
-                      Give access
-                      <i class="material-icons right">add</i>
-                    </button>
-                  </form>
-                </div>
-              </li>
-              <li>
-                <div class="collapsible-header valign-wrapper waves-effect cyan lighten-4">
-                  Events
-                  <div class="ml-auto icon-stack">
-                    <i class="material-icons">view_stream</i>
-                    <i class="material-icons arrow-down">arrow_drop_down</i>
-                    <i class="material-icons arrow-up">arrow_drop_up</i>
-                  </div>
-                </div>
-                <div class="collapsible-body cyan lighten-5">
-                  <h4>List</h4>
-                  <ul>
-                    <li v-for="event in list.events" :key="event.id">
-                      {{ event.emitter.username }}
-                      {{ event.type.toLowerCase() }}d the list. <br />
-                      <small>{{ new Date(event.created_at).toLocaleString() }}</small>
-                    </li>
-                  </ul>
-                  <h4>Items</h4>
-                  <ul v-for="item in itemsWithEvents" :key="item.id">
-                    <h5>{{ item.name }}</h5>
-                    <li v-for="event in item.events" :key="event.id">
-                      {{ event.emitter.username }}
-                      {{ event.type.toLowerCase() }}d the item. <br />
-                      <small>{{ new Date(event.created_at).toLocaleString() }}</small>
-                    </li>
-                  </ul>
-                </div>
-              </li>
-            </ul>
-          </div>
+              </div>
+            </div>
+          </li>
+        </ul>
+        <div class="w-64" v-if="owner">
+          <h2>{{ list.name }}</h2>
+          <small class="text-gray-600" v-if="owner"
+            >{{ owner.username }} - {{ formatDate(list.created_at) }}</small
+          >
+          <h3 class="block mt-4 text-sm text-gray-600">Description</h3>
+          <p>
+            {{ list.description }}
+          </p>
+          <h3 class="block mt-4 text-sm text-gray-600">People who have access</h3>
+          <ul>
+            <li
+              class="pb-2 border-b border-gray-400"
+              v-for="accessor in list.users_with_access"
+              :key="accessor.id"
+            >
+              <span>
+                {{ accessor.user.username }}
+                <small v-if="accessor.user_id === owner.id"> - Owner</small>
+              </span>
+              <small class="block text-gray-600">
+                Since {{ formatDate(accessor.created_at) }}</small
+              >
+            </li>
+          </ul>
+          <h3 class="block mt-4 text-sm text-gray-600">Gebeurtenissen</h3>
+          <ul>
+            <Event v-for="event in list.events" :key="event.id" :event="event" />
+          </ul>
         </div>
       </div>
     </div>
@@ -91,88 +93,81 @@
 </template>
 
 <script>
-import { watch, ref, computed } from 'vue';
+import { onMounted, ref, computed } from 'vue';
+import { models } from '@feathersjs/vuex';
 
+import { mustBeLoggedIn, formatDate } from '@/helpers';
 import { useRouter } from '@/router';
 
-import todoList from '@/components/TodoList.vue';
+import Navigation from '@/components/Navigation.vue';
+import Event from '@/components/Event.vue';
 
 export default {
+  name: 'list',
   components: {
-    todoList,
+    Navigation,
+    Event,
   },
   setup() {
-    const lists = [];
+    onMounted(mustBeLoggedIn);
 
     const router = useRouter();
     const listId = parseInt(router.currentRoute.value.params.id, 10);
-    const currentList = computed(() => lists.value.filter((list) => list.id === listId)[0]);
 
-    const itemsWithEvents = computed(() => {
-      if (currentList.value.items) {
-        return currentList.value.items.filter((item) => item.events.length > 0);
-      }
-      return [];
+    const list = ref(null);
+    const owner = ref(null);
+    onMounted(async () => {
+      const { List } = models.api;
+      list.value = await List.get(listId).catch(() => {
+        router.push('/');
+      });
+
+      // Pluck the owner out of the list
+      owner.value = list.value.users_with_access.filter(
+        (userWithAccess) => userWithAccess.user_id === list.value.owner_id,
+      )[0].user;
     });
 
-    const giveAccessEmail = ref('');
-
-    const listAccordion = ref(null);
-    watch(listAccordion, (val) => {
-      if (!val) {
-        return;
+    // Based on https://stackoverflow.com/questions/3942878/how-to-decide-font-color-in-white-or-black-depending-on-background-color
+    function decideTextColor(backgroundColor) {
+      const noHash = backgroundColor.substring(1);
+      let red;
+      let green;
+      let blue;
+      if (noHash.length > 2) {
+        red = parseInt(noHash.substring(0, 2), 16);
+        green = parseInt(noHash.substring(2, 4), 16);
+        blue = parseInt(noHash.substring(4, 6), 16);
+      } else {
+        red = parseInt(noHash.substring(0, 1), 16);
+        green = parseInt(noHash.substring(1, 2), 16);
+        blue = parseInt(noHash.substring(2, 3), 16);
       }
-      window.M.Collapsible.init(val);
+      return red * 0.299 + green * 0.587 + blue * 0.114 > 186 ? 'text-black' : 'text-white';
+    }
+
+    const showCompleted = ref(true);
+    const sorteditems = computed(() => {
+      let items = [...list.value.items];
+
+      // Filter out completed if checked
+      if (!showCompleted.value) {
+        items = items.filter((item) => item.completed_at === null);
+      }
+
+      // Order according to the order in the database
+      return items.sort((a, b) => a.order - b.order);
     });
-
-    // TODO: As state action, need f5 to see changes now
-    // eslint-disable-next-line
-    async function revokeAccess(email) {
-      // await services.todolists.patch(list.id, {
-      //   revoke: email,
-      // });
-    }
-
-    // TODO: As state action, need f5 to see changes now
-    async function giveAccess() {
-      // await services.todolists.patch(list.id, {
-      //   access: state.giveAccessEmail,
-      // });
-    }
 
     return {
-      giveAccessEmail,
-      revokeAccess,
-      giveAccess,
-      list: currentList,
-      itemsWithEvents,
-      listAccordion,
+      listId,
+      list,
+      owner,
+      formatDate,
+      sorteditems,
+      decideTextColor,
+      showCompleted,
     };
   },
 };
 </script>
-<style lang="scss">
-.ml-auto {
-  margin-left: auto;
-}
-
-.icon-stack {
-  display: flex;
-  flex-direction: column;
-}
-
-.collapsible {
-  .arrow-up {
-    display: none;
-  }
-
-  .active {
-    .arrow-up {
-      display: block;
-    }
-    .arrow-down {
-      display: none;
-    }
-  }
-}
-</style>

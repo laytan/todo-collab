@@ -6,7 +6,7 @@ export function userHasAccess({ feathers }) {
     static modelName = 'UserHasAccess';
   }
 
-  const servicePath = 'user_has_access';
+  const servicePath = 'user-has-access';
   const vuexPlugin = makeServicePlugin({
     Model: UserHasAccess,
     service: apiClient.service(servicePath),

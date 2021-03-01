@@ -18,7 +18,7 @@ export const router = createRouter({
       component: () => import(/* webpackChunkName: "authentication" */ './views/Authentication.vue'),
     },
     {
-      path: '/lists/:id',
+      path: '/list/:id',
       name: 'list',
       component: () => import(/* webpackChunkName: "list" */ './views/List.vue'),
     },
@@ -36,6 +36,11 @@ export const router = createRouter({
       path: '/lists',
       name: 'lists',
       component: () => import(/* webpackChunkName: "lists" */ './views/Lists.vue'),
+    },
+    {
+      path: '/lists/create',
+      name: 'create-list',
+      component: () => import(/* webpackChunkName: "create-list" */ './views/CreateList.vue'),
     },
   ],
 });
