@@ -36,6 +36,7 @@ const registerEvent = ({
   getEmitterId = dGetEmitter,
   getType = dGetType,
   getIdsEffected = helpers.getIdsEffected,
+  describe = () => null,
 }) => async (context) => {
   checkContext(context, 'after', undefined, 'registerEvent');
 
@@ -66,6 +67,7 @@ const registerEvent = ({
     service,
     id_in_service: effectedId,
     emitter_id: emitterId,
+    description: describe(context),
   }));
 
   await Promise.all(eventsToCreate);
