@@ -1,14 +1,12 @@
 <template>
   <li class="pb-2 border-b border-gray-400">
-    <span v-if="emitter">{{ emitter.username }}</span> {{ typeForDisplay(event.type) }}
+    <span v-if="event?.emitter">{{ event.emitter.username }}</span> {{ typeForDisplay(event.type) }}
     {{ serviceForDisplay(event.service) }}
+    <span v-if="event.description" class="block text-sm">{{ event.description }}</span>
     <small class="block text-gray-600">{{ formatDate(event.created_at) }}</small>
   </li>
 </template>
 <script>
-import { onMounted, ref } from 'vue';
-import { models } from '@feathersjs/vuex';
-
 import { formatDate } from '@/helpers';
 
 export default {
@@ -18,14 +16,7 @@ export default {
       required: true,
     },
   },
-  setup(props) {
-    const { User } = models.api;
-
-    const emitter = ref(null);
-    onMounted(async () => {
-      emitter.value = await User.get(props.event.emitter_id).catch(console.error);
-    });
-
+  setup() {
     function typeForDisplay(type) {
       switch (type) {
         case 'CREATE':
@@ -36,6 +27,10 @@ export default {
           return 'made changes to';
         case 'DELETE':
           return 'removed';
+        case 'COMPLETE':
+          return 'completed';
+        case 'UNCOMPLETE':
+          return 'uncompleted';
         default:
           return type;
       }
@@ -57,7 +52,6 @@ export default {
     }
 
     return {
-      emitter,
       formatDate,
       typeForDisplay,
       serviceForDisplay,
