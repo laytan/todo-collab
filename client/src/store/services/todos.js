@@ -9,7 +9,6 @@ export function todos({ feathers }) {
       return {
         label: '',
         color: '#0000ff',
-        completed: false,
       };
     }
   }
