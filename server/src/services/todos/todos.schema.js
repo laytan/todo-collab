@@ -4,7 +4,7 @@ const todosSchema = Joi.object({
   order: Joi.number().min(0),
   name: Joi.string().min(2).max(50),
   description: Joi.string().max(500).allow(''),
-  label: Joi.string().max(50),
+  label: Joi.string().max(50).allow(''),
   color: Joi.string().regex(/^#[0-9a-f]{3,6}$/i, 'color'),
   list_id: Joi.number(),
 });
