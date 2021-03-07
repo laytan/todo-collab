@@ -28,11 +28,12 @@ module.exports = function channels(app) {
     const authorizedLists = await app.service('user-has-access').find({
       query: {
         user_id: user.id,
+        $select: ['list_id'],
       },
     });
 
     // add the user to the lists channel
-    authorizedLists.data.forEach((list) => app.channel(`lists/${list.id}`).join(connection));
+    authorizedLists.forEach((access) => app.channel(`lists/${access.list_id}`).join(connection));
   });
 
   app.on('logout', async (authResult, { connection }) => {
@@ -57,5 +58,8 @@ module.exports = function channels(app) {
   });
 
   // Publish todo items to the parents list channel
-  app.service('todos').publish((todo) => app.channel(`lists/${todo.listId}`));
+  app.service('todos').publish((todo) => app.channel(`lists/${todo.list_id}`));
+
+  // Every authenticated user can listen to user events
+  app.service('users').publish(() => app.channel('authenticated'));
 };
