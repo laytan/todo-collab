@@ -7,6 +7,7 @@ import { lists } from '@/store/services/lists';
 import { todos } from '@/store/services/todos';
 import { userHasAccess } from '@/store/services/user-has-access';
 import { users } from '@/store/services/users';
+import { events } from '@/store/services/events';
 import { auth } from '@/store/auth';
 
 /**
@@ -36,6 +37,7 @@ export function setupStore({ feathers }) {
       todos({ feathers }),
       userHasAccess({ feathers }),
       users({ feathers }),
+      events({ feathers }),
     ],
   });
 
