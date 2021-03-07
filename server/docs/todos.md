@@ -27,7 +27,7 @@ All fields are **required**
     "order": "[A number representing the todos position in the list, starts at 0]",
     "name": "[2 to 50 characters]",
     "description": "[Max 500 characters, can be empty]",
-    "label": "[Max 50 characters label used to group todos]",
+    "label": "[Max 50 characters label used to group todos, can be empty]",
     "color": "[A hex color value used to group todos]",
     "list_id": "[ID of the list this todo belongs in]",
 }
@@ -79,8 +79,6 @@ No specific error responses
 
 ### SUCCESS RESPONSE
 
-This method will also join the events off this todo.
-
 **CODE**: `200 OK`
 
 ```json
@@ -96,20 +94,7 @@ This method will also join the events off this todo.
   "updated_at": "2020-05-22T17:22:07.000Z",
   "status": 1,
   "done_by_user_id": null,
-  "list_id": 1,
-  "events": [
-    {
-      "type": "CREATE",
-      "service": "todos",
-      "id_in_service": 1,
-      "description": null,
-      "id": 1,
-      "created_at": "2020-05-22T17:22:07.000Z",
-      "updated_at": "2020-05-22T17:22:07.000Z",
-      "status": 1,
-      "emitter_id": 1
-    }
-  ]
+  "list_id": 1
 }
 ```
 
@@ -140,27 +125,22 @@ Above URL will return all todos the user has access to that start with Chee
 **CODE**: `200 OK`
 
 ```json
-{
-  "total": 1,
-  "limit": 10,
-  "skip": 0,
-  "data": [
-    {
-      "order": 0,
-      "name": "Cheese",
-      "description": "",
-      "label": "Refrigerated",
-      "color": "#FFF",
-      "completed_at": null,
-      "id": 1,
-      "created_at": "2020-05-22T17:22:07.000Z",
-      "updated_at": "2020-05-22T17:22:07.000Z",
-      "status": 1,
-      "done_by_user_id": null,
-      "list_id": 1
-    }
-  ]
-}
+[
+  {
+    "order": 0,
+    "name": "Cheese",
+    "description": "",
+    "label": "Refrigerated",
+    "color": "#FFF",
+    "completed_at": null,
+    "id": 1,
+    "created_at": "2020-05-22T17:22:07.000Z",
+    "updated_at": "2020-05-22T17:22:07.000Z",
+    "status": 1,
+    "done_by_user_id": null,
+    "list_id": 1
+  }
+]
 ```
 
 ### ERROR RESPONSE
@@ -208,7 +188,7 @@ All fields are **optional**
   "order": "[A number representing the todos position in the list, starts at 0]",
   "name": "[2 to 50 characters]",
   "description": "[Max 500 characters, can be empty]",
-  "label": "[Max 50 characters label used to group todos]",
+  "label": "[Max 50 characters label used to group todos, can be empty]",
   "color": "[A hex color value used to group todos]",
   "completed": "[A boolean which will set done_by_id to the current user and completed_at to now, false will remove these]"
 }

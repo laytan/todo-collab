@@ -1,12 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { protect } = require('@feathersjs/authentication-local').hooks;
 const {
-  populate, iff, isProvider, checkContext,
+  iff, isProvider, checkContext,
 } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 
 const {
-  setUserId, statusSoftDelete, verifyListOwner, validate, withoutProvider,
+  setUserId, statusSoftDelete, verifyListOwner, validate,
 } = require('../../hooks');
 const { registerEvent } = require('../../hooks/events');
 const { getAccessibleLists } = require('../../helpers');
@@ -17,48 +16,6 @@ const addAccessForOwner = (context) => context.app.service('user-has-access').cr
   user_id: context.result.owner_id,
   list_id: context.result.id,
 }).then(() => context);
-
-const joinEvents = populate({
-  schema: {
-    include: {
-      service: 'events',
-      nameAs: 'events',
-      parentField: 'id',
-      childField: 'id_in_service',
-      useInnerPopulate: true,
-      asArray: true,
-      query: {
-        service: 'todo-lists',
-      },
-    },
-  },
-});
-
-const joinItems = populate({
-  schema: {
-    include: {
-      service: 'todos',
-      nameAs: 'items',
-      parentField: 'id',
-      childField: 'list_id',
-      useInnerPopulate: true,
-      asArray: true,
-    },
-  },
-});
-
-const joinAccessors = populate({
-  schema: {
-    include: {
-      service: 'user-has-access',
-      nameAs: 'users_with_access',
-      parentField: 'id',
-      childField: 'list_id',
-      useInnerPopulate: true,
-      asArray: true,
-    },
-  },
-});
 
 const verifyListAccess = async (context) => {
   checkContext(context, 'before', ['get', 'patch'], 'verifyListAccess');
@@ -99,13 +56,7 @@ module.exports = {
   after: {
     all: [],
     find: [],
-    get: [
-      withoutProvider(joinEvents),
-      // Can join without provider because all lists are already verified accessible
-      withoutProvider(joinItems),
-      withoutProvider(joinAccessors),
-      protect('_include'),
-    ],
+    get: [],
     create: [
       addAccessForOwner,
       registerEvent({}),

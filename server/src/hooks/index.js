@@ -73,7 +73,6 @@ const verifyOwner = (userIdColumn = 'user_id', getIds = getIdsEffected) => async
 
   // Find all the ids where the owner is the user
   const query = {
-    paginate: false,
     query: {
       id: { $in: ids },
       [userIdColumn]: context.params.user.id,
@@ -103,7 +102,7 @@ const verifyListOwner = (listIdColumn) => async (context) => {
   const list = (await dependsOnMethod(
     context,
     // Find instead of get so it does not need to join the foreign keys
-    (listId) => context.app.service('todo-lists').find({ paginate: false, query: { id: listId, $select: ['owner_id'] } }),
+    (listId) => context.app.service('todo-lists').find({ query: { id: listId, $select: ['owner_id'] } }),
     listIdColumn,
   ))[0][0];
 

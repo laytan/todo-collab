@@ -19,7 +19,7 @@ exports.UserHasAccess = class UserHasAccess extends Service {
       throw new BadRequest('User id is required.');
     }
 
-    const record = (await this.app.service('user-has-access').find({ paginate: false, query: { user_id: userId, list_id: listId } }))[0];
+    const record = (await this.app.service('user-has-access').find({ query: { user_id: userId, list_id: listId } }))[0];
     if (!record) {
       throw new NotFound(`No access found for user: ${userId} on list: ${listId}`);
     }

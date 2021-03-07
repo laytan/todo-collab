@@ -320,49 +320,44 @@ The data array will be empty when there are no results, it will still be status 
 **CODE**: `200 OK`
 
 ```json
-{
-  "total": 4,
-  "limit": 10,
-  "skip": 0,
-  "data": [
-    {
-      "username": "bobs13",
-      "email": "bobs13@example.com",
-      "isVerified": 0,
-      "id": 26,
-      "created_at": "2020-05-15T18:13:26.000Z",
-      "updated_at": "2020-05-15T18:13:26.000Z",
-      "status": 1
-    },
-    {
-      "username": "bobs15",
-      "email": "bobs15@example.com",
-      "isVerified": 0,
-      "id": 28,
-      "created_at": "2020-05-15T18:20:29.000Z",
-      "updated_at": "2020-05-15T18:20:29.000Z",
-      "status": 1
-    },
-    {
-      "username": "bobby",
-      "email": "someone@example.com",
-      "isVerified": 0,
-      "id": 29,
-      "created_at": "2020-05-15T18:42:34.000Z",
-      "updated_at": "2020-05-15T18:42:34.000Z",
-      "status": 1
-    },
-    {
-      "username": "bobs155",
-      "email": "bobs155@example.com",
-      "isVerified": 0,
-      "id": 33,
-      "created_at": "2020-05-15T19:45:27.000Z",
-      "updated_at": "2020-05-15T19:45:27.000Z",
-      "status": 1
-    }
-  ]
-}
+[
+  {
+    "username": "bobs13",
+    "email": "bobs13@example.com",
+    "isVerified": 0,
+    "id": 26,
+    "created_at": "2020-05-15T18:13:26.000Z",
+    "updated_at": "2020-05-15T18:13:26.000Z",
+    "status": 1
+  },
+  {
+    "username": "bobs15",
+    "email": "bobs15@example.com",
+    "isVerified": 0,
+    "id": 28,
+    "created_at": "2020-05-15T18:20:29.000Z",
+    "updated_at": "2020-05-15T18:20:29.000Z",
+    "status": 1
+  },
+  {
+    "username": "bobby",
+    "email": "someone@example.com",
+    "isVerified": 0,
+    "id": 29,
+    "created_at": "2020-05-15T18:42:34.000Z",
+    "updated_at": "2020-05-15T18:42:34.000Z",
+    "status": 1
+  },
+  {
+    "username": "bobs155",
+    "email": "bobs155@example.com",
+    "isVerified": 0,
+    "id": 33,
+    "created_at": "2020-05-15T19:45:27.000Z",
+    "updated_at": "2020-05-15T19:45:27.000Z",
+    "status": 1
+  }
+]
 ```
 
 ### ERROR RESPONSE

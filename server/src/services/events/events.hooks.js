@@ -1,33 +1,29 @@
-const { disallow, populate } = require('feathers-hooks-common');
-
-const eventsEmitterSchema = {
-  include: {
-    service: 'users',
-    nameAs: 'emitter',
-    parentField: 'emitter_id',
-    childField: 'id',
-  },
-};
+const { disallow } = require('feathers-hooks-common');
 
 module.exports = {
   before: {
-    all: [
-      disallow('external'),
-    ],
+    all: [],
+    // TODO: Disallow find and get to users with access to the list/todo of this event and document
     find: [],
     get: [],
-    create: [],
-    update: [],
-    patch: [],
-    remove: [],
+    create: [
+      disallow('external'),
+    ],
+    update: [
+      disallow(),
+    ],
+    patch: [
+      disallow(),
+    ],
+    remove: [
+      disallow(),
+    ],
   },
 
   after: {
     all: [],
     find: [],
-    get: [
-      populate({ schema: eventsEmitterSchema }),
-    ],
+    get: [],
     create: [],
     update: [],
     patch: [],

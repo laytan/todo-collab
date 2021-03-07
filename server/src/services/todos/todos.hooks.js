@@ -1,12 +1,11 @@
 const { authenticate } = require('@feathersjs/authentication').hooks;
-const { protect } = require('@feathersjs/authentication-local').hooks;
 const {
-  populate, iff, isProvider,
+  iff, isProvider,
 } = require('feathers-hooks-common');
 const { Forbidden } = require('@feathersjs/errors');
 const { registerEvent, dGetType } = require('../../hooks/events');
 const { dependsOnMethod } = require('../../helpers');
-const { statusSoftDelete, validate, withoutProvider } = require('../../hooks');
+const { statusSoftDelete, validate } = require('../../hooks');
 const { todosSchema, updateTodosSchema } = require('./todos.schema');
 
 // Converts completed boolean into done_by and completed_at
@@ -40,7 +39,7 @@ const verifyListAccess = async (context) => {
     },
   );
 
-  const userHasAccesses = await Promise.all(lists.map((list) => context.app.service('user-has-access').find({ paginate: false, query: { user_id: context.params.user.id, list_id: list.id } })));
+  const userHasAccesses = await Promise.all(lists.map((list) => context.app.service('user-has-access').find({ query: { user_id: context.params.user.id, list_id: list.id } })));
 
   if (userHasAccesses.length !== lists.length) {
     throw new Forbidden('You do not have access to the list of this item.');
@@ -48,22 +47,6 @@ const verifyListAccess = async (context) => {
 
   return context;
 };
-
-const joinEvents = populate({
-  schema: {
-    include: {
-      service: 'events',
-      nameAs: 'events',
-      parentField: 'id',
-      childField: 'id_in_service',
-      useInnerPopulate: true,
-      query: {
-        service: 'todos',
-      },
-      asArray: true,
-    },
-  },
-});
 
 const registerCompletedEvent = registerEvent({
   getType: (context) => {
@@ -74,6 +57,14 @@ const registerCompletedEvent = registerEvent({
     }
 
     return dGetType(context);
+  },
+  describe: (context) => {
+    let described = `Name: ${context.result.name}`;
+
+    // TODO: prettier
+    described += `, Changes: ${JSON.stringify(context.data, null, 2)}`;
+
+    return described;
   },
 });
 
@@ -104,12 +95,11 @@ module.exports = {
   after: {
     all: [],
     find: [],
-    get: [
-      withoutProvider(joinEvents),
-      protect('_include'),
-    ],
+    get: [],
     create: [
-      registerEvent({}),
+      registerEvent({
+        describe: (ctx) => `Name: ${ctx.result.name}`,
+      }),
     ],
     update: [],
     patch: [

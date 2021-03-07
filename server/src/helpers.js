@@ -55,7 +55,7 @@ const dependsOnMethod = async (context, defaultHandler, idField = 'id', specific
  * @returns {Promise<Array<String>>}
  */
 const getAccessibleLists = async (userId, app) => {
-  const accessObjects = await app.service('user-has-access').find({ paginate: false, query: { user_id: userId, $select: ['list_id'] } });
+  const accessObjects = await app.service('user-has-access').find({ query: { user_id: userId, $select: ['list_id'] } });
   const accessableListIds = accessObjects.map((accessObject) => accessObject.list_id.toString());
   return accessableListIds;
 };

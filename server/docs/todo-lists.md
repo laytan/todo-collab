@@ -73,22 +73,17 @@ The data array will be empty when there are no results, it will still be status 
 **CODE**: `200 OK`
 
 ```json
-{
-  "total": 1,
-  "limit": 10,
-  "skip": 0,
-  "data": [
-    {
-      "name": "Groceries",
-      "description": "Groceries for September",
-      "id": 1,
-      "created_at": "2020-05-20T18:44:19.000Z",
-      "updated_at": "2020-05-20T18:44:19.000Z",
-      "status": 1,
-      "owner_id": 1
-    }
-  ]
-}
+[
+  {
+    "name": "Groceries",
+    "description": "Groceries for September",
+    "id": 1,
+    "created_at": "2020-05-20T18:44:19.000Z",
+    "updated_at": "2020-05-20T18:44:19.000Z",
+    "status": 1,
+    "owner_id": 1
+  }
+]
 ```
 
 ### ERROR RESPONSE
@@ -103,8 +98,6 @@ No specific error responses
 
 ### SUCCESS RESPONSE
 
-This method will return all related data to the list (events, items and the users with access) also.
-
 **CODE**: `200 OK`
 
 ```json
@@ -116,61 +109,6 @@ This method will return all related data to the list (events, items and the user
   "updated_at": "2020-05-20T18:44:19.000Z",
   "status": 1,
   "owner_id": 1,
-  "events": [
-    {
-      "type": "CREATE",
-      "service": "todo-lists",
-      "id_in_service": 1,
-      "description": null,
-      "id": 1,
-      "created_at": "2020-05-20T18:44:19.000Z",
-      "updated_at": "2020-05-20T18:44:19.000Z",
-      "status": 1,
-      "emitter_id": 1
-    }
-  ],
-  "items": [
-    {
-      "order": 0,
-      "name": "cheese",
-      "description": "",
-      "label": "Refrigerated",
-      "color": "#fff",
-      "completed_at": null,
-      "id": 1,
-      "created_at": "2020-05-20T20:41:31.000Z",
-      "updated_at": "2020-05-20T20:41:31.000Z",
-      "status": 1,
-      "done_by_user_id": null,
-      "list_id": 1
-    }
-  ],
-  "users_with_access": [
-    {
-      "id": 1,
-      "created_at": "2020-05-20T21:22:22.000Z",
-      "updated_at": "2020-05-20T21:22:22.000Z",
-      "status": 1,
-      "user_id": 4,
-      "list_id": 3
-      "user": {
-        "username": "bob",
-        "email": "bob@example.com",
-        "isVerified": 0,
-        "verifyToken": "d32fdff344f9c03f4662f3664bd13c",
-        "verifyShortToken": "171808",
-        "verifyExpires": 1589924074721,
-        "verifyChanges": "{}",
-        "resetToken": null,
-        "resetShortToken": null,
-        "resetExpires": null,
-        "id": 1,
-        "created_at": "2020-05-14T21:34:34.000Z",
-        "updated_at": "2020-05-14T21:34:34.000Z",
-        "status": 1
-      }
-    }
-  ]
 }
 ```
 
